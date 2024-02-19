@@ -1,0 +1,13 @@
+Package: FishApp
+Title: Artisanal Fisheries Portal for Northern Honduras
+Version: 0.0.0.9000
+Authors@R: person('Saeesh', 'Mangwani', email = 'saeesh.mangwani@imbrsea.eu', role = c('cre', 'aut'))
+Description: Shiny interface to track and assess the state of artisanal fisheries in Northern Honduras, based on a multi-year, community-based catch landings database.
+License: MIT + file LICENSE
+Imports: 
+    config (>= 0.3.2),
+    golem (>= 0.4.1),
+    shiny (>= 1.8.0)
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.1.1
