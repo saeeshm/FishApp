@@ -6,11 +6,30 @@
 #' @noRd
 app_ui <- function(request) {
   tagList(
-    # Leave this function for adding external resources
+    # Golem external resources
     golem_add_external_resources(),
-    # Your application UI logic
-    fluidPage(
-      h1("FishApp")
+    page_navbar(
+      # THEME
+      theme = bslib::bs_theme(bootswatch = "sandstone"),
+      title='PescApp',
+      id='main-page',
+      # Zone map
+      # General characteristics page module
+      nav_panel(
+        title="Mapa de Zonas", 
+        h1("Page still under development!")
+      ),
+      # General characteristics page module
+      nav_panel(
+        title="Características Generales", 
+        # General characteristics module UI
+        # h1("Page still under development!")
+        mod_01_generalChars_ui(id='genPage')
+      ),
+      nav_panel(
+        title="Estado de pesquerías",
+        h1("Page still under development!")
+      )
     )
   )
 }
@@ -33,7 +52,7 @@ golem_add_external_resources <- function() {
     favicon(),
     bundle_resources(
       path = app_sys("app/www"),
-      app_title = "FishApp"
+      app_title = "PescApp"
     )
     # Add here other external resources
     # for example, you can add shinyalert::useShinyalert()

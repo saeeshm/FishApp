@@ -3,7 +3,9 @@
 #' @param input,output,session Internal parameters for {shiny}.
 #'     DO NOT REMOVE.
 #' @import shiny
+#' @import bslib
 #' @noRd
 app_server <- function(input, output, session) {
-  # Your application server logic
+  # General page server logic function
+  mod_01_generalChars_server('genPage', comunidad='Todo', region='Bahia de Tela')
 }

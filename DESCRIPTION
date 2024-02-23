@@ -5,9 +5,26 @@ Authors@R: person('Saeesh', 'Mangwani', email = 'saeesh.mangwani@imbrsea.eu', ro
 Description: Shiny interface to track and assess the state of artisanal fisheries in Northern Honduras, based on a multi-year, community-based catch landings database.
 License: MIT + file LICENSE
 Imports: 
+    bslib,
     config (>= 0.3.2),
+    data.table,
+    ggplot2,
+    glue,
     golem (>= 0.4.1),
-    shiny (>= 1.8.0)
+    htmltools,
+    lubridate,
+    shiny (>= 1.8.0),
+    shinyWidgets
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.1
+RoxygenNote: 7.3.1
+Suggests: 
+    spelling,
+    testthat (>= 3.0.0),
+    usethis
+Config/testthat/edition: 3
+Language: en-US
+URL: https://github.com/saeeshm/FishApp
+BugReports: https://github.com/saeeshm/FishApp/issues
+Depends: 
+    R (>= 2.10)
