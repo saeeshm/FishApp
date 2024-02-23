@@ -28,11 +28,10 @@ mod_01_generalChars_ui <- function(id){
       ),
       # Date-range input
       shinyWidgets::sliderTextInput(
-        ns('timerange'), 
-        'Time period', 
+        ns('sampleyear'), 
+        'Año de Muestreo', 
         # Using only Month-year combos as valid input choices
-        choices=strftime(unique(fishdbase$ym, na.rm = T), format = '%b %Y'),
-        selected=strftime(range(fishdbase$ym, na.rm = T), format = '%b %Y')
+        choices=unique(year(fishdbase$fecha), na.rm=T)
       )
     ),
     # Top-row 
@@ -68,8 +67,7 @@ mod_01_generalChars_server <- function(id, comunidad, region){
       plot_type='species', 
       y_unit=input$y_unit, 
       comunidad=comunidad, 
-      time_min = lubridate::my(input$timerange[1]),
-      time_max = lubridate::my(input$timerange[2])
+      sample_year = input$sampleyear
     ))
     
     # Mean length of top-10 species plot (top-right)
@@ -78,8 +76,7 @@ mod_01_generalChars_server <- function(id, comunidad, region){
       plot_type='length', 
       y_unit=input$y_unit, 
       comunidad=comunidad, 
-      time_min = lubridate::my(input$timerange[1]),
-      time_max = lubridate::my(input$timerange[2])
+      sample_year = input$sampleyear
     ))
     
     # Catch-seasonality plot (bottom-left)
@@ -88,8 +85,7 @@ mod_01_generalChars_server <- function(id, comunidad, region){
       plot_type='seasonality', 
       y_unit=input$y_unit, 
       comunidad=comunidad, 
-      time_min = lubridate::my(input$timerange[1]),
-      time_max = lubridate::my(input$timerange[2])
+      sample_year = input$sampleyear
     ))
     
     # Catches by gear plot (bottom-right)
@@ -98,8 +94,7 @@ mod_01_generalChars_server <- function(id, comunidad, region){
       plot_type='gear', 
       y_unit=input$y_unit, 
       comunidad=comunidad, 
-      time_min = lubridate::my(input$timerange[1]),
-      time_max = lubridate::my(input$timerange[2])
+      sample_year = input$sampleyear
     ))
   })
 }

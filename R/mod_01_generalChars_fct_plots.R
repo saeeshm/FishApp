@@ -8,13 +8,14 @@
 #' @import data.table
 
 # ==== Function definition ====
-make_plot <- function(fishdbase, plot_type, y_unit, comunidad, time_min, time_max){
+make_plot <- function(fishdbase, plot_type, y_unit, comunidad, sample_year){
   # Filtering relevant data based on filter inputs - getting the plotting
   # dataframe
   plotdf <- if(comunidad=='Todo'){
-    fishdbase[(fecha >= time_min) & (fecha < time_max), ]
+    fishdbase[lubridate::year(fecha) == sample_year, ]
+    # fishdbase[(fecha >= time_min) & (fecha < time_max), ]
   }else{
-    fishdbase[(comunidad == comunidad) & (fecha >= time_min) & (fecha <= time_max), ]
+    fishdbase[(comunidad == comunidad) & (lubridate::year(fecha) == sample_year), ]
   }
   
   # Using the index list to call the appropriate function to generate the
