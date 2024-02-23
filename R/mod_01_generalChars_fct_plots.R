@@ -22,6 +22,33 @@ make_plot <- function(fishdbase, plot_type, y_unit, comunidad, time_min, time_ma
   .plotFuncList[[plot_type]](plotdf, y_unit)
 }
 
+# Produces an average length per species plot (10-most caught)
+.length_plot <- function(plotdf, y_unit){
+  if(y_unit == "Weight"){
+    # If using weight, calculating total caught-weight in kg per gear as well as
+    # average length for every species name
+    currdf <- plotdf[, .(
+      peso_kg = sum(peso, na.rm=T)/1000,
+      long_prom = mean(longitud, na.rm=T)
+    ), by=nombre_comun_cln]
+    # Selecting top-10 by weight
+    currdf <- head(currdf[order(-peso_kg)], 10)
+    .my_col_plot(currdf, x='nombre_comun_cln', y='long_prom', 
+                 y_lab = 'Talla promedio [cm]')
+  }else{
+    # Calculating number of samples per species
+    currdf <- plotdf[, .(
+      'N' = .N,
+      long_prom = mean(longitud, na.rm=T)
+    ), by=nombre_comun_cln]
+    # Selecting top-10
+    currdf <- head(currdf[order(-N)], 10)
+    # Arranging by number and selecting top-10
+    .my_col_plot(currdf, x='nombre_comun_cln', y='long_prom',
+                 y_lab = 'Talla promedio [cm]')
+  }
+}
+
 # Produces a 10-most caught species plot
 .species_plot <- function(plotdf, y_unit){
   if(y_unit == "Weight"){
@@ -29,14 +56,14 @@ make_plot <- function(fishdbase, plot_type, y_unit, comunidad, time_min, time_ma
     currdf <- plotdf[, .(peso_kg = sum(peso, na.rm=T)/1000), by=nombre_comun_cln]
     # Selecting top-10
     currdf <- head(currdf[order(-peso_kg)], 10)
-    .template_col_plot(currdf, x='nombre_comun_cln', y='peso_kg')
+    .my_col_plot(currdf, x='nombre_comun_cln', y='peso_kg')
   }else{
     # Calculating number of samples per species
     currdf <- plotdf[, .N, by=nombre_comun_cln]
     # Selecting top-10
     currdf <- head(currdf[order(-N)], 10)
     # Arranging by number and selecting top-10
-    .template_col_plot(currdf, x='nombre_comun_cln', y='N', y_lab='Número de muestras')
+    .my_col_plot(currdf, x='nombre_comun_cln', y='N', y_lab='Número de muestras')
   }
 }
 
@@ -45,9 +72,9 @@ make_plot <- function(fishdbase, plot_type, y_unit, comunidad, time_min, time_ma
   if(y_unit == "Weight"){
     # If using weight, calculating total caught-weight in kg per gear
     currdf <- plotdf[, .(peso_kg = sum(peso, na.rm=T)/1000), by=tipo_arte]
-    .template_col_plot(currdf, x='tipo_arte', y='peso_kg')
+    .my_col_plot(currdf, x='tipo_arte', y='peso_kg')
   }else{
-    .template_bar_plot(plotdf, x='tipo_arte')
+    .my_bar_plot(plotdf, x='tipo_arte')
   }
 }
 
@@ -59,14 +86,14 @@ make_plot <- function(fishdbase, plot_type, y_unit, comunidad, time_min, time_ma
   if(y_unit=='Weight'){
     # If using weight, calculating total caught-weight in kg per month
     currdf <- plotdf[, .(peso_kg = sum(peso, na.rm=T)/1000), by=month]
-    .template_col_plot(currdf, x='month', y='peso_kg')
+    .my_col_plot(currdf, x='month', y='peso_kg')
   }else{
-    .template_bar_plot(currdf, x='month')
+    .my_bar_plot(currdf, x='month')
   }
 }
 
 # Generic bar-plot template - used for plotting all the "number" plots above
-.template_bar_plot <- function(plotdf, x, y_lab='Número de muestras'){
+.my_bar_plot <- function(plotdf, x, y_lab='Número de muestras'){
   plotdf |> 
     ggplot2::ggplot(ggplot2::aes(
       # User-defined variable name
@@ -88,7 +115,7 @@ make_plot <- function(fishdbase, plot_type, y_unit, comunidad, time_min, time_ma
 # Generic column-plot template - used for plotting all the "weight" plots above
 # (the weight variable needs to be created before passing to the y-argument
 # here)
-.template_col_plot <- function(plotdf, x, y, y_lab='Peso muestreado [kg]'){
+.my_col_plot <- function(plotdf, x, y, y_lab='Peso muestreado [kg]'){
   plotdf |> 
     ggplot2::ggplot(ggplot2::aes(
       # User defined x and y arguments
@@ -112,5 +139,6 @@ make_plot <- function(fishdbase, plot_type, y_unit, comunidad, time_min, time_ma
 .plotFuncList <- list(
   'seasonality' = .seasonality_plot, 
   'gear' = .gear_plot,
-  'species' = .species_plot
+  'species' = .species_plot,
+  'length' = .length_plot
 )

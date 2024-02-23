@@ -37,27 +37,16 @@ mod_01_generalChars_ui <- function(id){
     ),
     # Top-row 
     layout_column_wrap(
-      width = 1,
+      width = 1/2,
       # 1 full-width card: species plot
-      card(
-        card_header('Las 10 especies de peces más capturadas'), 
-        full_screen=T,
-        plotOutput(ns('plot_espc'))
-      )
+      plot_card('Especies mas capturadas', plotOutput(ns('plot_espc'))),
+      plot_card('Tallas promedios', plotOutput(ns('plot_long')))
     ),
     # Bottom row (2, 1/2 width cards: gear and seasonality plots)
     layout_column_wrap(
       width = 1/2,
-      card(
-        card_header('Estacionalidad de las capturas'), 
-        full_screen=T,
-        plotOutput(ns('plot_ssnl'))
-      ),
-      card(
-        card_header('Capturas por arte de pesca'), 
-        full_screen=T,
-        plotOutput(ns('plot_arte'))
-      )
+      plot_card('Estacionalid de pesca',plotOutput(ns('plot_ssnl'))),
+      plot_card('Capturas por arte de pesca',plotOutput(ns('plot_arte')))
     )
   )
 }
@@ -72,10 +61,21 @@ mod_01_generalChars_server <- function(id, comunidad, region){
     output$region_desc <- renderText(region)
     # Community description text output
     output$comunidad_desc <- renderText(comunidad)
-    # Top-10 species plot (top)
+    
+    # Top-10 species plot (top-left)
     output$plot_espc <- renderPlot(make_plot(
       fishdbase, 
       plot_type='species', 
+      y_unit=input$y_unit, 
+      comunidad=comunidad, 
+      time_min = lubridate::my(input$timerange[1]),
+      time_max = lubridate::my(input$timerange[2])
+    ))
+    
+    # Mean length of top-10 species plot (top-right)
+    output$plot_long <- renderPlot(make_plot(
+      fishdbase, 
+      plot_type='length', 
       y_unit=input$y_unit, 
       comunidad=comunidad, 
       time_min = lubridate::my(input$timerange[1]),
