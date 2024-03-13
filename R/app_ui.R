@@ -13,12 +13,6 @@ app_ui <- function(request) {
       theme = bslib::bs_theme(bootswatch = "sandstone"),
       title='PescApp',
       id='main-page',
-      # Zone map
-      # General characteristics page module
-      nav_panel(
-        title="Mapa de Zonas", 
-        h1("Page still under development!")
-      ),
       # General characteristics page module
       nav_panel(
         title="Características Generales", 
@@ -26,6 +20,12 @@ app_ui <- function(request) {
         # h1("Page still under development!")
         mod_01_generalChars_ui(id='genPage')
       ),
+      # Zone map
+      nav_panel(
+        title="Mapa de Zonas", 
+        h1("Page still under development!")
+      ),
+      # Stock status page module
       nav_panel(
         title="Estado de pesquerías",
         h1("Page still under development!")

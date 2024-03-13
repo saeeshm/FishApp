@@ -8,7 +8,7 @@
 #' @import data.table
 
 # ==== Function definition ====
-make_plot <- function(fishdbase, plot_type, y_unit, comunidad, sample_year){
+make_plot <- function(fishdbase, plot_type, yIsPeso, comunidad, sample_year){
   # Filtering relevant data based on filter inputs - getting the plotting
   # dataframe
   plotdf <- if(comunidad=='Todo'){
@@ -20,12 +20,12 @@ make_plot <- function(fishdbase, plot_type, y_unit, comunidad, sample_year){
   
   # Using the index list to call the appropriate function to generate the
   # requested plot-type
-  .plotFuncList[[plot_type]](plotdf, y_unit)
+  .plotFuncList[[plot_type]](plotdf, yIsPeso)
 }
 
 # Produces an average length per species plot (10-most caught)
-.length_plot <- function(plotdf, y_unit){
-  if(y_unit == "Weight"){
+.length_plot <- function(plotdf, yIsPeso){
+  if(yIsPeso){
     # If using weight, calculating total caught-weight in kg per gear as well as
     # average length for every species name
     currdf <- plotdf[, .(
@@ -51,8 +51,8 @@ make_plot <- function(fishdbase, plot_type, y_unit, comunidad, sample_year){
 }
 
 # Produces a 10-most caught species plot
-.species_plot <- function(plotdf, y_unit){
-  if(y_unit == "Weight"){
+.species_plot <- function(plotdf, yIsPeso){
+  if(yIsPeso){
     # If using weight, calculating total caught-weight in kg per gear
     currdf <- plotdf[, .(peso_kg = sum(peso, na.rm=T)/1000), by=nombre_comun_cln]
     # Selecting top-10
@@ -69,8 +69,8 @@ make_plot <- function(fishdbase, plot_type, y_unit, comunidad, sample_year){
 }
 
 # Produces a total catches by gear plot
-.gear_plot <- function(plotdf, y_unit){
-  if(y_unit == "Weight"){
+.gear_plot <- function(plotdf, yIsPeso){
+  if(yIsPeso){
     # If using weight, calculating total caught-weight in kg per gear
     currdf <- plotdf[, .(peso_kg = sum(peso, na.rm=T)/1000), by=tipo_arte]
     .my_col_plot(currdf, x='tipo_arte', y='peso_kg')
@@ -80,11 +80,11 @@ make_plot <- function(fishdbase, plot_type, y_unit, comunidad, sample_year){
 }
 
 # Produces a seasonality plot (uses a fixed y-unit of weight)
-.seasonality_plot <- function(plotdf, y_unit){
+.seasonality_plot <- function(plotdf, yIsPeso){
   # Adding a month column
   currdf <- plotdf[, month := factor(month.abb[lubridate::month(ym)], levels=month.abb)]
   # Plotting
-  if(y_unit=='Weight'){
+  if(yIsPeso){
     # If using weight, calculating total caught-weight in kg per month
     currdf <- plotdf[, .(peso_kg = sum(peso, na.rm=T)/1000), by=month]
     .my_col_plot(currdf, x='month', y='peso_kg')

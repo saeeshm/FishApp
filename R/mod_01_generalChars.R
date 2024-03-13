@@ -15,23 +15,29 @@ mod_01_generalChars_ui <- function(id){
     sidebar = sidebar(
       position='left',
       # Text output describing currently focused region
-      tags$h3('Region Elegido:'),
+      tags$h4('Region Elegido:'),
       textOutput(ns('region_desc')),
       # Text output describing currently focused region
-      tags$h3('Comunidad Elegido:'),
+      tags$h4('Comunidad Elegido:'),
       textOutput(ns('comunidad_desc')),
+      tags$br(),
+      
       # Unit-selection input
-      selectInput(
-        ns('y_unit'), 
-        'Y-axis Unit', 
-        choices=c('Number', 'Weight')
+      tags$h4('Controles gráficos'),
+      tags$h5('Unidad de muestreo'),
+      shinyWidgets::switchInput(
+        ns('yIsPeso'), 
+        value=TRUE,
+        onLabel='Peso',
+        offLabel = 'Número'
       ),
       # Date-range input
+      tags$h5('Año de Muestreo'),
       shinyWidgets::sliderTextInput(
         ns('sampleyear'), 
-        'Año de Muestreo', 
+        label=NULL,
         # Using only Month-year combos as valid input choices
-        choices=unique(year(fishdbase$fecha), na.rm=T)
+        choices=unique(year(na.omit(fishdbase$fecha)))
       )
     ),
     # Top-row 
@@ -65,7 +71,7 @@ mod_01_generalChars_server <- function(id, comunidad, region){
     output$plot_espc <- renderPlot(make_plot(
       fishdbase, 
       plot_type='species', 
-      y_unit=input$y_unit, 
+      yIsPeso=input$yIsPeso, 
       comunidad=comunidad, 
       sample_year = input$sampleyear
     ))
@@ -74,7 +80,7 @@ mod_01_generalChars_server <- function(id, comunidad, region){
     output$plot_long <- renderPlot(make_plot(
       fishdbase, 
       plot_type='length', 
-      y_unit=input$y_unit, 
+      yIsPeso=input$yIsPeso, 
       comunidad=comunidad, 
       sample_year = input$sampleyear
     ))
@@ -83,7 +89,7 @@ mod_01_generalChars_server <- function(id, comunidad, region){
     output$plot_ssnl <- renderPlot(make_plot(
       fishdbase, 
       plot_type='seasonality', 
-      y_unit=input$y_unit, 
+      yIsPeso=input$yIsPeso, 
       comunidad=comunidad, 
       sample_year = input$sampleyear
     ))
@@ -92,7 +98,7 @@ mod_01_generalChars_server <- function(id, comunidad, region){
     output$plot_arte <- renderPlot(make_plot(
       fishdbase, 
       plot_type='gear', 
-      y_unit=input$y_unit, 
+      yIsPeso=input$yIsPeso, 
       comunidad=comunidad, 
       sample_year = input$sampleyear
     ))

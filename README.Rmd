@@ -19,37 +19,29 @@ knitr::opts_chunk$set(
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
-The goal of FishApp is to ...
+An improved description is under development...
 
 ## Installation
 
-You can install the development version of FishApp like so:
-
-``` r
-# FILL THIS IN! HOW CAN PEOPLE INSTALL YOUR DEV PACKAGE?
+For now, install and test FishApp by cloning this repository, creating an R project inside it, and calling the following functions:
+```{r}
+devtools::load_all()
+run_app()
 ```
 
-## Example
+Once the repository is set up, you can gather and view new changes to the app by calling `git pull` from the terminal (or from inside Rstudio), and then calling the same two functions as above.
 
-This is a basic example which shows you how to solve a common problem:
+<!-- You can install the development version of FishApp like so: -->
 
-```{r example}
-library(FishApp)
-## basic example code
-```
+<!-- ``` r -->
 
-What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so:
+<!-- ``` -->
 
-```{r cars}
-summary(cars)
-```
+<!-- ## Example -->
 
-You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date. `devtools::build_readme()` is handy for this.
+<!-- This is a basic example which shows you how to solve a common problem: -->
 
-You can also embed plots, for example:
-
-```{r pressure, echo = FALSE}
-plot(pressure)
-```
-
-In that case, don't forget to commit and push the resulting figure files, so they display on GitHub and CRAN.
+<!-- ```{r example} -->
+<!-- library(FishApp) -->
+<!-- ## basic example code -->
+<!-- ``` -->
