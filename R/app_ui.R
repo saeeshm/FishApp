@@ -13,16 +13,31 @@ app_ui <- function(request) {
       theme = bslib::bs_theme(bootswatch = "sandstone"),
       title='PescApp',
       id='main-page',
-      # General characteristics page module
+      # Per-species indicators
       nav_panel(
-        title="Características Generales", 
+        title="Sobre", 
+        h1("Page still under development!")
+      ),
+      # Multispecies indicators
+      nav_panel(
+        title="Datos Multiespecificos", 
         # General characteristics module UI
         # h1("Page still under development!")
         mod_01_generalChars_ui(id='genPage')
       ),
+      # Per-species indicators
+      nav_panel(
+        title="Datos Por Especies", 
+        h1("Page still under development!")
+      ),
+      # Sampling/Fishing effort indicators
+      nav_panel(
+        title="Datos de Muestro", 
+        h1("Page still under development!")
+      ),
       # Zone map
       nav_panel(
-        title="Mapa de Zonas", 
+        title="Mapa Regional", 
         h1("Page still under development!")
       ),
       # Stock status page module
