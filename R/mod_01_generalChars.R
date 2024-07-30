@@ -76,7 +76,7 @@ mod_01_generalChars_server <- function(id, comunidad, region){
       sample_year = input$sampleyear
     ))
     
-    # Mean length of top-10 species plot (top-right)
+    # Mean length of top-10 species plot (top-right) 
     output$plot_long <- renderPlot(make_plot(
       fishdbase, 
       plot_type='length', 
