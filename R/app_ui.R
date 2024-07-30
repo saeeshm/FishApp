@@ -38,7 +38,8 @@ app_ui <- function(request) {
       # Zone map
       nav_panel(
         title="Mapa Regional", 
-        h1("Page still under development!")
+        # h1("Page still under development!")
+        mod_04_mapaReg_ui(id='mapaReg')
       ),
       # Stock status page module
       nav_panel(
