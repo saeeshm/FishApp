@@ -15,35 +15,31 @@ app_ui <- function(request) {
       id='main-page',
       # Per-species indicators
       nav_panel(
-        title="Sobre", 
+        title="Descripcion", 
         h1("Page still under development!")
+      ),
+      # Zone map
+      nav_panel(
+        title="Mapa", 
+        # h1("Page still under development!")
+        mod_04_mapaReg_ui(id='mapaReg')
       ),
       # Multispecies indicators
       nav_panel(
         title="Datos Multiespecificos", 
         # General characteristics module UI
         # h1("Page still under development!")
-        mod_01_generalChars_ui(id='genPage')
+        mod_01_multiEsp_ui(id='multiEsp')
       ),
       # Per-species indicators
       nav_panel(
         title="Datos Por Especies", 
-        h1("Page still under development!")
+        # h1("Page still under development!")
+        mod_01_generalChars_ui(id='genPage')
       ),
       # Sampling/Fishing effort indicators
       nav_panel(
         title="Datos de Muestro", 
-        h1("Page still under development!")
-      ),
-      # Zone map
-      nav_panel(
-        title="Mapa Regional", 
-        # h1("Page still under development!")
-        mod_04_mapaReg_ui(id='mapaReg')
-      ),
-      # Stock status page module
-      nav_panel(
-        title="Estado de pesquerías",
         h1("Page still under development!")
       )
     )
