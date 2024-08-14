@@ -10,22 +10,6 @@
 
 # ==== Functions ====
 
-# Preparing data
-# fishdbase <- fread(path <- '../fisheries-analysis/data/dbase_tela_clean.csv')
-# lfqdbase <- fread('../fisheries-analysis/data/stock_analysis/tela_lfq_adjust.csv')
-# Preparing trophic level table
-# troph_cwalk <- fread('../fisheries-analysis/data/fishbase_tables/taxa_trophic_level_cwalk.csv')
-# troph_cwalk[, nombre_cientifico := paste(genus, species)]
-# troph_cwalk[, troph := ifelse(is.na(troph_diet), troph_food, troph_diet)]
-# Joining trophic level data to lfqadj database
-# setkey(lfqdbase, nombre_cientifico)
-# setkey(troph_cwalk, nombre_cientifico)
-# lfqdbase <- merge(lfqdbase,
-                # troph_cwalk[, c('nombre_cientifico', 'troph'), with=F],
-                # by='nombre_cientifico')
-# save(fishdbase, lfqdbase, troph_cwalk, file='data/fishdbase.rda')
-
-
 # Custom plotting theme
 qtheme <- function(size=15, font='serif'){
   ggplot2::theme_minimal(size, font) +
