@@ -15,7 +15,7 @@ mod_04_mapaReg_ui <- function(id){
     sidebar = bslib::sidebar(
       position='left',
       # Text output describing currently focused region
-      tags$h4('Region Elegido:'),
+      tags$h4('Region'),
       textOutput(ns('region_desc'))
     ),
     bslib::card(

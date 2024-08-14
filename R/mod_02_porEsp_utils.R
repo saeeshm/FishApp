@@ -8,12 +8,6 @@
 #' @import data.table
 #' @import ggplot2
 
-# ==== Preparing data ====
-
-# spectab <- unique(na.omit(fishdbase[,.(nombre_comun_cln, nombre_cientifico)]))
-# save(fishdbase, lfqdbase, troph_cwalk, spectab, file='data/fishdbase.rda')
-
-
 # ==== Functions ====
 
 # Creating a plotting dataset by filtering for the provided species
