@@ -36,7 +36,7 @@ mod_01_multiEsp_ui <- function(id){
         full_screen = T,
         nav_panel(
           'LFQ',
-          bslib::card_header("Frecuencias de longitud por arte"),
+          bslib::card_header("Frecuencias de tallas por arte"),
           bslib::card_body(plotOutput(ns('plot_lfq')))
         ),
         nav_panel(

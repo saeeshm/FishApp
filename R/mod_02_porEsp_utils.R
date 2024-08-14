@@ -243,6 +243,7 @@ ss_plot_ssn <- function(lfqdbase, year_min, year_max, currspec){
     ggplot2::ggplot(ggplot2::aes(x = month,y = adjWt,)) +
     # ggplot2::geom_col(fill = '#008080', alpha=0.9) +
     ggplot2::geom_col(fill = 'darkorange', alpha=0.8) +
+    ggplot2::scale_x_discrete(drop = F) +
     qtheme() +
     ggplot2::labs(
       x = NULL,
