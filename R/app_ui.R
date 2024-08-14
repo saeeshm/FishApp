@@ -10,38 +10,41 @@ app_ui <- function(request) {
     golem_add_external_resources(),
     page_navbar(
       # THEME
-      theme = bslib::bs_theme(bootswatch = "sandstone"),
+      theme = bslib::bs_theme(bootswatch = "cerulean"),
       title='PescApp',
       id='main-page',
       # Per-species indicators
       nav_panel(
         title="Descripcion", 
-        h1("Page still under development!")
+        h1("The Coral Reef Alliance"),
+        p("CORAL is an NGO committed to saving the world’s coral reefs through \
+          cutting-edge science and community engagement, through collaboration \
+          with local partners, to reduce direct threats to reefs and to promote \
+          scalable and effective solutions for their protection. CORAL’s goal is\
+          to create a network large, diverse connected, and well-managed reefs. \
+          To achieve this goal, CORAL has Programs in two critically important \
+          reef regions of the world: Hawaii and the Western Caribbean.")
       ),
       # Zone map
       nav_panel(
         title="Mapa", 
-        # h1("Page still under development!")
         mod_04_mapaReg_ui(id='mapaReg')
+      ),
+      # General sampling effort information
+      nav_panel(
+        title="Datos Generales", 
+        mod_03_datGen_ui("datGen")
       ),
       # Multispecies indicators
       nav_panel(
         title="Datos Multiespecificos", 
-        # General characteristics module UI
-        # h1("Page still under development!")
         mod_01_multiEsp_ui(id='multiEsp')
       ),
       # Per-species indicators
       nav_panel(
         title="Datos Por Especies", 
-        # h1("Page still under development!")
-        mod_01_generalChars_ui(id='genPage')
+        mod_02_porEsp_ui(id='porEsp')
       ),
-      # Sampling/Fishing effort indicators
-      nav_panel(
-        title="Datos de Muestro", 
-        h1("Page still under development!")
-      )
     )
   )
 }

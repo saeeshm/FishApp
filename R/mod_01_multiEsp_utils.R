@@ -11,19 +11,19 @@
 # ==== Functions ====
 
 # Preparing data
-fishdbase <- fread(path <- '../fisheries-analysis/data/dbase_tela_clean.csv')
-lfqdbase <- fread('../fisheries-analysis/data/stock_analysis/tela_lfq_adjust.csv')
+# fishdbase <- fread(path <- '../fisheries-analysis/data/dbase_tela_clean.csv')
+# lfqdbase <- fread('../fisheries-analysis/data/stock_analysis/tela_lfq_adjust.csv')
 # Preparing trophic level table
-troph_cwalk <- fread('../fisheries-analysis/data/fishbase_tables/taxa_trophic_level_cwalk.csv')
-troph_cwalk[, nombre_cientifico := paste(genus, species)]
-troph_cwalk[, troph := ifelse(is.na(troph_diet), troph_food, troph_diet)]
+# troph_cwalk <- fread('../fisheries-analysis/data/fishbase_tables/taxa_trophic_level_cwalk.csv')
+# troph_cwalk[, nombre_cientifico := paste(genus, species)]
+# troph_cwalk[, troph := ifelse(is.na(troph_diet), troph_food, troph_diet)]
 # Joining trophic level data to lfqadj database
-setkey(lfqdbase, nombre_cientifico)
-setkey(troph_cwalk, nombre_cientifico)
-lfqdbase <- merge(lfqdbase, 
-                troph_cwalk[, c('nombre_cientifico', 'troph'), with=F], 
-                by='nombre_cientifico')
-save(fishdbase, lfqdbase, troph_cwalk, file='data/fishdbase.rda')
+# setkey(lfqdbase, nombre_cientifico)
+# setkey(troph_cwalk, nombre_cientifico)
+# lfqdbase <- merge(lfqdbase,
+                # troph_cwalk[, c('nombre_cientifico', 'troph'), with=F],
+                # by='nombre_cientifico')
+# save(fishdbase, lfqdbase, troph_cwalk, file='data/fishdbase.rda')
 
 
 # Custom plotting theme
@@ -62,7 +62,7 @@ multiesp_lfq_plot <- function(lfqdbase, year_min, year_max){
       linewidth=0.01
     ) +
     ggplot2::scale_fill_distiller(palette = 'RdYlGn', direction=-1) +
-    ggplot2::facet_wrap('tipo_arte', scales = 'free_y', drop=F, ncol=1) +
+    ggplot2::facet_wrap('tipo_arte', scales = 'fixed', drop=F, ncol=1) +
     qtheme() +
     ggplot2::labs(
       y = 'Peso capturado (kg)',
@@ -98,7 +98,7 @@ multiesp_top10_plot <- function(lfqdbase, year_min, year_max){
     # ggplot2::scale_x_continuous(limits=c(0, 700)) +
     qtheme() +
     ggplot2::labs(
-      x = 'Peso (kg)',
+      x = 'Peso capturado (kg)',
       y= NULL,
     )
 }
@@ -252,6 +252,6 @@ multiesp_cpue_plot <- function(lfqdbase, year_min, year_max){
     qtheme() +
     ggplot2::labs(
       x = NULL,
-      y = 'CPUE (kg/day)'
+      y = 'CPUE (kg/dia)'
     )
 }
