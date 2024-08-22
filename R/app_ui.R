@@ -15,15 +15,8 @@ app_ui <- function(request) {
       id='main-page',
       # Per-species indicators
       nav_panel(
-        title="Descripcion", 
-        h1("The Coral Reef Alliance"),
-        p("CORAL is an NGO committed to saving the world’s coral reefs through \
-          cutting-edge science and community engagement, through collaboration \
-          with local partners, to reduce direct threats to reefs and to promote \
-          scalable and effective solutions for their protection. CORAL’s goal is\
-          to create a network large, diverse connected, and well-managed reefs. \
-          To achieve this goal, CORAL has Programs in two critically important \
-          reef regions of the world: Hawaii and the Western Caribbean.")
+        title="Descripción", 
+        build_desc()
       ),
       # Zone map
       nav_panel(
@@ -37,12 +30,12 @@ app_ui <- function(request) {
       ),
       # Multispecies indicators
       nav_panel(
-        title="Datos Multiespecificos", 
+        title="Indicadores Multiespecíficos", 
         mod_01_multiEsp_ui(id='multiEsp')
       ),
       # Per-species indicators
       nav_panel(
-        title="Datos Por Especies", 
+        title="Indicadores Por Especie", 
         mod_02_porEsp_ui(id='porEsp')
       ),
     )

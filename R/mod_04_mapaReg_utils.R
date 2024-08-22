@@ -31,7 +31,8 @@ mapa_regional <- function(region){
     # National Administrative layers
     leaflet::addPolygons(
       data=apmc,
-      label = apmc$CATEGORIA,
+      label = apmc$lab,
+      # labelOptions = labelOptions()
       group = 'APMCs',
       # color = 'orange',
       color = ~leaflet::colorFactor('plasma', domain=unique(apmc$CATEGORIA))(CATEGORIA),

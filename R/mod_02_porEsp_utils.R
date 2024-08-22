@@ -46,12 +46,12 @@ ss_lfq_plot <- function(lfqdbase, year_min, year_max, currspec){
     ggplot2::ggplot() +
     ggplot2::geom_bar(
       ggplot2::aes(x=long_bin, weight=adjWt), 
-      fill='white',
+      fill='#CAAC7F',
       colour='black',
       alpha=0.8,
       linewidth=0.4,
       show.legend=F) +
-    ggplot2::scale_fill_brewer(palette = 'Dark2') +
+    # ggplot2::scale_fill_brewer(palette = 'Dark2') +
     # Setting scale limits for clean viewing
     # coord_cartesian(ylim=c(0, ylim_max+50), 
     #                 xlim=c(
