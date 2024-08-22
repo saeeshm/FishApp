@@ -61,17 +61,18 @@ multiesp_top10_plot <- function(lfqdbase, year_min, year_max){
   plotdf <- lfqdbase[(year(fecha) >= year_min) & (year(fecha) < year_max), ]
   ctab <- plotdf |> 
     # Calculating total catches by weight across the period
-    _[, .(adjWt = sum(adjWt, na.rm=T)), by=nombre_cientifico] |> 
+    _[, .(adjWt = sum(adjWt, na.rm=T)), by=c('nombre_comun_cln')] |> 
     # Picking the top 10
     _[order(adjWt),] |> 
-    tail(15)
+    _[, nombre_comun_cln := stringr::str_to_title(nombre_comun_cln)] |> 
+    tail(10)
   
   # Filtering full data for just this and plotting
   ctab |> 
     # Factorizing
-    _[, nombre_cientifico := factor(nombre_cientifico, levels=ctab$nombre_cientifico)] |> 
-    ggplot2::ggplot(ggplot2::aes(y = nombre_cientifico, 
-                                 fill=nombre_cientifico, 
+    _[, nombre_comun_cln := factor(nombre_comun_cln, levels=ctab$nombre_comun_cln)] |> 
+    ggplot2::ggplot(ggplot2::aes(y = nombre_comun_cln, 
+                                 fill=nombre_comun_cln, 
                                  x=adjWt)) +
     ggplot2::geom_col(
       colour='white', 
@@ -178,13 +179,13 @@ multiesp_bspect_plot <- function(fishdbase, lfqdbase, year_min, year_max){
     ggplot2::scale_x_continuous(
       # limits=c(2, 12000),
       transform = scales::log_trans(base=logBase), 
-      name = "Weight (grams)",
+      name = "Peso (gramos)",
       # Axis labels to have a precision of only 2 decimal places
       labels = function(x) sprintf("%.2f", x)
     ) + 
     ggplot2::scale_y_continuous(
       # limits = c(1, 6000),
-      transform = scales::log_trans(base=logBase), name = "Normalized Biomass Density",
+      transform = scales::log_trans(base=logBase), name = "Densidad de biomasa",
       labels = function(x) sprintf("%.2f", x)
     ) +
     qtheme() +

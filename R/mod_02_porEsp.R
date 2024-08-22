@@ -72,7 +72,7 @@ mod_02_porEsp_ui <- function(id){
           ),
           nav_panel(
             'CPUE (Longitud)',
-            bslib::card_header("Capturas por unidad de esfuerzo (por clase de longitud)"),
+            bslib::card_header("Capturas por unidad de esfuerzo (por clase de talla)"),
             bslib::card_body(plotOutput(ns('plot_cpue_pl')))
           )
         )
