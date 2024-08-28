@@ -11,6 +11,9 @@
 
 # Plotting community sampling effort for the current data
 dg_plot_peso <- function(dbase, year_min, year_max){
+  # Ensuring the community variable is a factor so levels are not dropped
+  dbase$comunidad <- factor(dbase$comunidad, 
+                            levels=sort(na.omit(unique(dbase$comunidad))))
   # Filtering the data for the requested year range
   plotdf <- dbase[(year(fecha) >= year_min) & (year(fecha) < year_max), ]
   # All unique combinations of gears
@@ -22,7 +25,6 @@ dg_plot_peso <- function(dbase, year_min, year_max){
     _[!is.na(comunidad),] |> 
     _[, tipo_arte := ifelse(is.na(tipo_arte), 'Desconocido', tipo_arte)] |> 
     _[, `:=`(
-      comunidad = factor(comunidad, levels=unique(comunidad)),
       tipo_arte = factor(tipo_arte, levels=c('Desconocido', uartes))
     )] |> 
     _[, .(peso = sum(peso, na.rm=T)/1000), by=.(comunidad, tipo_arte)] |> 
@@ -31,7 +33,7 @@ dg_plot_peso <- function(dbase, year_min, year_max){
     ggplot2::scale_y_discrete(drop = FALSE) +
     ggplot2::scale_x_continuous(expand = c(0, 2)) +
     ggplot2::scale_fill_discrete(drop=FALSE) +
-    ggplot2::facet_wrap('comunidad', ncol=1) +
+    ggplot2::facet_wrap('comunidad', ncol=1, drop = F) +
     qtheme() +
     ggplot2::guides('fill' = 'none') +
     ggplot2::labs(
@@ -43,6 +45,9 @@ dg_plot_peso <- function(dbase, year_min, year_max){
 
 # Plotting catch seasonality by community
 dg_plot_ssn <- function(dbase, year_min, year_max){
+  # Ensuring the community variable is a factor so levels are not dropped
+  dbase$comunidad <- factor(dbase$comunidad, 
+                            levels=sort(na.omit(unique(dbase$comunidad))))
   # Filtering the data for the requested year range
   plotdf <- dbase[(year(fecha) >= year_min) & (year(fecha) < year_max), ]
   
@@ -53,7 +58,6 @@ dg_plot_ssn <- function(dbase, year_min, year_max){
     _[, tipo_arte := ifelse(is.na(tipo_arte), 'Desconocido', tipo_arte)] |> 
     _[, month := lubridate::month(fecha)] |> 
     _[, `:=`(
-      comunidad = factor(comunidad, levels=unique(comunidad)),
       month = factor(month.abb[month], levels=month.abb)
     )] |> 
     _[, .(peso = sum(peso, na.rm=T)/1000), by=.(month, comunidad)] |> 
@@ -63,7 +67,7 @@ dg_plot_ssn <- function(dbase, year_min, year_max){
     ggplot2::geom_point(alpha=0.8, show.legend = F) +
     ggplot2::scale_x_discrete(drop = FALSE) +
     ggplot2::scale_fill_discrete(drop=FALSE) +
-    ggplot2::facet_wrap('comunidad', ncol=1) +
+    ggplot2::facet_wrap('comunidad', ncol=1, drop=F) +
     qtheme() +
     ggplot2::labs(
       x = NULL,
