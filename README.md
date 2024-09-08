@@ -9,45 +9,38 @@
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
-The goal of FishApp is to …
+This is a shiny dashboard that calculates a suite of fishery-dependent empirical indicators for assessing the state of artisanal fisheries on the Northern Coast of Honduras. The application currently utilizes data gathered from the artisanal fisheries survey conducted in Tela Bay, but is suited to any database structured in the same format (including the ongoing survey databases for Trujillo and Islas de Bahía).
 
 ## Installation
 
-You can install the development version of FishApp like so:
+There are two ways to install the development version of FishApp. For both, you will first need to open Rstudio or an R Console. Next, you will need to install the R packages `remotes` and `devtools`. This can be done by running the following commands in the terminal:
 
-``` r
-# FILL THIS IN! HOW CAN PEOPLE INSTALL YOUR DEV PACKAGE?
+```
+# MUST BE DONE INSIDE RSTUDIO OR AN R CONSOLE
+install.packages('remotes')
+install.packages('devtools')
 ```
 
-## Example
+### Direct installation from github
+```
+remotes::install_github('https://github.com/saeeshm/FishApp', force=T)
+```
 
-This is a basic example which shows you how to solve a common problem:
+### Installation from a zip file
+You will first need to download this repository as a zip file or have someone send you a zip version of the package.
+```
+# REPLACE THE PATH INSIDE THE QUOTES WITH THE FILE PATH TO YOUR FOLDER
+remotes::install_local('/path/to/FishApp-master.zip', force=T)
+```
 
-``` r
+## Updating the application
+When there are changes made to the application that you would like to see, you will need to re-install the packages in it's entirety. Do so, simply run the above installation commands again using whichever method you prefer. 
+
+Make sure to always use the MASTER branch when installing, as this is the most tested and up-to-date version of the app.
+
+## Running the dashboard
+Once installed, the dashboard can be run from within Rstudio as follows:
+```
 library(FishApp)
-## basic example code
+run_app()
 ```
-
-What is special about using `README.Rmd` instead of just `README.md`?
-You can include R chunks like so:
-
-``` r
-summary(cars)
-#>      speed           dist       
-#>  Min.   : 4.0   Min.   :  2.00  
-#>  1st Qu.:12.0   1st Qu.: 26.00  
-#>  Median :15.0   Median : 36.00  
-#>  Mean   :15.4   Mean   : 42.98  
-#>  3rd Qu.:19.0   3rd Qu.: 56.00  
-#>  Max.   :25.0   Max.   :120.00
-```
-
-You’ll still need to render `README.Rmd` regularly, to keep `README.md`
-up-to-date. `devtools::build_readme()` is handy for this.
-
-You can also embed plots, for example:
-
-<img src="man/figures/README-pressure-1.png" width="100%" />
-
-In that case, don’t forget to commit and push the resulting figure
-files, so they display on GitHub and CRAN.
