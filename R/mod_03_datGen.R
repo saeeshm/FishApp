@@ -14,7 +14,7 @@ mod_03_datGen_ui <- function(id){
     sidebar = sidebar(
       position='left',
       # Text output describing currently focused region
-      tags$h4('Region Elegido:'),
+      tags$h4('Region'),
       textOutput(ns('region_desc')),
       # Date-range input
       tags$h4('Año de Muestreo'),

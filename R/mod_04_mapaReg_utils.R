@@ -3,13 +3,6 @@
 
 # Description: Utility functions for the producing the region map
 
-# Preparing input data
-# hpath <- '../fisheries-analysis/data/tela-site-data'
-# comunidades <- st_read(file.path(hpath, 'tela_comunidades.geojson'))
-# zdr <- st_read(file.path(hpath, '180910 zonas recuperacion pesquera Tela.shp'))
-# apmc <- st_read(file.path(hpath, 'APMC_HN_2019.shp'))
-# save(comunidades, zdr, apmc, file='data/tela_mapa.rda')
-
 # ==== Functions ====
 
 # Function for drawing the map for the Tela Bay region
@@ -38,7 +31,8 @@ mapa_regional <- function(region){
     # National Administrative layers
     leaflet::addPolygons(
       data=apmc,
-      label = apmc$CATEGORIA,
+      label = apmc$lab,
+      # labelOptions = labelOptions()
       group = 'APMCs',
       # color = 'orange',
       color = ~leaflet::colorFactor('plasma', domain=unique(apmc$CATEGORIA))(CATEGORIA),

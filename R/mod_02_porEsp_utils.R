@@ -8,12 +8,6 @@
 #' @import data.table
 #' @import ggplot2
 
-# ==== Preparing data ====
-
-# spectab <- unique(na.omit(fishdbase[,.(nombre_comun_cln, nombre_cientifico)]))
-# save(fishdbase, lfqdbase, troph_cwalk, spectab, file='data/fishdbase.rda')
-
-
 # ==== Functions ====
 
 # Creating a plotting dataset by filtering for the provided species
@@ -52,12 +46,12 @@ ss_lfq_plot <- function(lfqdbase, year_min, year_max, currspec){
     ggplot2::ggplot() +
     ggplot2::geom_bar(
       ggplot2::aes(x=long_bin, weight=adjWt), 
-      fill='white',
+      fill='#CAAC7F',
       colour='black',
       alpha=0.8,
       linewidth=0.4,
       show.legend=F) +
-    ggplot2::scale_fill_brewer(palette = 'Dark2') +
+    # ggplot2::scale_fill_brewer(palette = 'Dark2') +
     # Setting scale limits for clean viewing
     # coord_cartesian(ylim=c(0, ylim_max+50), 
     #                 xlim=c(
@@ -249,6 +243,7 @@ ss_plot_ssn <- function(lfqdbase, year_min, year_max, currspec){
     ggplot2::ggplot(ggplot2::aes(x = month,y = adjWt,)) +
     # ggplot2::geom_col(fill = '#008080', alpha=0.9) +
     ggplot2::geom_col(fill = 'darkorange', alpha=0.8) +
+    ggplot2::scale_x_discrete(drop = F) +
     qtheme() +
     ggplot2::labs(
       x = NULL,
