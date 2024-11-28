@@ -15,8 +15,12 @@ mod_04_mapaReg_ui <- function(id){
     sidebar = bslib::sidebar(
       position='left',
       # Text output describing currently focused region
-      tags$h4('Region'),
-      textOutput(ns('region_desc'))
+      card(
+        card_header(tags$h4('Región')),
+        card_body(
+          textOutput(ns('region_desc'))
+        )
+      )
     ),
     bslib::card(
       leaflet::leafletOutput(ns('mapa'), height = "100%")
