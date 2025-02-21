@@ -1,3 +1,28 @@
 .navbar{
   font-family: 'Poppins'
 }
+
+/* Logo and App Title (Brand) */
+.navbar-brand{
+  display:inline-block;
+}
+
+img.app-logo{
+  max-width: 2em;
+  max-height: 2em;
+  margin-right: 0.6em;
+}
+
+div.app-title{
+  display: inline-block;
+  font-size: 1.2em;
+}
+
+/* Language Toggle */
+.bootstrap-switch{
+  border: 1px solid #0093d7;
+}
+
+.form-group{
+  margin:0;
+}

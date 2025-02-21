@@ -23,10 +23,23 @@ app_ui <- function(request) {
         base_font = font_google("Inter"),
         code_font = font_google("JetBrains Mono"),
         heading_font = font_google("Poppins"),
-        # 'body-font-family' = font_google('Inter'),
-        'bslib-sidebar-bg' = 'coral'
+        'body-font-family' = font_google('Inter'),
+        navbar_bg = "#0093d7",
+        # 'bslib-sidebar-bg' = 'coral'
       ),
-      title='PescApp',
+      navbar_options = navbar_options(class = "bg-primary", theme = "dark"),
+      # Title with logo
+      title=tags$div(
+        style='{display:inline-block}',
+        tags$img(
+          class='app-logo',
+          src='www/CORAL_Logo_WhiteSquare_notext.png'
+        ),
+        tags$div(
+          class='app-title',
+          'PescApp'
+        )
+      ),
       id='main-page',
       # Per-species indicators
       nav_panel(
@@ -53,6 +66,20 @@ app_ui <- function(request) {
         title="Indicadores Por Especie", 
         mod_02_porEsp_ui(id='porEsp')
       ),
+      nav_spacer(),
+      nav_item(
+        shinyWidgets::switchInput(
+          inputId = "Id018",
+          label = fontawesome::fa('language'),
+          value=T,
+          onLabel='ES',
+          offLabel='EN',
+          onStatus='info',
+          offStatus ='info',
+          inline=T,
+          size='normal'
+        )
+      )
     )
   )
 }
@@ -72,7 +99,8 @@ golem_add_external_resources <- function() {
   )
 
   tags$head(
-    favicon(),
+    favicon(ico='CORAL_Logo_ColorSquare_notext', ext='png'),
+    tags$script(src = "https://kit.fontawesome.com/<you>.js"),
     bundle_resources(
       path = app_sys("app/www"),
       app_title = "PescApp"
