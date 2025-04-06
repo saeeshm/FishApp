@@ -11,6 +11,7 @@ app_ui <- function(request) {
     page_navbar(
       # THEME
       theme = bslib::bs_theme(
+        brand = 'inst/app/www/_brand.yml',
         bootswatch = "cerulean",
         bg = "#fff",
         fg = "#000000",
@@ -23,17 +24,18 @@ app_ui <- function(request) {
         base_font = font_google("Inter"),
         code_font = font_google("JetBrains Mono"),
         heading_font = font_google("Poppins"),
-        'body-font-family' = font_google('Inter'),
+        # Further customizations
+        # 'body-font-family' = font_google('Inter'),
+        # Navbar background hill
         navbar_bg = "#0093d7",
-        # 'bslib-sidebar-bg' = 'coral'
+        # NAvbar text colour
+        navbar_light_contrast="#fff"
       ),
-      navbar_options = navbar_options(class = "bg-primary", theme = "dark"),
-      # Title with logo
       title=tags$div(
         style='{display:inline-block}',
         tags$img(
           class='app-logo',
-          src='www/CORAL_Logo_WhiteSquare_notext.png'
+          src='www/CORAL_Logo_WhiteSquare.png'
         ),
         tags$div(
           class='app-title',
@@ -100,7 +102,6 @@ golem_add_external_resources <- function() {
 
   tags$head(
     favicon(ico='CORAL_Logo_ColorSquare_notext', ext='png'),
-    tags$script(src = "https://kit.fontawesome.com/<you>.js"),
     bundle_resources(
       path = app_sys("app/www"),
       app_title = "PescApp"

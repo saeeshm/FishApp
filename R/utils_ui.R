@@ -1,4 +1,4 @@
-#' Create a standard bslic card with a plot output
+#' Create a standard bslib card with a plot output
 #'
 #' @param list An R list
 #' @param class a class for the list
@@ -10,6 +10,7 @@
 plot_card <- function(header, ...) {
   bslib::card(
     full_screen = TRUE,
+    min_height = "500px",
     bslib::card_header(header),
     bslib::card_body(...)
   )

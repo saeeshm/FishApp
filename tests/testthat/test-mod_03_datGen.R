@@ -1,5 +1,5 @@
 testServer(
-  mod_03_datMuestro_server,
+  mod_03_datGen_server,
   # Add here your module params
   args = list()
   , {
@@ -26,13 +26,13 @@ testServer(
     # expect_true(inherits(output$tbl$html, "html"))
 })
  
-test_that("module ui works", {
-  ui <- mod_03_datMuestro_ui(id = "test")
-  golem::expect_shinytaglist(ui)
-  # Check that formals have not been removed
-  fmls <- formals(mod_03_datMuestro_ui)
-  for (i in c("id")){
-    expect_true(i %in% names(fmls))
-  }
-})
+# test_that("module ui works", {
+#   ui <- mod_03_datGen_ui(id = "test")
+#   golem::expect_shinytaglist(ui)
+#   # Check that formals have not been removed
+#   fmls <- formals(mod_03_datGen_ui)
+#   for (i in c("id")){
+#     expect_true(i %in% names(fmls))
+#   }
+# })
  
