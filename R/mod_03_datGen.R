@@ -191,7 +191,7 @@ mod_03_datGen_server <- function(id, region){
     output$prop_peso_esp_comunes <- renderText(esp_comunies()$prop_capt)
     
     # Gear usage
-    output$plot_artes <- renderPlot(dg_plot_peso(
+    output$plot_artes <- renderPlot(dg_plot_artes(
       fishdbase, 
       year_min = input$sampleyear[1],
       year_max = input$sampleyear[2]

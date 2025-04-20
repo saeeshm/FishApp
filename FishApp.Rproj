@@ -1,9 +1,5 @@
 Version: 1.0
-<<<<<<< HEAD
-ProjectId: 6c95e6da-b283-4463-beaa-15387c739d5a
-=======
 ProjectId: 4162c688-4e50-4034-9d5b-356aaae78876
->>>>>>> fd1ba68 (Updated UI to Coral brand, updated general page with summary cards)
 
 RestoreWorkspace: Default
 SaveWorkspace: Default

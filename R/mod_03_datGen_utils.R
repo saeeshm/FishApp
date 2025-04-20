@@ -103,6 +103,48 @@ dg_plot_esp_comunes <- function(dbase, year_min, year_max){
   )
 }
 
+# Plotting gears most used (by weight) as a waffle/grid plot (proportional)
+dg_plot_artes <- function(dbase, year_min, year_max){
+  # Filtering the data for the requested year range
+  plotdf <- dbase[(year(fecha) >= year_min) & (year(fecha) < year_max), ]
+  # All unique combinations of gears
+  uartes <- na.omit(unique(plotdf$tipo_arte))
+  
+  # Creating waffle chart with ggplot
+  plotdf |> 
+    # Classifying unknown gear type data, and factorizing
+    _[, tipo_arte := ifelse(is.na(tipo_arte), 'Desconocido', tipo_arte)] |> 
+    _[, `:=`(
+      tipo_arte = factor(tipo_arte, levels=c('Desconocido', uartes))
+    )] |> 
+    # Getting the total number of observations (rows) grouped by gear
+    _[, .N, by=tipo_arte] |> 
+  # test |> 
+    ggplot2::ggplot(ggplot2::aes(values = N/unit_denom, fill=tipo_arte)) +
+    waffle::geom_waffle(
+      colour = "black", 
+      make_proportional = T,
+      n_rows = 10,
+      linewidth=0.5
+    ) +
+    # coord_equal() +
+    theme_void() +
+    qtheme() +
+    theme(
+      line = element_blank(), 
+      rect = element_blank(),
+      axis.text = element_blank(), 
+      axis.title = element_blank(), 
+      axis.ticks.length = unit(0, "pt"), 
+      axis.minor.ticks.length = unit(0, "pt"), 
+      panel.border = NULL
+    ) +
+    ggplot2::labs(
+      y = NULL,
+      fill='Arte'
+    )
+}
+
 # Plotting community sampling effort for the current data
 dg_plot_peso <- function(dbase, year_min, year_max){
   # Filtering the data for the requested year range

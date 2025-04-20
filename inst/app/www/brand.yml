@@ -17,9 +17,9 @@ logo:
   images:
     icon-color: CORAL Logo_ColorSquare_notext.png
     icon-white: CORAL Logo_WhiteSquare_notext.png
-    logo-color: CORAL CORAL Logo_ColorSquare.png
-    logo-white: CORAL CORAL Logo_WhiteSquare.png
-    logo-wide-color: lCORAL Logo_ColorHorizontal.png
+    logo-color: CORAL Logo_ColorSquare.png
+    logo-white: CORAL Logo_WhiteSquare.png
+    logo-wide-color: CORAL Logo_ColorHorizontal.png
   small: icon-color
   medium: 
     light: logo-color

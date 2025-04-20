@@ -11,7 +11,7 @@ app_ui <- function(request) {
     page_navbar(
       # THEME
       theme = bslib::bs_theme(
-        brand = 'inst/app/www/_brand.yml',
+        brand = 'inst/app/www/brand.yml',
         bootswatch = "cerulean",
         bg = "#fff",
         fg = "#000000",
@@ -32,7 +32,7 @@ app_ui <- function(request) {
         navbar_light_contrast="#fff"
       ),
       title=tags$div(
-        style='{display:inline-block}',
+        # style='{display:inline-block}',
         tags$img(
           class='app-logo',
           src='www/CORAL_Logo_WhiteSquare.png'
@@ -41,6 +41,19 @@ app_ui <- function(request) {
           class='app-title',
           'PescApp'
         )
+        # tags$div(
+        #   class='lang-picker',
+        #   shinyWidgets::pickerInput(
+        #     inputId = "Id018",
+        #     # icon = fontawesome::fa('language'),
+        #     choices=c('ES', 'EN'),
+        #     selected='ES',
+        #     width='5%',
+        #     options=list(
+        #       container='body'
+        #     )
+        #   )
+        # )
       ),
       id='main-page',
       # Per-species indicators
@@ -68,20 +81,33 @@ app_ui <- function(request) {
         title="Indicadores Por Especie", 
         mod_02_porEsp_ui(id='porEsp')
       ),
-      nav_spacer(),
-      nav_item(
-        shinyWidgets::switchInput(
+      tags$div(
+        class='lang-picker',
+        shinyWidgets::pickerInput(
           inputId = "Id018",
-          label = fontawesome::fa('language'),
-          value=T,
-          onLabel='ES',
-          offLabel='EN',
-          onStatus='info',
-          offStatus ='info',
-          inline=T,
-          size='normal'
+          # icon = fontawesome::fa('language'),
+          choices=c('ES', 'EN'),
+          selected='ES',
+          width='10%',
+          options=list(
+            container='body'
+          )
         )
       )
+      # nav_spacer(),
+      # nav_item(
+      #   id='lang-picker',
+      #   shinyWidgets::pickerInput(
+      #     inputId = "Id018",
+      #     # icon = fontawesome::fa('language'),
+      #     choices=c('ES', 'EN'),
+      #     selected='ES',
+      #     # inline=T,
+      #     options=list(
+      #       container='body'
+      #     )
+      #   )
+      # )
     )
   )
 }
