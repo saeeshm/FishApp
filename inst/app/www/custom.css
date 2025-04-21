@@ -20,12 +20,33 @@
 }
 
 /* Language toggle */
-.lang-picker{
+@media (max-width: 1250px) {
+  .lang-picker{
   display: inline-block;
   position: absolute;
   right: 12vw;
   top: 1%;
   scale: 0.8;
+  }
+}
+@media (max-width: 1950px) {
+  .lang-picker{
+  display: inline-block;
+  position: absolute;
+  right: 0%;
+  top: 1%;
+  scale: 0.8;
+  }
+}
+
+/* Make the selected language option visible */
+.filter-option-inner-inner {
+  top: 8%;
+  left: 10%;
+  width: 1.5rem;
+  height: 1.5rem;
+  position: absolute;
+  overflow: visible;
 }
 
 /*Slider input label styles*/

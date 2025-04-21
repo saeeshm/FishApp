@@ -39,7 +39,8 @@ mod_02_porEsp_ui <- function(id){
           sep = '     '
         ),
         options = list(
-          `live-search` = TRUE)
+          `live-search` = TRUE,
+          `container` = 'body')
       )
     ),
     # Column-left: Distributions by gear

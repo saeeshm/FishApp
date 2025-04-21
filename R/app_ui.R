@@ -29,7 +29,8 @@ app_ui <- function(request) {
         # Navbar background hill
         navbar_bg = "#0093d7",
         # NAvbar text colour
-        navbar_light_contrast="#fff"
+        navbar_light_contrast="#fff",
+        "bslib_spacer" = "0.75rem" # Squeeze out a bit of space between cards
       ),
       title=tags$div(
         # style='{display:inline-block}',

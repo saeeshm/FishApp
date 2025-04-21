@@ -10,7 +10,7 @@
 plot_card <- function(header, ...) {
   bslib::card(
     full_screen = TRUE,
-    min_height = "500px",
+    # min_height = "500px",
     bslib::card_header(header),
     bslib::card_body(...)
   )

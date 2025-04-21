@@ -79,7 +79,7 @@ mod_03_datGen_ui <- function(id){
     sidebar = bslib::sidebar(
       position='left',
       # Text output describing currently focused region
-      tags$h4('Region'),
+      tags$h4('Región'),
       textOutput(ns('region_desc')),
       # Date-range input
       tags$h4('Año de Muestreo'),
