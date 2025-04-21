@@ -34,7 +34,7 @@ remotes::install_local('/path/to/FishApp-master.zip', force=T)
 ```
 
 ## Updating the application
-When there are changes made to the application that you would like to see, you will need to re-install the packages in it's entirety. Do so, simply run the above installation commands again using whichever method you prefer. 
+When there are changes made to the application that you would like to see, you will need to re-install the packages in its entirety. To do so, simply run the above installation commands again using whichever method you prefer. 
 
 Make sure to always use the MASTER branch when installing, as this is the most tested and up-to-date version of the app.
 
