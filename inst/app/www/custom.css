@@ -8,10 +8,120 @@
   display:inline-block;
 }
 
+.navbar-static-top {
+  /*background: url(https://img.freepik.com/free-photo/underwater-photo-pool_1219-17.jpg?semt=ais_hybrid&w=740);
+  background-size: 100% 100%;*/
+  /*background: #207c91;*/
+  background: url(https://c0.wallpaperflare.com/preview/386/360/864/water-ripple-underwater-wave.jpg);
+  background-size: 30% 120%;
+  background-repeat: repeat-x;
+  background-position-y: 0%;
+  transition: 1s all;
+  animation: 5s oceansway ease-in-out infinite forwards;
+}
+
+@keyframes oceansway {
+  0% {
+    background-position-x: 0rem;
+  }
+  50% {
+    background-position-x: 0.25rem;
+  }
+}
+
+.waves-container {
+  position: absolute;
+  top: 0; width: 0;
+  width: 100%;
+  height: 100%;
+  transition: .5s;
+  pointer-events: none;
+  filter: contrast(1.5) brightness(1.5);
+}
+
+.waves-container:before {
+  position: absolute;
+  content: '';
+  width: calc(150vw + 30px);
+  height: calc(100% + 30px);
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%) rotate(180deg) scale(.7);
+  filter: blur(1px) hue-rotate(180deg);
+  opacity: 0.6;
+  transition: all 450ms cubic-bezier(0.23, 1, 0.32, 1);
+  pointer-events: none;
+}
+
+.waves-container:before {
+  /*background-color: #207c91;*/
+  background-color: transparent;
+  box-shadow: 2px 2px 12px 0 rgba(0,0,0,0.58);
+  border-radius: 21px;
+  
+  background-image: 
+    url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='1600' height='198'%3e%3cdefs%3e%3clinearGradient id='a' x1='50%25' x2='50%25' y1='-10.959%25' y2='100%25'%3e%3cstop stop-color='%23fcc900' stop-opacity='.25' offset='0%25'/%3e%3cstop stop-color='%23fcc900' offset='100%25'/%3e%3c/linearGradient%3e%3c/defs%3e%3cpath fill='url(%23a)' fill-rule='evenodd' d='M.005 121C311 121 409.898-.25 811 0c400 0 500 121 789 121v77H0s.005-48 .005-77z'/%3e%3c/svg%3e"),
+    url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='1600' height='198'%3e%3cdefs%3e%3clinearGradient id='a' x1='50%25' x2='50%25' y1='-10.959%25' y2='100%25'%3e%3cstop stop-color='%23fcc900' stop-opacity='.25' offset='0%25'/%3e%3cstop stop-color='%23fcc900' offset='100%25'/%3e%3c/linearGradient%3e%3c/defs%3e%3cpath fill='url(%23a)' fill-rule='evenodd' d='M.005 121C311 121 409.898-.25 811 0c400 0 500 121 789 121v77H0s.005-48 .005-77z'/%3e%3c/svg%3e"),
+    url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='1600' height='198'%3e%3cdefs%3e%3clinearGradient id='a' x1='50%25' x2='50%25' y1='-10.959%25' y2='100%25'%3e%3cstop stop-color='%23fcc900' stop-opacity='.25' offset='0%25'/%3e%3cstop stop-color='%23fcc900' offset='100%25'/%3e%3c/linearGradient%3e%3c/defs%3e%3cpath fill='url(%23a)' fill-rule='evenodd' d='M.005 121C311 121 409.898-.25 811 0c400 0 500 121 789 121v77H0s.005-48 .005-77z'/%3e%3c/svg%3e");
+  background-repeat: repeat-x;
+  background-size: 1600px 50%;
+  background-position: 0 130%, -50px 130%, 500px 130%;
+  
+  mask-image: url('wave-background-filter.jpg');
+  mask-mode: luminance;
+  mask-repeat: repeat-x;
+  mask-size: 55%;
+  
+  animation: 20s waves linear infinite forwards;
+}
+
+@keyframes waves {
+  to {
+    background-position: 1600px 130%, 3150px 130%, 5300px 130%;
+  }
+}
+
 .app-logo{
   max-width: 2em;
   max-height: 2em;
   margin-right: 0.6em;
+  margin-bottom: -2rem;
+}
+
+.app-logo-text {
+  margin-top: -0.75rem;
+}
+
+.app-logo-fish {
+  animation: 4s linear 0s infinite bob;
+}
+
+@keyframes bob {
+  0% {
+    transform: translateY(-8%) rotate(0deg);
+  }
+  10% {
+      transform: translateY(-6%) rotate(5deg);
+  }
+  40% {
+      transform: translateY(6%) rotate(5deg);
+  }
+  50% {
+      transform: translateY(8%) rotate(0deg);
+  }
+  60% {
+      transform: translateY(6%) rotate(-5deg);
+  }
+  95% {
+      transform: translateY(-6%) rotate(-5deg);
+  }
+  100% {
+      transform: translateY(-8%) rotate(0deg);
+  }
+}
+
+.app-logo-container {
+  position: relative;
+  display: grid;
 }
 
 .app-title{
@@ -34,7 +144,7 @@
   display: inline-block;
   position: absolute;
   right: 0%;
-  top: 1%;
+  top: 4%;
   scale: 0.8;
   }
 }

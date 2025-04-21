@@ -33,14 +33,24 @@ app_ui <- function(request) {
         "bslib_spacer" = "0.75rem" # Squeeze out a bit of space between cards
       ),
       title=tags$div(
-        # style='{display:inline-block}',
-        tags$img(
-          class='app-logo',
-          src='www/CORAL_Logo_WhiteSquare.png'
+        style='display:inline-flex;',
+        tags$div(
+          tags$img(
+            class='app-logo app-logo-fish',
+            src='www/CORAL_Logo_WhiteSquare_notext.png'
+          ),
+          tags$img(
+            class='app-logo app-logo-text',
+            src='www/CORAL_Logo_WhiteSquare_justtext.png'
+          ),
+          class = 'app-logo-container'
         ),
         tags$div(
           class='app-title',
           'PescApp'
+        ),
+        tags$div(
+          class = 'waves-container'
         )
         # tags$div(
         #   class='lang-picker',
