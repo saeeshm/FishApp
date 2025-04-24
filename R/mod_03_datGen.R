@@ -157,7 +157,7 @@ mod_03_datGen_ui <- function(id){
 #' 03_datMuestro Server Functions
 #'
 #' @noRd 
-mod_03_datGen_server <- function(id, region){
+mod_03_datGen_server <- function(id, lang, region){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
     # Sidebar elements ----------

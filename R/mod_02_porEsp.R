@@ -85,7 +85,7 @@ mod_02_porEsp_ui <- function(id){
 #' 02_porEsp Server Functions
 #'
 #' @noRd 
-mod_02_porEsp_server <- function(id, region){
+mod_02_porEsp_server <- function(id, lang, region){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
     # Adding the selected region description

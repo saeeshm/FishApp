@@ -52,25 +52,12 @@ app_ui <- function(request) {
         tags$div(
           class = 'waves-container'
         )
-        # tags$div(
-        #   class='lang-picker',
-        #   shinyWidgets::pickerInput(
-        #     inputId = "Id018",
-        #     # icon = fontawesome::fa('language'),
-        #     choices=c('ES', 'EN'),
-        #     selected='ES',
-        #     width='5%',
-        #     options=list(
-        #       container='body'
-        #     )
-        #   )
-        # )
       ),
       id='main-page',
       # Per-species indicators
       nav_panel(
-        title="Descripción", 
-        build_desc()
+        title = shiny::uiOutput('desc_title'),
+        shiny::uiOutput('desc_ui')
       ),
       # Zone map
       nav_panel(
@@ -95,7 +82,7 @@ app_ui <- function(request) {
       tags$div(
         class='lang-picker',
         shinyWidgets::pickerInput(
-          inputId = "Id018",
+          inputId = "lang",
           # icon = fontawesome::fa('language'),
           choices=c('ES', 'EN'),
           selected='ES',
@@ -104,7 +91,8 @@ app_ui <- function(request) {
             container='body'
           )
         )
-      )
+      ) |> 
+        bslib::tooltip("Cambiar idioma / Change language")
       # nav_spacer(),
       # nav_item(
       #   id='lang-picker',

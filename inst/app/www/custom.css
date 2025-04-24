@@ -1,3 +1,7 @@
+.bslib-page-fill {
+  overflow-x: hidden !important;
+}
+
 /* Navbar general */
 .navbar{
   font-family: 'Poppins'

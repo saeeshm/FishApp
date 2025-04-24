@@ -13,6 +13,7 @@ mod_04_mapaReg_ui <- function(id){
   layout_sidebar(
     # Inputs and descriptions in the sidebar
     sidebar = bslib::sidebar(
+      width = '20%',
       position='left',
       # Text output describing currently focused region
       tags$h4('Región'),
@@ -27,7 +28,7 @@ mod_04_mapaReg_ui <- function(id){
 #' 04_mapaReg Server Functions
 #'
 #' @noRd 
-mod_04_mapaReg_server <- function(id, region){
+mod_04_mapaReg_server <- function(id, lang, region){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
     # Region description text output
