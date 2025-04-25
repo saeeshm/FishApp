@@ -2,6 +2,10 @@
   overflow-x: hidden !important;
 }
 
+body {
+  overflow-x: hidden;
+}
+
 /* Navbar general */
 .navbar{
   font-family: 'Poppins'
@@ -134,22 +138,24 @@
 }
 
 /* Language toggle */
-@media (max-width: 1250px) {
-  .lang-picker{
+.lang-picker {
   display: inline-block;
-  position: absolute;
-  right: 12vw;
-  top: 1%;
+  position: fixed;
+  z-index: 9999;
   scale: 0.8;
+}
+
+@media (max-width: 1250px) {
+  .lang-picker {
+    right: 12vw;
+    top: 1%;
   }
 }
+
 @media (max-width: 1950px) {
   .lang-picker{
-  display: inline-block;
-  position: absolute;
-  right: 0%;
-  top: 4%;
-  scale: 0.8;
+    right: 6vw;
+    top: 4%;
   }
 }
 

@@ -112,7 +112,7 @@ mod_01_multiEsp_server <- function(id, lang, region){
           ),
           nav_panel(
             'Species',
-            bslib::card_header("The 10 Most Captured"),
+            bslib::card_header("The 10 Most Captured Species"),
             bslib::card_body(plotOutput(ns('plot_esp')))
           ),
         )

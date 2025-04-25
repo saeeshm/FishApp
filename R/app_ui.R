@@ -61,22 +61,25 @@ app_ui <- function(request) {
       ),
       # Zone map
       nav_panel(
-        title="Mapa", 
+        title = shiny::uiOutput('map_title'),
         mod_04_mapaReg_ui(id='mapaReg')
       ),
       # General sampling effort information
       nav_panel(
-        title="Datos Generales", 
+        # title="Datos Generales",
+        title = shiny::uiOutput('datGen_title'),
         mod_03_datGen_ui("datGen")
       ),
       # Multispecies indicators
       nav_panel(
-        title="Indicadores Multiespecíficos", 
+        # title="Indicadores Multiespecíficos", 
+        title = shiny::uiOutput('multiEsp_title'),
         mod_01_multiEsp_ui(id='multiEsp')
       ),
       # Per-species indicators
       nav_panel(
-        title="Indicadores Por Especie", 
+        # title="Indicadores Por Especie", 
+        title = shiny::uiOutput('porEsp_title'),
         mod_02_porEsp_ui(id='porEsp')
       ),
       tags$div(
@@ -84,7 +87,7 @@ app_ui <- function(request) {
         shinyWidgets::pickerInput(
           inputId = "lang",
           # icon = fontawesome::fa('language'),
-          choices=c('ES', 'EN'),
+          choices=c('ES','EN'),
           selected='ES',
           width='10%',
           options=list(
@@ -93,20 +96,6 @@ app_ui <- function(request) {
         )
       ) |> 
         bslib::tooltip("Cambiar idioma / Change language")
-      # nav_spacer(),
-      # nav_item(
-      #   id='lang-picker',
-      #   shinyWidgets::pickerInput(
-      #     inputId = "Id018",
-      #     # icon = fontawesome::fa('language'),
-      #     choices=c('ES', 'EN'),
-      #     selected='ES',
-      #     # inline=T,
-      #     options=list(
-      #       container='body'
-      #     )
-      #   )
-      # )
     )
   )
 }
