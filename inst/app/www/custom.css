@@ -1,3 +1,11 @@
+.bslib-page-fill {
+  overflow-x: hidden !important;
+}
+
+body {
+  overflow-x: hidden;
+}
+
 /* Navbar general */
 .navbar{
   font-family: 'Poppins'
@@ -12,6 +20,44 @@
   max-width: 2em;
   max-height: 2em;
   margin-right: 0.6em;
+  margin-bottom: -2rem;
+}
+
+.app-logo-text {
+  margin-top: -0.75rem;
+}
+
+/*.app-logo-fish {
+  animation: 4s linear 0s infinite bob;
+}
+
+@keyframes bob {
+  0% {
+    transform: translateY(-8%) rotate(0deg);
+  }
+  10% {
+      transform: translateY(-6%) rotate(5deg);
+  }
+  40% {
+      transform: translateY(6%) rotate(5deg);
+  }
+  50% {
+      transform: translateY(8%) rotate(0deg);
+  }
+  60% {
+      transform: translateY(6%) rotate(-5deg);
+  }
+  95% {
+      transform: translateY(-6%) rotate(-5deg);
+  }
+  100% {
+      transform: translateY(-8%) rotate(0deg);
+  }
+}*/
+
+.app-logo-container {
+  position: relative;
+  display: grid;
 }
 
 .app-title{
@@ -20,12 +66,37 @@
 }
 
 /* Language toggle */
-.lang-picker{
+.lang-picker {
   display: inline-block;
-  position: absolute;
-  right: 12vw;
-  top: 1%;
+  position: fixed;
+  z-index: 9999;
   scale: 0.8;
+  right: 5vw;
+  top: 2%;
+}
+
+/*@media (max-width: 1250px) {
+  .lang-picker {
+    right: 12vw;
+    top: 1%;
+  }
+}
+
+@media (max-width: 1950px) {
+  .lang-picker{
+    right: 6vw;
+    top: 4%;
+  }
+}*/
+
+/* Make the selected language option visible */
+.filter-option-inner-inner {
+  top: 8%;
+  left: 10%;
+  width: 1.5rem;
+  height: 1.5rem;
+  position: absolute;
+  overflow: visible;
 }
 
 /*Slider input label styles*/

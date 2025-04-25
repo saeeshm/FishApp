@@ -58,19 +58,19 @@ color:
   light: light-gray
   dark: coral-blue
 
-typography:
-  fonts:
-    - family: Inter
-      source: google
-    - family: Franklin Gothic
-      source: google
-    - family: Poppins
-      source: google
-  base:
-    family: Inter
-    line-height: 1.6
-  headings:
-    family: Poppins
-    color: primary
-  link:
-    color: deep-blue
+# typography:
+#   fonts:
+#     - family: Inter
+#       source: google
+#     - family: Franklin Gothic
+#       source: google
+#     - family: Poppins
+#       source: google
+#   base:
+#     family: Inter
+#     line-height: 1.6
+#   headings:
+#     family: Poppins
+#     color: primary
+#   link:
+#     color: deep-blue

@@ -27,7 +27,7 @@ qtheme <- function(size=15, font='serif'){
 # }
 
 # Length-frequency by trophic level plot
-multiesp_lfq_plot <- function(lfqdbase, year_min, year_max){
+multiesp_lfq_plot <- function(lfqdbase, year_min, year_max, lang){
   # Setting gears to factor to make sure none are dropped
   lfqdbase$tipo_arte <- factor(lfqdbase$tipo_arte)
   # Filtering the data for the requested year range
@@ -49,14 +49,14 @@ multiesp_lfq_plot <- function(lfqdbase, year_min, year_max){
     ggplot2::facet_wrap('tipo_arte', scales = 'fixed', drop=F, ncol=1) +
     qtheme() +
     ggplot2::labs(
-      y = 'Peso capturado (kg)',
-      x = 'Longitud (cm)',
-      fill='Nivel\nTrófico'
+      y = ifelse(lang == 'ES', 'Peso capturado (kg)','Capture Weight (kg)'),
+      x = ifelse(lang == 'ES', 'Longitud (cm)', 'Length (cm)'),
+      fill=ifelse(lang == 'ES', 'Nivel\nTrófico', 'Trofic\nLevel')
     )
 }
 
 # Top-10 species captured plot
-multiesp_top10_plot <- function(lfqdbase, year_min, year_max){
+multiesp_top10_plot <- function(lfqdbase, year_min, year_max, lang){
   # Filtering the data for the requested year range
   plotdf <- lfqdbase[(year(fecha) >= year_min) & (year(fecha) < year_max), ]
   ctab <- plotdf |> 
@@ -83,7 +83,7 @@ multiesp_top10_plot <- function(lfqdbase, year_min, year_max){
     # ggplot2::scale_x_continuous(limits=c(0, 700)) +
     qtheme() +
     ggplot2::labs(
-      x = 'Peso capturado (kg)',
+      x = ifelse(lang == 'ES','Peso capturado (kg)','Captured Weight (kg)'),
       y= NULL,
     )
 }
@@ -113,7 +113,7 @@ calc_log_bins <- function(lmin, lmax, logBase){
 }
 
 # Normalized Biomass density plot
-multiesp_bspect_plot <- function(fishdbase, lfqdbase, year_min, year_max){
+multiesp_bspect_plot <- function(fishdbase, year_min, year_max, lang){
   # Filtering the data for the requested year range
   plotdf <- fishdbase[(year(fecha) >= year_min) & (year(fecha) < year_max), ]
   
@@ -179,13 +179,14 @@ multiesp_bspect_plot <- function(fishdbase, lfqdbase, year_min, year_max){
     ggplot2::scale_x_continuous(
       # limits=c(2, 12000),
       transform = scales::log_trans(base=logBase), 
-      name = "Peso (gramos)",
+      name = ifelse(lang == 'ES',"Peso (gramos)","Weight (grams)"),
       # Axis labels to have a precision of only 2 decimal places
       labels = function(x) sprintf("%.2f", x)
     ) + 
     ggplot2::scale_y_continuous(
       # limits = c(1, 6000),
-      transform = scales::log_trans(base=logBase), name = "Densidad de biomasa",
+      transform = scales::log_trans(base=logBase), 
+      name = ifelse(lang == 'ES',"Densidad de biomasa","Biomass Density"),
       labels = function(x) sprintf("%.2f", x)
     ) +
     qtheme() +
@@ -214,7 +215,7 @@ multiesp_bspect_plot <- function(fishdbase, lfqdbase, year_min, year_max){
 }
 
 # CPUE plot
-multiesp_cpue_plot <- function(lfqdbase, year_min, year_max){
+multiesp_cpue_plot <- function(lfqdbase, year_min, year_max,lang){
   # Filtering the data for the requested year range
   plotdf <- lfqdbase[(year(fecha) >= year_min) & (year(fecha) < year_max), ]
   
@@ -237,6 +238,6 @@ multiesp_cpue_plot <- function(lfqdbase, year_min, year_max){
     qtheme() +
     ggplot2::labs(
       x = NULL,
-      y = 'CPUE (kg/dia)'
+      y = ifelse(lang == 'ES','CPUE (kg/dia)','CPUE (kg/day)')
     )
 }

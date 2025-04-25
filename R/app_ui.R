@@ -29,85 +29,73 @@ app_ui <- function(request) {
         # Navbar background hill
         navbar_bg = "#0093d7",
         # NAvbar text colour
-        navbar_light_contrast="#fff"
+        navbar_light_contrast="#fff",
+        "bslib_spacer" = "0.75rem" # Squeeze out a bit of space between cards
       ),
       title=tags$div(
-        # style='{display:inline-block}',
-        tags$img(
-          class='app-logo',
-          src='www/CORAL_Logo_WhiteSquare.png'
+        style='display:inline-flex;',
+        tags$div(
+          tags$img(
+            class='app-logo app-logo-fish',
+            src='www/CORAL_Logo_WhiteSquare_notext.png'
+          ),
+          tags$img(
+            class='app-logo app-logo-text',
+            src='www/CORAL_Logo_WhiteSquare_justtext.png'
+          ),
+          class = 'app-logo-container'
         ),
         tags$div(
           class='app-title',
           'PescApp'
+        ),
+        tags$div(
+          class = 'waves-container'
         )
-        # tags$div(
-        #   class='lang-picker',
-        #   shinyWidgets::pickerInput(
-        #     inputId = "Id018",
-        #     # icon = fontawesome::fa('language'),
-        #     choices=c('ES', 'EN'),
-        #     selected='ES',
-        #     width='5%',
-        #     options=list(
-        #       container='body'
-        #     )
-        #   )
-        # )
       ),
       id='main-page',
       # Per-species indicators
       nav_panel(
-        title="Descripción", 
-        build_desc()
+        title = shiny::uiOutput('desc_title'),
+        shiny::uiOutput('desc_ui')
       ),
       # Zone map
       nav_panel(
-        title="Mapa", 
+        title = shiny::uiOutput('map_title'),
         mod_04_mapaReg_ui(id='mapaReg')
       ),
       # General sampling effort information
       nav_panel(
-        title="Datos Generales", 
+        # title="Datos Generales",
+        title = shiny::uiOutput('datGen_title'),
         mod_03_datGen_ui("datGen")
       ),
       # Multispecies indicators
       nav_panel(
-        title="Indicadores Multiespecíficos", 
+        # title="Indicadores Multiespecíficos", 
+        title = shiny::uiOutput('multiEsp_title'),
         mod_01_multiEsp_ui(id='multiEsp')
       ),
       # Per-species indicators
       nav_panel(
-        title="Indicadores Por Especie", 
+        # title="Indicadores Por Especie", 
+        title = shiny::uiOutput('porEsp_title'),
         mod_02_porEsp_ui(id='porEsp')
       ),
       tags$div(
         class='lang-picker',
         shinyWidgets::pickerInput(
-          inputId = "Id018",
+          inputId = "lang",
           # icon = fontawesome::fa('language'),
-          choices=c('ES', 'EN'),
+          choices=c('ES','EN'),
           selected='ES',
           width='10%',
           options=list(
             container='body'
           )
         )
-      )
-      # nav_spacer(),
-      # nav_item(
-      #   id='lang-picker',
-      #   shinyWidgets::pickerInput(
-      #     inputId = "Id018",
-      #     # icon = fontawesome::fa('language'),
-      #     choices=c('ES', 'EN'),
-      #     selected='ES',
-      #     # inline=T,
-      #     options=list(
-      #       container='body'
-      #     )
-      #   )
-      # )
+      ) |> 
+        bslib::tooltip("Cambiar idioma / Change language")
     )
   )
 }

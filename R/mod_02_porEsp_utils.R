@@ -38,7 +38,7 @@ calc_froese_indics <- function(Linf, Lmax=NULL){
 }
 
 # Plotting length-frequencies by gear for this species
-ss_lfq_plot <- function(lfqdbase, year_min, year_max, currspec){
+ss_lfq_plot <- function(lfqdbase, year_min, year_max, currspec, lang){
   # Getting plotting data
   plotdf <- make_plotdf(lfqdbase, year_min, year_max, currspec)
   # Making plot
@@ -106,13 +106,13 @@ ss_lfq_plot <- function(lfqdbase, year_min, year_max, currspec){
     qtheme() +
     ggplot2::facet_wrap('tipo_arte', scales = 'fixed', drop=F, ncol=1) +
     ggplot2::labs(
-      y = 'Peso capturado (kg)',
-      x = 'Longitud (cm)'
+      y = ifelse(lang() == 'ES','Peso capturado (kg)','Capture Weight (kg)'),
+      x = ifelse(lang() == 'ES','Longitud (cm)','Length (cm)')
     )
 }
 
 # Plotting the CPUE for this species
-ss_cpue_plot <- function(lfqdbase, year_min, year_max, currspec, bygear){
+ss_cpue_plot <- function(lfqdbase, year_min, year_max, currspec, bygear, lang){
   # Getting plotting data
   plotdf <- make_plotdf(lfqdbase, year_min, year_max, currspec)
   # Preparing CPUE dataframe for summarization
@@ -138,7 +138,7 @@ ss_cpue_plot <- function(lfqdbase, year_min, year_max, currspec, bygear){
       qtheme() +
       ggplot2::labs(
         x = NULL,
-        y = 'CPUE (kg/dia)'
+        y = ifelse(lang() == 'ES','CPUE (kg/dia)','CPUE (kg/day)')
       )
   }else{
     cpueDat |> 
@@ -152,13 +152,13 @@ ss_cpue_plot <- function(lfqdbase, year_min, year_max, currspec, bygear){
       qtheme() +
       ggplot2::labs(
         x = NULL,
-        y = 'CPUE (kg/dia)'
+        y = ifelse(lang() == 'ES','CPUE (kg/dia)','CPUE (kg/day)')
       )
   }
 }
   
 # Plotting the CPUE per length-class against the mean CPUE
-ss_plot_cpue_pl <- function(lfqdbase, year_min, year_max, currspec){
+ss_plot_cpue_pl <- function(lfqdbase, year_min, year_max, currspec, lang){
   # Getting plotting data
   plotdf <- make_plotdf(lfqdbase, year_min, year_max, currspec)
   
@@ -227,13 +227,13 @@ ss_plot_cpue_pl <- function(lfqdbase, year_min, year_max, currspec){
     ggplot2::geom_line() +
     qtheme() +
     ggplot2::labs(
-      x = 'Longitud (cm)',
-      y = 'CPUE (kg/dia)'
+      x = ifelse(lang() == 'ES','Longitud (cm)','Length (cm)'),
+      y = ifelse(lang() == 'ES','CPUE (kg/dia)','CPUE (kg/day)')
     )
 }
 
 # Plotting catch seasonality
-ss_plot_ssn <- function(lfqdbase, year_min, year_max, currspec){
+ss_plot_ssn <- function(lfqdbase, year_min, year_max, currspec, lang){
   # Getting plotting data
   plotdf <- make_plotdf(lfqdbase, year_min, year_max, currspec)
   # Plotting
@@ -247,6 +247,6 @@ ss_plot_ssn <- function(lfqdbase, year_min, year_max, currspec){
     qtheme() +
     ggplot2::labs(
       x = NULL,
-      y = 'Peso capturado (kg)'
+      y = ifelse(lang() == 'ES','Peso capturado (kg)','Captured Weight (kg)')
     )
 }

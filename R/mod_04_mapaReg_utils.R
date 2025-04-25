@@ -60,5 +60,7 @@ mapa_regional <- function(region){
     # Button for resetting the view
     leaflet::addEasyButton(leaflet::easyButton(
       icon="fa-globe", title="Vuelva a la región",
-      onClick=leaflet::JS("function(btn, map){ map.setView([15.93, -87.56], 10); }")))
+      onClick=leaflet::JS("function(btn, map){ map.setView([15.93, -87.56], 10); }"))) |> 
+    # Optional: map inset to show where we are in the world.
+    leaflet::addMiniMap(position = 'bottomleft', width = 125, height = 125, toggleDisplay = T, zoomLevelFixed = 5)
 }

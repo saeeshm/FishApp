@@ -19,7 +19,8 @@ mod_03_datGen_ui <- function(id){
       min_width = "300px",
       # min_height = '150px',
       theme='text-indigo',
-      title = 'Numero de muestreos',
+      # title = 'Numero de muestreos',
+      title = textOutput(ns('num_muestreos_title')),
       value = textOutput(ns('num_muestreos')),
       showcase = fontawesome::fa_i("pen-to-square")
     ),
@@ -28,7 +29,8 @@ mod_03_datGen_ui <- function(id){
       min_width = "300px",
       # min_height = '150px',
       theme = 'text-orange',
-      title = 'Dias muestreado',
+      # title = 'Dias muestreado',
+      title = textOutput(ns('num_dias_muestreo_title')),
       value = textOutput(ns('num_dias_muestreo')),
       showcase = fontawesome::fa_i("calendar-days")
     ),
@@ -37,7 +39,8 @@ mod_03_datGen_ui <- function(id){
       min_width = "300px",
       # min_height = '150px',
       theme = 'text-blue',
-      title = 'Comunidades muestreadas',
+      # title = 'Comunidades muestreadas',
+      title = textOutput(ns('num_comunidades_title')),
       value = textOutput(ns('num_comunidades')),
       showcase = fontawesome::fa_i("map-location-dot")
       # p(textOutput(ns('nombres_comunidades')))
@@ -47,7 +50,8 @@ mod_03_datGen_ui <- function(id){
       min_width = "300px",
       theme = 'text-teal',
       # min_height = '150px',
-      title = 'Peso total muestreado',
+      # title = 'Peso total muestreado',
+      title = textOutput(ns('peso_muestreado_title')),
       value = textOutput(ns('peso_muestreado')),
       showcase = fontawesome::fa_i("scale-unbalanced")
     ),
@@ -56,7 +60,8 @@ mod_03_datGen_ui <- function(id){
       min_width = "300px",
       # min_height = '150px',
       theme = 'text-pink',
-      title = 'Especies muestreadas',
+      # title = 'Especies muestreadas',
+      title = textOutput(ns('num_especies_title')),
       value = textOutput(ns('num_especies')),
       showcase = fontawesome::fa_i("fish-fins")
     ),
@@ -65,7 +70,8 @@ mod_03_datGen_ui <- function(id){
       min_width = "300px",
       theme = 'text-purple',
       # min_height = '150px',
-      title = 'Individuos muestreados',
+      # title = 'Individuos muestreados',
+      title = textOutput(ns('num_individuos_title')),
       value = textOutput(ns('num_individuos')),
       showcase = fontawesome::fa_i("ruler")
     )
@@ -79,7 +85,7 @@ mod_03_datGen_ui <- function(id){
     sidebar = bslib::sidebar(
       position='left',
       # Text output describing currently focused region
-      tags$h4('Region'),
+      tags$h4('Región'),
       textOutput(ns('region_desc')),
       # Date-range input
       tags$h4('Año de Muestreo'),
@@ -157,7 +163,7 @@ mod_03_datGen_ui <- function(id){
 #' 03_datMuestro Server Functions
 #'
 #' @noRd 
-mod_03_datGen_server <- function(id, region){
+mod_03_datGen_server <- function(id, lang, region){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
     # Sidebar elements ----------
@@ -173,6 +179,15 @@ mod_03_datGen_server <- function(id, region){
       input$sampleyear[1], 
       input$sampleyear[2]
     ))
+    
+    # Render up them titles!
+    output$num_muestreos_title <- renderText(ifelse(lang() == 'ES','Numero de muestreos','Number of Samples'))
+    output$num_dias_muestreo_title <- renderText(ifelse(lang() == 'ES','Dias muestreado','Days Sampled'))
+    output$num_comunidades_title <- renderText(ifelse(lang() == 'ES','Comunidades muestreadas','Communities Sampled'))
+    output$peso_muestreado_title <- renderText(ifelse(lang() == 'ES','Peso total muestreado','Total Weight Sampled'))
+    output$num_especies_title <- renderText(ifelse(lang() == 'ES','Especies muestreadas','Species Sampled'))
+    output$num_individuos_title <- renderText(ifelse(lang() == 'ES','Individuos muestreados','Individuals Sampled'))
+    
     output$num_muestreos <- renderText(ss()$num_muestreos)
     output$num_dias_muestreo <- renderText(ss()$num_dias_muestreo)
     output$num_comunidades <- renderText(ss()$num_comunidades)
