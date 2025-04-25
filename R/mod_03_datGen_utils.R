@@ -120,7 +120,7 @@ dg_plot_artes <- function(dbase, year_min, year_max){
     # Getting the total number of observations (rows) grouped by gear
     _[, .N, by=tipo_arte] |> 
   # test |> 
-    ggplot2::ggplot(ggplot2::aes(values = N/unit_denom, fill=tipo_arte)) +
+    ggplot2::ggplot(ggplot2::aes(values = N, fill=tipo_arte)) +
     waffle::geom_waffle(
       colour = "black", 
       make_proportional = T,
