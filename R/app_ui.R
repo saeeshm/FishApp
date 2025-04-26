@@ -9,6 +9,7 @@ app_ui <- function(request) {
     # Golem external resources
     golem_add_external_resources(),
     page_navbar(
+      shiny::includeScript("inst/app/www/code.js"),
       # THEME
       theme = bslib::bs_theme(
         brand = 'inst/app/www/brand.yml',
@@ -84,6 +85,7 @@ app_ui <- function(request) {
       ),
       tags$div(
         class='lang-picker',
+        # shiny::icon('language'),
         shinyWidgets::pickerInput(
           inputId = "lang",
           # icon = fontawesome::fa('language'),

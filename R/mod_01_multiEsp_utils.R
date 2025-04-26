@@ -49,9 +49,9 @@ multiesp_lfq_plot <- function(lfqdbase, year_min, year_max, lang){
     ggplot2::facet_wrap('tipo_arte', scales = 'fixed', drop=F, ncol=1) +
     qtheme() +
     ggplot2::labs(
-      y = ifelse(lang == 'ES', 'Peso capturado (kg)','Capture Weight (kg)'),
+      y = ifelse(lang == 'ES', 'Peso capturado (kg)','Catch Weight (kg)'),
       x = ifelse(lang == 'ES', 'Longitud (cm)', 'Length (cm)'),
-      fill=ifelse(lang == 'ES', 'Nivel\nTrófico', 'Trofic\nLevel')
+      fill=ifelse(lang == 'ES', 'Nivel\nTrófico', 'Trophic\nLevel')
     )
 }
 
@@ -83,7 +83,7 @@ multiesp_top10_plot <- function(lfqdbase, year_min, year_max, lang){
     # ggplot2::scale_x_continuous(limits=c(0, 700)) +
     qtheme() +
     ggplot2::labs(
-      x = ifelse(lang == 'ES','Peso capturado (kg)','Captured Weight (kg)'),
+      x = ifelse(lang == 'ES','Peso capturado (kg)','Catch Weight (kg)'),
       y= NULL,
     )
 }

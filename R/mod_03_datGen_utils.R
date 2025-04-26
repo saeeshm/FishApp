@@ -62,7 +62,7 @@ dg_plot_por_arte <- function(dbase, year_min, year_max){
 
 # Plotting total weight sampled for the 10 most commonly caught species (by
 # weight) from the current data
-dg_plot_esp_comunes <- function(dbase, year_min, year_max){
+dg_plot_esp_comunes <- function(dbase, year_min, year_max, lang){
   # Filtering the data for the requested year range
   currdf <- dbase[(year(fecha) >= year_min) & (year(fecha) < year_max), ]
   
@@ -93,8 +93,8 @@ dg_plot_esp_comunes <- function(dbase, year_min, year_max){
     ggplot2::guides('fill' = 'none') +
     ggplot2::labs(
       y = NULL,
-      x = 'Peso muestreado (kg)',
-      fill='Especie'
+      x = ifelse(lang() == 'ES','Peso muestreado (kg)','Sampled Weight (kg)'),
+      fill=ifelse(lang() == 'ES','Especie','Species')
     )
   # Returning results as a list
   list(
@@ -104,7 +104,7 @@ dg_plot_esp_comunes <- function(dbase, year_min, year_max){
 }
 
 # Plotting gears most used (by weight) as a waffle/grid plot (proportional)
-dg_plot_artes <- function(dbase, year_min, year_max){
+dg_plot_artes <- function(dbase, year_min, year_max, lang){
   # Filtering the data for the requested year range
   plotdf <- dbase[(year(fecha) >= year_min) & (year(fecha) < year_max), ]
   # All unique combinations of gears
@@ -141,12 +141,12 @@ dg_plot_artes <- function(dbase, year_min, year_max){
     ) +
     ggplot2::labs(
       y = NULL,
-      fill='Arte'
+      fill=ifelse(lang() == 'ES','Arte','Technique')
     )
 }
 
 # Plotting community sampling effort for the current data
-dg_plot_peso <- function(dbase, year_min, year_max){
+dg_plot_peso <- function(dbase, year_min, year_max, lang){
   # Filtering the data for the requested year range
   plotdf <- dbase[(year(fecha) >= year_min) & (year(fecha) < year_max), ]
   # All unique combinations of gears
@@ -172,13 +172,13 @@ dg_plot_peso <- function(dbase, year_min, year_max){
     ggplot2::guides('fill' = 'none') +
     ggplot2::labs(
       y = NULL,
-      x = 'Peso muestreado (kg)',
-      fill='Arte'
+      x = ifelse(lang() == 'ES','Peso muestreado (kg)','Sampled Weight (kg)'),
+      fill=ifelse(lang() == 'ES','Arte','Technique')
     )
 }
 
 # Plotting catch seasonality by community
-dg_plot_ssn <- function(dbase, year_min, year_max){
+dg_plot_ssn <- function(dbase, year_min, year_max, lang){
   # Filtering the data for the requested year range
   plotdf <- dbase[(year(fecha) >= year_min) & (year(fecha) < year_max), ]
   
@@ -203,7 +203,7 @@ dg_plot_ssn <- function(dbase, year_min, year_max){
     qtheme() +
     ggplot2::labs(
       x = NULL,
-      y = 'Peso muestreado (kg)',
-      colour='Comunidad'
-    )
+      y = ifelse(lang() == 'ES','Peso muestreado (kg)','Sampled Weight (kg)'),
+      colour = ifelse(lang() == 'ES','Comunidad','Community')
+    ) 
 }

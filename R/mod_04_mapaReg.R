@@ -16,7 +16,8 @@ mod_04_mapaReg_ui <- function(id){
       width = '20%',
       position='left',
       # Text output describing currently focused region
-      tags$h4('Región'),
+      # tags$h4('Región'),
+      tags$h4(textOutput(ns('region_title'))),
       textOutput(ns('region_desc'))
     ),
     bslib::card(
@@ -31,6 +32,8 @@ mod_04_mapaReg_ui <- function(id){
 mod_04_mapaReg_server <- function(id, lang, region){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
+    # Title of Sidebar
+    output$region_title <- renderText(ifelse(lang() == 'ES','Región','Region'))
     # Region description text output
     output$region_desc <- renderText(region)
       # Producing map

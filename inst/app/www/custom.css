@@ -67,27 +67,26 @@ body {
 
 /* Language toggle */
 .lang-picker {
-  display: inline-block;
   position: fixed;
+  top: 1.5rem;
+  height: 2%;
+  width: 5%;
+  display: inline-block;
   z-index: 9999;
-  scale: 0.8;
-  right: 5vw;
-  top: 2%;
 }
 
-/*@media (max-width: 1250px) {
+/* The below applies when the window is small enough to collapse all navbar labels*/
+@media (max-width: 991px) {
   .lang-picker {
-    right: 12vw;
-    top: 1%;
+    right: 8rem !important;
   }
 }
 
-@media (max-width: 1950px) {
+@media (min-width: 992px) and (max-width: 1950px) {
   .lang-picker{
-    right: 6vw;
-    top: 4%;
+    right: 3rem !important;
   }
-}*/
+}
 
 /* Make the selected language option visible */
 .filter-option-inner-inner {

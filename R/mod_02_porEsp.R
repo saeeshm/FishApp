@@ -84,7 +84,8 @@ mod_02_porEsp_ui <- function(id){
               bslib::card_body(plotOutput(ns('plot_cpue_total')))
           ),
           nav_panel(
-            'CPUE (Longitud)',
+            # 'CPUE (Longitud),'
+            textOutput(ns('cpue_long_title')),
             bslib::card_header(
               textOutput(ns("plot_cpue_pl_title"))
               ),
@@ -139,6 +140,7 @@ mod_02_porEsp_server <- function(id, lang, region){
       lang
     ))
     # CPUE per length-class plot
+    output$cpue_long_title <- renderText(ifelse(lang() == "ES",'CPUE (Longitud)','CPUE (Length)'))
     output$plot_cpue_pl_title <- renderText(ifelse(lang() == "ES",
                                                    "Capturas por unidad de esfuerzo (por clase de talla)",
                                                    "Captures by unit of effort (by size class)"))

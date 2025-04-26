@@ -19,7 +19,6 @@ mod_03_datGen_ui <- function(id){
       min_width = "300px",
       # min_height = '150px',
       theme='text-indigo',
-      # title = 'Numero de muestreos',
       title = textOutput(ns('num_muestreos_title')),
       value = textOutput(ns('num_muestreos')),
       showcase = fontawesome::fa_i("pen-to-square")
@@ -29,7 +28,6 @@ mod_03_datGen_ui <- function(id){
       min_width = "300px",
       # min_height = '150px',
       theme = 'text-orange',
-      # title = 'Dias muestreado',
       title = textOutput(ns('num_dias_muestreo_title')),
       value = textOutput(ns('num_dias_muestreo')),
       showcase = fontawesome::fa_i("calendar-days")
@@ -39,7 +37,6 @@ mod_03_datGen_ui <- function(id){
       min_width = "300px",
       # min_height = '150px',
       theme = 'text-blue',
-      # title = 'Comunidades muestreadas',
       title = textOutput(ns('num_comunidades_title')),
       value = textOutput(ns('num_comunidades')),
       showcase = fontawesome::fa_i("map-location-dot")
@@ -50,7 +47,6 @@ mod_03_datGen_ui <- function(id){
       min_width = "300px",
       theme = 'text-teal',
       # min_height = '150px',
-      # title = 'Peso total muestreado',
       title = textOutput(ns('peso_muestreado_title')),
       value = textOutput(ns('peso_muestreado')),
       showcase = fontawesome::fa_i("scale-unbalanced")
@@ -70,7 +66,6 @@ mod_03_datGen_ui <- function(id){
       min_width = "300px",
       theme = 'text-purple',
       # min_height = '150px',
-      # title = 'Individuos muestreados',
       title = textOutput(ns('num_individuos_title')),
       value = textOutput(ns('num_individuos')),
       showcase = fontawesome::fa_i("ruler")
@@ -85,10 +80,12 @@ mod_03_datGen_ui <- function(id){
     sidebar = bslib::sidebar(
       position='left',
       # Text output describing currently focused region
-      tags$h4('Región'),
+      # tags$h4('Región'),
+      tags$h4(textOutput(ns('region_title'))),
       textOutput(ns('region_desc')),
       # Date-range input
-      tags$h4('Año de Muestreo'),
+      # tags$h4('Año de Muestreo'),
+      tags$h4(textOutput(ns('sampleyear_title'))),
       shinyWidgets::sliderTextInput(
         ns('sampleyear'), 
         label=NULL,
@@ -122,7 +119,8 @@ mod_03_datGen_ui <- function(id){
           fill = T,
           full_screen = TRUE,
           min_height = '600px',
-          bslib::card_header('Especies más capturadas'),
+          # bslib::card_header('Especies más capturadas'),
+          bslib::card_header(textOutput(ns('plot_esp_comunes_title'))),
           # PLACEHOLDER PLOT - UPDATE THIS
           bslib::card_body(plotOutput(ns('plot_esp_comunes'))),
         ),
@@ -131,7 +129,8 @@ mod_03_datGen_ui <- function(id){
           fill = T,
           full_screen = TRUE,
           min_height = '600px',
-          bslib::card_header('Artes de pesca utilizada'),
+          # bslib::card_header('Artes de pesca utilizada'),
+          bslib::card_header(textOutput(ns('plot_artes_title'))),
           # PLACEHOLDER PLOT - UPDATE THIS
           bslib::card_body(plotOutput(ns('plot_artes')))
         )
@@ -144,7 +143,8 @@ mod_03_datGen_ui <- function(id){
           fill = T, 
           min_height = '600px',
           full_screen = TRUE,
-          bslib::card_header('Peso muestreado por comunidad'),
+          # bslib::card_header('Peso muestreado por comunidad'),
+          bslib::card_header(textOutput(ns('plot_muest_title'))),
           bslib::card_body(plotOutput(ns('plot_muest')))
         ),
         # Plot 2 - Catch seasonality by community
@@ -152,7 +152,8 @@ mod_03_datGen_ui <- function(id){
           fill = T,
           min_height = '600px',
           full_screen = TRUE,
-          bslib::card_header('Estacionalidad de capturas'),
+          # bslib::card_header('Estacionalidad de capturas'),
+          bslib::card_header(textOutput(ns('plot_ssn_title'))),
           bslib::card_body(plotOutput(ns('plot_ssn')))
         )
       )
@@ -169,8 +170,10 @@ mod_03_datGen_server <- function(id, lang, region){
     # Sidebar elements ----------
     
     # Adding the selected region description
+    output$region_title <- renderText(ifelse(lang() == "ES","Región","Region"))
     output$region_desc <- renderText(region)
     
+    output$sampleyear_title <- renderText(ifelse(lang() == "ES","Año de Muestreo","Sampling Year(s)"))
     # Main body elements ----------
     
     # Summary statistics
@@ -181,7 +184,7 @@ mod_03_datGen_server <- function(id, lang, region){
     ))
     
     # Render up them titles!
-    output$num_muestreos_title <- renderText(ifelse(lang() == 'ES','Numero de muestreos','Number of Samples'))
+    output$num_muestreos_title <- renderText(ifelse(lang() == 'ES','Número de muestreos','Number of Samples'))
     output$num_dias_muestreo_title <- renderText(ifelse(lang() == 'ES','Dias muestreado','Days Sampled'))
     output$num_comunidades_title <- renderText(ifelse(lang() == 'ES','Comunidades muestreadas','Communities Sampled'))
     output$peso_muestreado_title <- renderText(ifelse(lang() == 'ES','Peso total muestreado','Total Weight Sampled'))
@@ -200,29 +203,37 @@ mod_03_datGen_server <- function(id, lang, region){
     esp_comunies <- reactive(dg_plot_esp_comunes(
       fishdbase, 
       input$sampleyear[1], 
-      input$sampleyear[2]
+      input$sampleyear[2],
+      lang
     ))
+    output$plot_esp_comunes_title = renderText(ifelse(lang() == "ES","Especies más capturadas","Most Commonly Caught Species"))
     output$plot_esp_comunes <- renderPlot(esp_comunies()$top10_plot)
     output$prop_peso_esp_comunes <- renderText(esp_comunies()$prop_capt)
     
     # Gear usage
+    output$plot_artes_title <- renderText(ifelse(lang() == "ES","Artes de pesca utilizada","Fishing Technique Used"))
     output$plot_artes <- renderPlot(dg_plot_artes(
       fishdbase, 
       year_min = input$sampleyear[1],
-      year_max = input$sampleyear[2]
+      year_max = input$sampleyear[2],
+      lang
     ))
     
     # LFQ by trophic level plot
+    output$plot_muest_title <- renderText(ifelse(lang() == "ES","Peso muestreado por comunidad","Weight Sampled by Community"))
     output$plot_muest <- renderPlot(dg_plot_peso(
       fishdbase, 
       year_min = input$sampleyear[1],
-      year_max = input$sampleyear[2]
+      year_max = input$sampleyear[2],
+      lang
     ))
     # Top-captured species plot
+    output$plot_ssn_title <- renderText(ifelse(lang() == "ES","Estacionalidad de capturas","Seasonality of Catches"))
     output$plot_ssn <- renderPlot(dg_plot_ssn(
       fishdbase,
       year_min = input$sampleyear[1],
-      year_max = input$sampleyear[2]
+      year_max = input$sampleyear[2],
+      lang
     ))
   })
 }

@@ -106,7 +106,7 @@ ss_lfq_plot <- function(lfqdbase, year_min, year_max, currspec, lang){
     qtheme() +
     ggplot2::facet_wrap('tipo_arte', scales = 'fixed', drop=F, ncol=1) +
     ggplot2::labs(
-      y = ifelse(lang() == 'ES','Peso capturado (kg)','Capture Weight (kg)'),
+      y = ifelse(lang() == 'ES','Peso capturado (kg)','Catch Weight (kg)'),
       x = ifelse(lang() == 'ES','Longitud (cm)','Length (cm)')
     )
 }
@@ -247,6 +247,6 @@ ss_plot_ssn <- function(lfqdbase, year_min, year_max, currspec, lang){
     qtheme() +
     ggplot2::labs(
       x = NULL,
-      y = ifelse(lang() == 'ES','Peso capturado (kg)','Captured Weight (kg)')
+      y = ifelse(lang() == 'ES','Peso capturado (kg)','Catch Weight (kg)')
     )
 }
