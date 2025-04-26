@@ -107,7 +107,7 @@ mod_01_multiEsp_server <- function(id, lang, region){
           full_screen = T,
           nav_panel(
             'LFQ',
-            bslib::card_header("Size Class Frequencies"),
+            bslib::card_header("Size Class Frequencies by Technique"),
             bslib::card_body(plotOutput(ns('plot_lfq')))
           ),
           nav_panel(

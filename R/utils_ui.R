@@ -16,11 +16,11 @@ plot_card <- function(header, ...) {
   )
 }
 
-# Function that builds the description text block from provided text
+#' Function that builds the description text block from provided text
 #'
 #' @param lang One of ES (Espanol) or EN (English) 
 #'
-#' @returns
+#' @returns paragraphs of HTML text that describe the project
 #'
 #' @examples
 #' \dontrun
