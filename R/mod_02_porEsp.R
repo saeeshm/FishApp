@@ -56,7 +56,7 @@ mod_02_porEsp_ui <- function(id){
       value = textOutput(ns('prop_capturas_mspawn')),
       showcase = fontawesome::fa_i("map-location-dot")
       # p(textOutput(ns('nombres_comunidades')))
-    ),
+    )
   )
   
   layout_sidebar(
