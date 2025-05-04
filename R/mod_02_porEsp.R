@@ -11,6 +11,54 @@
 #' @import ggplot2
 mod_02_porEsp_ui <- function(id){
   ns <- NS(id)
+  
+  # Preparing UI objects ----------
+  
+  # Creating a list of value boxes for summary statistics
+  vbs <- list(
+    # Total number captured
+    bslib::value_box(
+      # fill=F,
+      min_width = "300px",
+      # min_height = '150px',
+      theme='text-indigo',
+      title = textOutput(ns('num_capturado_title')),
+      value = textOutput(ns('num_capturado')),
+      showcase = fontawesome::fa_i("pen-to-square")
+    ),
+    # Total weight captured
+    bslib::value_box(
+      # fill=F,
+      min_width = "300px",
+      theme = 'text-teal',
+      # min_height = '150px',
+      title = textOutput(ns('peso_capturado_title')),
+      value = textOutput(ns('peso_capturado')),
+      showcase = fontawesome::fa_i("scale-unbalanced")
+    ),
+    # Proportion of captures that are close to the length at maturity
+    bslib::value_box(
+      # fill=F,
+      min_width = "300px",
+      # min_height = '150px',
+      theme = 'text-orange',
+      title = textOutput(ns('prop_capturas_matr_title')),
+      value = textOutput(ns('prop_capturas_matr')),
+      showcase = fontawesome::fa_i("calendar-days")
+    ),
+    # Proportion of captures that are mega-spawners
+    bslib::value_box(
+      # fill=F,
+      min_width = "300px",
+      # min_height = '150px',
+      theme = 'text-blue',
+      title = textOutput(ns('prop_capturas_mspawn_title')),
+      value = textOutput(ns('prop_capturas_mspawn')),
+      showcase = fontawesome::fa_i("map-location-dot")
+      # p(textOutput(ns('nombres_comunidades')))
+    ),
+  )
+  
   layout_sidebar(
     # Inputs and descriptions in the sidebar
     sidebar = sidebar(
@@ -36,7 +84,7 @@ mod_02_porEsp_ui <- function(id){
         selected = 'Calale',
         choicesOpt = list(
           subtext = spectab$nombre_cientifico,
-          sep = '     '
+          sep = ' '
         ),
         options = list(
           `live-search` = TRUE,
@@ -107,6 +155,10 @@ mod_02_porEsp_server <- function(id, lang, region){
     # Adding the selected region description
     output$region_title <- renderText(ifelse(lang() == "ES","Región","Region"))
     output$region_desc <- renderText(region)
+    
+    # Value boxes
+    
+    
     # Length-frequencies by gear plot
     output$sampleyear_title <- renderText(ifelse(lang() == "ES","Año de Muestreo","Sampling Year(s)"))
     output$plot_lfq_title <- renderText(ifelse(lang() == "ES","Frecuencias de tallas por arte","Frequencies by Size Class"))
@@ -118,6 +170,7 @@ mod_02_porEsp_server <- function(id, lang, region){
       lang
     ))
     output$species_title <- renderText(ifelse(lang() == "ES","Especie","Species"))
+    
     # CPUE total plot
     output$plot_cpue_total <- renderPlot(ss_cpue_plot(
       lfqdbase,
@@ -127,10 +180,13 @@ mod_02_porEsp_server <- function(id, lang, region){
       bygear = F,
       lang
     ))
+    
     # CPUE by gear plot
-    output$plot_cpue_arte_title <- renderText(ifelse(lang() == "ES",
-                                                     "Capturas por unidad de esfuerzo por arte",
-                                                     "Captures by unit of effort"))
+    output$plot_cpue_arte_title <- renderText(
+      ifelse(lang() == "ES",
+             "Capturas por unidad de esfuerzo por arte",
+             "Captures by unit of effort")
+    )
     output$plot_cpue_arte <- renderPlot(ss_cpue_plot(
       lfqdbase,
       year_min = input$sampleyear[1],
@@ -139,11 +195,18 @@ mod_02_porEsp_server <- function(id, lang, region){
       bygear = T,
       lang
     ))
+    
     # CPUE per length-class plot
-    output$cpue_long_title <- renderText(ifelse(lang() == "ES",'CPUE (Longitud)','CPUE (Length)'))
-    output$plot_cpue_pl_title <- renderText(ifelse(lang() == "ES",
-                                                   "Capturas por unidad de esfuerzo (por clase de talla)",
-                                                   "Captures by unit of effort (by size class)"))
+    output$cpue_long_title <- renderText(ifelse(
+      lang() == "ES",
+      'CPUE (Longitud)',
+      'CPUE (Length)')
+    )
+    output$plot_cpue_pl_title <- renderText(ifelse(
+      lang() == "ES",
+      "Capturas por unidad de esfuerzo (por clase de talla)",
+      "Captures by unit of effort (by size class)")
+    )
     output$plot_cpue_pl <- renderPlot(ss_plot_cpue_pl(
       lfqdbase,
       year_min = input$sampleyear[1],
@@ -151,7 +214,13 @@ mod_02_porEsp_server <- function(id, lang, region){
       currspec = input$species,
       lang
     ))
+    
     # Catch-seasonality plot
+    output$plot_est_title <- renderText(ifelse(
+      lang() == "ES",
+      "Estacionalided de capturas",
+      "Catch seasonality")
+    )
     output$plot_est <- renderPlot(ss_plot_ssn(
       lfqdbase,
       year_min = input$sampleyear[1],

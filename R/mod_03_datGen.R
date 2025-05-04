@@ -106,12 +106,12 @@ mod_03_datGen_ui <- function(id){
         !!!vbs[1:3]
       ),
       # Row 2: 3 value boxes
-      layout_column_wrap(
+      bslib::layout_column_wrap(
         fill=F,
         !!!vbs[4:6]
       ),
       # Row 3: Short plots
-      layout_column_wrap(
+      bslib::layout_column_wrap(
         width = '400px',
         fill = F,
         # Plot 1 - Top 10-species
