@@ -109,3 +109,18 @@ body {
 .text-muted{
   color: var(--bs-tertiary-color) !important;
 }
+
+/* Style for Modal-dialogue triggering question marks */
+.modal-hook {
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0rem;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  flex-wrap: wrap;
+}
+
+.modal-hook:hover {
+  background: var(--brand-coral-blue) !important;
+}

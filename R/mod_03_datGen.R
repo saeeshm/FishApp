@@ -120,7 +120,7 @@ mod_03_datGen_ui <- function(id){
           full_screen = TRUE,
           min_height = '600px',
           # bslib::card_header('Especies más capturadas'),
-          bslib::card_header(textOutput(ns('plot_esp_comunes_title'))),
+          bslib::card_header(modal_UI(ns('plot_esp_comunes_title'))),
           # PLACEHOLDER PLOT - UPDATE THIS
           bslib::card_body(plotOutput(ns('plot_esp_comunes'))),
         ),
@@ -130,7 +130,8 @@ mod_03_datGen_ui <- function(id){
           full_screen = TRUE,
           min_height = '600px',
           # bslib::card_header('Artes de pesca utilizada'),
-          bslib::card_header(textOutput(ns('plot_artes_title'))),
+          # bslib::card_header(textOutput(ns('plot_artes_title'))),
+          bslib::card_header(modal_UI(ns('plot_artes_title'))),
           # PLACEHOLDER PLOT - UPDATE THIS
           bslib::card_body(plotOutput(ns('plot_artes')))
         )
@@ -144,7 +145,7 @@ mod_03_datGen_ui <- function(id){
           min_height = '600px',
           full_screen = TRUE,
           # bslib::card_header('Peso muestreado por comunidad'),
-          bslib::card_header(textOutput(ns('plot_muest_title'))),
+          bslib::card_header(modal_UI(ns('plot_muest_title'))),
           bslib::card_body(plotOutput(ns('plot_muest')))
         ),
         # Plot 2 - Catch seasonality by community
@@ -153,7 +154,7 @@ mod_03_datGen_ui <- function(id){
           min_height = '600px',
           full_screen = TRUE,
           # bslib::card_header('Estacionalidad de capturas'),
-          bslib::card_header(textOutput(ns('plot_ssn_title'))),
+          bslib::card_header(modal_UI(ns('plot_ssn_title'))),
           bslib::card_body(plotOutput(ns('plot_ssn')))
         )
       )
@@ -199,6 +200,27 @@ mod_03_datGen_server <- function(id, lang, region){
     output$num_especies <- renderText(ss()$num_especies)
     output$num_individuos <- renderText(ss()$num_individuos)
     
+    # Petite servers of modal dialogue windows.
+    modal_Server('plot_esp_comunes_title',
+                 lang,
+                 plot_title = c("Especies más capturadas","Most Commonly Caught Species"),
+                 plot_info = c("Información sobre el gráfico","Information about the plot"))
+    
+    modal_Server('plot_artes_title',
+                 lang, 
+                 plot_title = c("Artes de pesca utilizada","Fishing Technique Used"),
+                 plot_info = c("Información sobre el gráfico","Information about the plot"))
+    
+    modal_Server('plot_muest_title',
+                 lang,
+                 plot_title = c("Peso muestreado por comunidad","Weight Sampled by Community"),
+                 plot_info = c("Información sobre el gráfico","Information about the plot"))
+    
+    modal_Server('plot_ssn_title',
+                 lang, 
+                 plot_title = c("Estacionalidad de capturas","Seasonality of Catches"),
+                 plot_info = c("Información sobre el gráfico","Information about the plot"))
+    
     # Top 10 captured species data
     esp_comunies <- reactive(dg_plot_esp_comunes(
       fishdbase, 
@@ -206,12 +228,13 @@ mod_03_datGen_server <- function(id, lang, region){
       input$sampleyear[2],
       lang
     ))
-    output$plot_esp_comunes_title = renderText(ifelse(lang() == "ES","Especies más capturadas","Most Commonly Caught Species"))
+    # output$plot_esp_comunes_title = renderText(ifelse(lang() == "ES","Especies más capturadas","Most Commonly Caught Species"))
+    
     output$plot_esp_comunes <- renderPlot(esp_comunies()$top10_plot)
     output$prop_peso_esp_comunes <- renderText(esp_comunies()$prop_capt)
     
     # Gear usage
-    output$plot_artes_title <- renderText(ifelse(lang() == "ES","Artes de pesca utilizada","Fishing Technique Used"))
+    # output$plot_artes_title <- renderText(ifelse(lang() == "ES","Artes de pesca utilizada","Fishing Technique Used"))
     output$plot_artes <- renderPlot(dg_plot_artes(
       fishdbase, 
       year_min = input$sampleyear[1],
@@ -220,7 +243,7 @@ mod_03_datGen_server <- function(id, lang, region){
     ))
     
     # LFQ by trophic level plot
-    output$plot_muest_title <- renderText(ifelse(lang() == "ES","Peso muestreado por comunidad","Weight Sampled by Community"))
+    # output$plot_muest_title <- renderText(ifelse(lang() == "ES","Peso muestreado por comunidad","Weight Sampled by Community"))
     output$plot_muest <- renderPlot(dg_plot_peso(
       fishdbase, 
       year_min = input$sampleyear[1],
@@ -228,7 +251,7 @@ mod_03_datGen_server <- function(id, lang, region){
       lang
     ))
     # Top-captured species plot
-    output$plot_ssn_title <- renderText(ifelse(lang() == "ES","Estacionalidad de capturas","Seasonality of Catches"))
+    # output$plot_ssn_title <- renderText(ifelse(lang() == "ES","Estacionalidad de capturas","Seasonality of Catches"))
     output$plot_ssn <- renderPlot(dg_plot_ssn(
       fishdbase,
       year_min = input$sampleyear[1],
