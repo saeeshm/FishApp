@@ -120,7 +120,7 @@ mod_03_datGen_ui <- function(id){
           full_screen = TRUE,
           min_height = '600px',
           # bslib::card_header('Especies más capturadas'),
-          bslib::card_header(modal_UI(ns('plot_esp_comunes_title'))),
+          bslib::card_header(modal_UI(ns('plot_esp_comunes_title'),'Especies más capturadas')),
           # PLACEHOLDER PLOT - UPDATE THIS
           bslib::card_body(plotOutput(ns('plot_esp_comunes'))),
         ),
@@ -131,7 +131,7 @@ mod_03_datGen_ui <- function(id){
           min_height = '600px',
           # bslib::card_header('Artes de pesca utilizada'),
           # bslib::card_header(textOutput(ns('plot_artes_title'))),
-          bslib::card_header(modal_UI(ns('plot_artes_title'))),
+          bslib::card_header(modal_UI(ns('plot_artes_title'),'Artes de pesca utilizada')),
           # PLACEHOLDER PLOT - UPDATE THIS
           bslib::card_body(plotOutput(ns('plot_artes')))
         )
@@ -145,7 +145,7 @@ mod_03_datGen_ui <- function(id){
           min_height = '600px',
           full_screen = TRUE,
           # bslib::card_header('Peso muestreado por comunidad'),
-          bslib::card_header(modal_UI(ns('plot_muest_title'))),
+          bslib::card_header(modal_UI(ns('plot_muest_title'),'Peso muestreado por comunidad')),
           bslib::card_body(plotOutput(ns('plot_muest')))
         ),
         # Plot 2 - Catch seasonality by community
@@ -154,7 +154,7 @@ mod_03_datGen_ui <- function(id){
           min_height = '600px',
           full_screen = TRUE,
           # bslib::card_header('Estacionalidad de capturas'),
-          bslib::card_header(modal_UI(ns('plot_ssn_title'))),
+          bslib::card_header(modal_UI(ns('plot_ssn_title'),'Estacionalidad de capturas')),
           bslib::card_body(plotOutput(ns('plot_ssn')))
         )
       )
