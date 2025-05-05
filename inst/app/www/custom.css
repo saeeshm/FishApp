@@ -71,7 +71,7 @@ body {
   top: 1.5rem;
   height: 2%;
   width: 5%;
-  display: inline-block;
+  display: ruby;
   z-index: 9999;
 }
 

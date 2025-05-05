@@ -85,13 +85,14 @@ app_ui <- function(request) {
       ),
       tags$div(
         class='lang-picker',
-        # shiny::icon('language'),
+        # Globe icon element
+        shiny::div(shiny::icon('globe',lib = 'font-awesome'),style='filter:invert(1);'),
+        # Actual lang-picker element
         shinyWidgets::pickerInput(
           inputId = "lang",
-          # icon = fontawesome::fa('language'),
           choices=c('ES','EN'),
           selected='ES',
-          width='10%',
+          width='50%',
           options=list(
             container='body'
           )
