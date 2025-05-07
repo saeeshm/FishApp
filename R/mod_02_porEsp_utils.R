@@ -141,6 +141,18 @@ ss_cpue_trend_overall <- function(lfqdbase, year_min, year_max, currspec, lang){
   # Extract the slope estimate and confidence interval (in per year units)
   slope_estimate <- round(coef(lm_cpue)[2]*365, 5)
   conf_interval <- round(confint(lm_cpue)[2, ]*365, 5)
+  # Making description text
+  cpue_desc <- paste(
+    ifelse(lang == 'ES','Tendencia de CPUE:','CPUE trend:'),
+    paste0(
+      slope_estimate, 
+      ' (', 
+      conf_interval[1], 
+      ' to ', 
+      conf_interval[2], 
+      ') Por Año'
+    )
+  )
   
   # Plotting overall cpue trend
   ov_cpue_plot <- cpueDat |> 
