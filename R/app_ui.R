@@ -83,6 +83,8 @@ app_ui <- function(request) {
         title = shiny::uiOutput('porEsp_title'),
         mod_02_porEsp_ui(id='porEsp')
       ),
+      # A generalized language picker (this generates a warning, because bslib
+      # doesn't like this inside nav_panel!)
       tags$div(
         class='lang-picker',
         # shiny::icon('language'),

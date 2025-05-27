@@ -104,22 +104,22 @@ ss_summ_stats <- function(fishdbase, lfqdbase, year_min, year_max, currspec){
   # List of required summary stats
   list(
     # Total number of captures in this year period
-    num_capturado = sum(currdf$adjCount, na.rm=T),
+    num_capturado = sum(curr_lfqdb$adjCount, na.rm=T),
     # Total weight captured (kg)
-    peso_capturado = round(sum(currdf$adjWt, na.rm = T), 0),
+    peso_capturado = round(sum(curr_lfqdb$adjWt, na.rm = T), 0),
     # Proportion of captures within the maturity range
-    prop_capturas_matr = round(prop_mat, 2),
+    prop_capturas_matr = paste(round(prop_mat, 2), '%'),
     # Proportion of captures that were mega-spawners
-    prop_capturas_mspawn = round(prop_mspawn, 2),
+    prop_capturas_mspawn = paste(round(prop_mspawn, 2), '%'),
     # All froese indicators for reference
-    froese = froese,
+    froese = froese
   )
 }
 
 # CPUE plots ----------
 
 # Overall CPUE trend
-ss_cpue_trend_overall <- function(lfqdbase, year_min, year_max, currspec, lang){
+ss_cpue_trend_total <- function(lfqdbase, year_min, year_max, currspec, lang){
   # Getting plotting data
   plotdf <- make_plotdf(lfqdbase, year_min, year_max, currspec)
   # Preparing CPUE dataframe for summarization
@@ -139,74 +139,78 @@ ss_cpue_trend_overall <- function(lfqdbase, year_min, year_max, currspec, lang){
     )]
   lm_cpue <- lm(cpue ~ fecha2_days, data=modDat)
   # Extract the slope estimate and confidence interval (in per year units)
-  slope_estimate <- round(coef(lm_cpue)[2]*365, 5)
-  conf_interval <- round(confint(lm_cpue)[2, ]*365, 5)
+  slope_estimate <- round(coef(lm_cpue)[2]*365, 3)
+  conf_interval <- round(confint(lm_cpue)[2, ]*365, 3)
+  # Making description text
+  cpue_desc <- paste(
+    ifelse(lang == 'ES','Tendencia:','Trend:'),
+    paste0(
+      slope_estimate, 
+      ' (', 
+      conf_interval[1], 
+      ', ', 
+      conf_interval[2], 
+      ')',
+      ifelse(lang == 'ES',' kg/año',' kg/year')
+    )
+  )
   
   # Plotting overall cpue trend
   ov_cpue_plot <- cpueDat |> 
     ggplot2:: ggplot(ggplot2::aes(x = fecha2, y=cpue)) +
     ggplot2::geom_point(alpha=0.4, show.legend = F) +
     ggplot2::geom_line(alpha=0.8, show.legend = F) +
-    ggplot2::scale_y_continuous(limits = c(0, 5)) +
-    ggplot2::geom_smooth(method='lm', colour='firebrick', linewidth=0.6) +
+    # ggplot2::scale_y_continuous(limits = c(0, 5)) +
+    ggplot2::geom_smooth(method='lm', colour='#00AFA4', fill='#00AFA410', linewidth=0.6) +
     # ggpmisc::stat_poly_eq(use_label(c("P", "R2"))) +
     qtheme() +
     ggplot2::labs(
       x = NULL,
       y = ifelse(lang == 'ES','CPUE (kg/dia)','CPUE (kg/day)')
     )
+  # Returning all items as a list
+  list(
+    'cpue_desc' = cpue_desc,
+    'plot' = ov_cpue_plot
+  )
 }
 
-# Plotting the CPUE for this species
-ss_cpue_plot <- function(lfqdbase, year_min, year_max, currspec, bygear, lang){
-  # Getting plotting data
-  plotdf <- make_plotdf(lfqdbase, year_min, year_max, currspec)
-  # Preparing CPUE dataframe for summarization
-  cpueDat <- plotdf |> 
-    _[, `:=`(
-      cpue = adjWt/tot_boats,
-      year = lubridate::year(fecha),
-      month = lubridate::month(fecha)
-    )] |> 
-    _[, fecha2 := lubridate::ymd(paste(year, month, '01', sep='-'))]
-  
-  # If plotting by gear, summarizing by gear and month before plotting
-  if(bygear){
-    cpueDat |> 
-      _[, .(cpue = mean(cpue, na.rm=T)), by=.(fecha2, tipo_arte)] |> 
-      ggplot2::ggplot(ggplot2::aes(x = fecha2, y=cpue)) +
-      ggplot2::geom_point(alpha=0.4, show.legend = F) +
-      ggplot2::geom_line(alpha=0.8, show.legend = F) +
-      # stat_poly_line() +
-      # stat_poly_eq(use_label(c("P", "R2"))) +
-      ggplot2::scale_y_continuous(limits = c(0, 3)) +
-      ggplot2::facet_wrap('tipo_arte', ncol=1) +
-      qtheme() +
-      ggplot2::labs(
-        x = NULL,
-        y = ifelse(lang == 'ES','CPUE (kg/dia)','CPUE (kg/day)')
-      )
-  }else{
-    cpueDat |> 
-      _[, .(cpue = mean(cpue, na.rm=T)), by=.(fecha2)] |> 
-      ggplot2:: ggplot(ggplot2::aes(x = fecha2, y=cpue)) +
-      ggplot2::geom_point(alpha=0.4, show.legend = F) +
-      ggplot2::geom_line(alpha=0.8, show.legend = F) +
-      ggplot2::scale_y_continuous(limits = c(0, 5)) +
-      ggplot2::geom_smooth(method='lm', colour='firebrick', linewidth=0.6) +
-      # ggpmisc::stat_poly_eq(use_label(c("P", "R2"))) +
-      qtheme() +
-      ggplot2::labs(
-        x = NULL,
-        y = ifelse(lang == 'ES','CPUE (kg/dia)','CPUE (kg/day)')
-      )
-  }
-}
+# CPUE per gear
+# ss_cpue_por_arte <- function(lfqdbase, year_min, year_max, currspec, lang){
+#   # Getting plotting data
+#   plotdf <- make_plotdf(lfqdbase, year_min, year_max, currspec)
+#   # Preparing CPUE dataframe for summarization
+#   cpueDat <- plotdf |> 
+#     _[, `:=`(
+#       cpue = adjWt/tot_boats,
+#       year = lubridate::year(fecha),
+#       month = lubridate::month(fecha)
+#     )] |> 
+#     _[, fecha2 := lubridate::ymd(paste(year, month, '01', sep='-'))]
+#   
+#   # If plotting by gear, summarizing by gear and month before plotting
+#   cpueDat |> 
+#     _[, .(cpue = mean(cpue, na.rm=T)), by=.(fecha2, tipo_arte)] |> 
+#     ggplot2::ggplot(ggplot2::aes(x = fecha2, y=cpue)) +
+#     ggplot2::geom_point(alpha=0.4, show.legend = F) +
+#     ggplot2::geom_line(alpha=0.8, show.legend = F) +
+#     # stat_poly_line() +
+#     # stat_poly_eq(use_label(c("P", "R2"))) +
+#     ggplot2::scale_y_continuous(limits = c(0, 3)) +
+#     ggplot2::facet_wrap('tipo_arte', ncol=1) +
+#     qtheme() +
+#     ggplot2::labs(
+#       x = NULL,
+#       y = ifelse(lang == 'ES','CPUE (kg/dia)','CPUE (kg/day)')
+#     )
+# }
 
 # Plotting length-frequencies by gear for this species
-ss_lfq_plot <- function(lfqdbase, year_min, year_max, currspec, lang){
+ss_lfq_plot <- function(lfqdbase, year_min, year_max, currspec, froese, lang){
   # Getting plotting data
   plotdf <- make_plotdf(lfqdbase, year_min, year_max, currspec)
+  # Getting ylimits based on the total summed weights for this species by gear
+  # ylim_max <- max(plotdf[, .(tot_wt=sum(adjWt)), by=tipo_arte]$tot_wt)
   # Making plot
   plotdf |> 
     ggplot2::ggplot() +
@@ -217,13 +221,15 @@ ss_lfq_plot <- function(lfqdbase, year_min, year_max, currspec, lang){
       alpha=0.8,
       linewidth=0.4,
       show.legend=F) +
+    ggplot2::facet_wrap('tipo_arte', scales = 'fixed', drop=F, ncol=1) +
     # ggplot2::scale_fill_brewer(palette = 'Dark2') +
     # Setting scale limits for clean viewing
-    # coord_cartesian(ylim=c(0, ylim_max+50), 
-    #                 xlim=c(
-    #                   floor(min(plotdf$long_bin))-1, 
-    #                   ceiling(froese$LMspawn)+10
-    #                 )) +
+    coord_cartesian(
+      # ylim=c(0, ylim_max),
+      xlim=c(
+        floor(min(plotdf$long_bin))-1,
+        ceiling(froese$LMspawn)+10
+      )) +
     # scale_y_continuous(expand = c(0, 1)) +
     # Optimal length range for maximum yield
     # ggplot2::annotate('rect', 
@@ -233,8 +239,7 @@ ss_lfq_plot <- function(lfqdbase, year_min, year_max, currspec, lang){
     #                   fill='darkgreen',
     #                   alpha=0.2) +
     # Minimum catch length
-    # geom_vline(xintercept = 23, 
-    #            linetype='dashed', colour='firebrick') +
+    # geom_vline(xintercept = 23, linetype='dashed', colour='firebrick') +
     # ggplot2::annotate('text', 
     #                   # label='L-Min',
     #                   label='1.',
@@ -246,81 +251,56 @@ ss_lfq_plot <- function(lfqdbase, year_min, year_max, currspec, lang){
     #                   # hjust=1.2,
     #                   size=labelSize) +
     # Length-of maturity
-    # geom_vline(xintercept = froese$Lmat, linetype='dashed') +
-    # ggplot2::annotate('text', 
-    #                   label='2.',
-    #                   x=froese$Lmat, 
-    #                   y=ylim_max,
-    #                   fontface = 'bold',
-    #                   family=labelFont,
-    #                   hjust=-0.8,
-    #                   # hjust=1.2,
-    #                   size=labelSize) +
+    geom_vline(xintercept = froese$Lmat, linetype='solid', colour='darkgreen') +
+    # ggplot2::annotate(
+    #   'text',
+    #   label='L-Mat',
+    #   x=froese$Lmat,
+    #   y=ylim_max,
+    #   fontface = 'bold',
+    #   # family=labelFont,
+    #   hjust=-0.8,
+    #   # hjust=1.2,
+    #   size=3
+    # ) +
     # Length of mega-spawners
-    # geom_vline(xintercept = froese$LMspawn, 
-    #            linetype='dashed', colour='darkorange') +
-    # ggplot2::annotate('text', 
-    #                   label='3.',
-    #                   # label='L-Mspawn',
-    #                   family=labelFont,
-    #                   fontface = 'bold',
-    #                   x=froese$LMspawn, 
-    #                   y=ylim_max,
-    #                   hjust=-0.8,
-    #                   # hjust=1.2,
-    #                   size=labelSize) +
+    geom_vline(xintercept = froese$LMspawn, linetype='dashed', colour='darkorange') +
+    # ggplot2::annotate(
+    #   'text',
+    #   # label='3.',
+    #   # label='L-Mspawn',
+    #   # family=labelFont,
+    #   fontface = 'bold',
+    #   x=froese$LMspawn,
+    #   y=ylim_max,
+    #   hjust=-0.8,
+    #   # hjust=1.2,
+    #   size=3
+    # ) +
     qtheme() +
-    ggplot2::facet_wrap('tipo_arte', scales = 'fixed', drop=F, ncol=1) +
     ggplot2::labs(
-      y = ifelse(lang() == 'ES','Peso capturado (kg)','Catch Weight (kg)'),
-      x = ifelse(lang() == 'ES','Longitud (cm)','Length (cm)')
+      y = ifelse(lang == 'ES','Peso capturado (kg)','Captured Weight (kg)'),
+      x = ifelse(lang == 'ES','Longitud (cm)','Length (cm)')
     )
 }
 
-# Plotting the CPUE for this species
-ss_cpue_plot <- function(lfqdbase, year_min, year_max, currspec, bygear, lang){
+# Plotting catch seasonality
+ss_plot_ssn <- function(lfqdbase, year_min, year_max, currspec, lang){
   # Getting plotting data
   plotdf <- make_plotdf(lfqdbase, year_min, year_max, currspec)
-  # Preparing CPUE dataframe for summarization
-  cpueDat <- plotdf |> 
-    _[, `:=`(
-      cpue = adjWt/tot_boats,
-      year = lubridate::year(fecha),
-      month = lubridate::month(fecha)
-    )] |> 
-    _[, fecha2 := lubridate::ymd(paste(year, month, '01', sep='-'))]
-  
-  # If plotting by gear, summarizing by gear and month before plotting
-  if(bygear){
-    cpueDat |> 
-      _[, .(cpue = mean(cpue, na.rm=T)), by=.(fecha2, tipo_arte)] |> 
-      ggplot2::ggplot(ggplot2::aes(x = fecha2, y=cpue)) +
-      ggplot2::geom_point(alpha=0.4, show.legend = F) +
-      ggplot2::geom_line(alpha=0.8, show.legend = F) +
-      # stat_poly_line() +
-      # stat_poly_eq(use_label(c("P", "R2"))) +
-      ggplot2::scale_y_continuous(limits = c(0, 3)) +
-      ggplot2::facet_wrap('tipo_arte', ncol=1) +
-      qtheme() +
-      ggplot2::labs(
-        x = NULL,
-        y = ifelse(lang() == 'ES','CPUE (kg/dia)','CPUE (kg/day)')
-      )
-  }else{
-    cpueDat |> 
-      _[, .(cpue = mean(cpue, na.rm=T)), by=.(fecha2)] |> 
-      ggplot2:: ggplot(ggplot2::aes(x = fecha2, y=cpue)) +
-      ggplot2::geom_point(alpha=0.4, show.legend = F) +
-      ggplot2::geom_line(alpha=0.8, show.legend = F) +
-      ggplot2::scale_y_continuous(limits = c(0, 5)) +
-      ggplot2::geom_smooth(method='lm', colour='firebrick', linewidth=0.6) +
-      # ggpmisc::stat_poly_eq(use_label(c("P", "R2"))) +
-      qtheme() +
-      ggplot2::labs(
-        x = NULL,
-        y = ifelse(lang() == 'ES','CPUE (kg/dia)','CPUE (kg/day)')
-      )
-  }
+  # Plotting
+  plotdf |> 
+    _[, month := lubridate::month(fecha)] |> 
+    _[, month := factor(month.abb[month], levels=month.abb)] |> 
+    ggplot2::ggplot(ggplot2::aes(x = month,y = adjWt,)) +
+    # ggplot2::geom_col(fill = '#008080', alpha=0.9) +
+    ggplot2::geom_col(fill = 'darkorange', alpha=0.8) +
+    ggplot2::scale_x_discrete(drop = F) +
+    qtheme() +
+    ggplot2::labs(
+      x = NULL,
+      y = ifelse(lang == 'ES','Peso capturado (kg)','Catch Weight (kg)')
+    )
 }
   
 # Plotting the CPUE per length-class against the mean CPUE
@@ -393,26 +373,7 @@ ss_plot_cpue_pl <- function(lfqdbase, year_min, year_max, currspec, lang){
     ggplot2::geom_line() +
     qtheme() +
     ggplot2::labs(
-      x = ifelse(lang() == 'ES','Longitud (cm)','Length (cm)'),
-      y = ifelse(lang() == 'ES','CPUE (kg/dia)','CPUE (kg/day)')
-    )
-}
-
-# Plotting catch seasonality
-ss_plot_ssn <- function(lfqdbase, year_min, year_max, currspec, lang){
-  # Getting plotting data
-  plotdf <- make_plotdf(lfqdbase, year_min, year_max, currspec)
-  # Plotting
-  plotdf |> 
-    _[, month := lubridate::month(fecha)] |> 
-    _[, month := factor(month.abb[month], levels=month.abb)] |> 
-    ggplot2::ggplot(ggplot2::aes(x = month,y = adjWt,)) +
-    # ggplot2::geom_col(fill = '#008080', alpha=0.9) +
-    ggplot2::geom_col(fill = 'darkorange', alpha=0.8) +
-    ggplot2::scale_x_discrete(drop = F) +
-    qtheme() +
-    ggplot2::labs(
-      x = NULL,
-      y = ifelse(lang() == 'ES','Peso capturado (kg)','Catch Weight (kg)')
+      x = ifelse(lang == 'ES','Longitud (cm)','Length (cm)'),
+      y = ifelse(lang == 'ES','CPUE (kg/dia)','CPUE (kg/day)')
     )
 }
