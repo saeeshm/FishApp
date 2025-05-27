@@ -27,7 +27,7 @@ body {
   margin-top: -0.75rem;
 }
 
-/*.app-logo-fish {
+.app-logo-fish {
   animation: 4s linear 0s infinite bob;
 }
 
@@ -53,7 +53,7 @@ body {
   100% {
       transform: translateY(-8%) rotate(0deg);
   }
-}*/
+}
 
 .app-logo-container {
   position: relative;
