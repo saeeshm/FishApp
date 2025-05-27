@@ -10,22 +10,6 @@
 
 # ==== Functions ====
 
-# Custom plotting theme
-qtheme <- function(size=15, font='serif'){
-  ggplot2::theme_minimal(size, font) +
-    ggplot2::theme(
-      plot.background = ggplot2::element_rect(fill='white', colour=NA),
-      # legend.position = 'bottom',
-      panel.border = ggplot2::element_rect(colour = "black", fill=NA, size=0.5)
-    )
-}
-
-# General function that deals with the reactive input and calls the relevant
-# plotting function
-# make_ms_plot <- function(lfqdbase, year_min, year_max){
-# 
-# }
-
 # Length-frequency by trophic level plot
 multiesp_lfq_plot <- function(lfqdbase, year_min, year_max, lang){
   # Setting gears to factor to make sure none are dropped

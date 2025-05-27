@@ -161,7 +161,7 @@ ss_cpue_trend_total <- function(lfqdbase, year_min, year_max, currspec, lang){
     ggplot2::geom_point(alpha=0.4, show.legend = F) +
     ggplot2::geom_line(alpha=0.8, show.legend = F) +
     # ggplot2::scale_y_continuous(limits = c(0, 5)) +
-    ggplot2::geom_smooth(method='lm', colour='firebrick', linewidth=0.6) +
+    ggplot2::geom_smooth(method='lm', colour='#00AFA4', fill='#00AFA410', linewidth=0.6) +
     # ggpmisc::stat_poly_eq(use_label(c("P", "R2"))) +
     qtheme() +
     ggplot2::labs(

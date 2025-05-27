@@ -248,7 +248,7 @@ mod_02_porEsp_server <- function(id, lang, region){
     output$num_capturado_title <- renderText(ifelse(lang() == "ES","Número de pescas capturadas","Number of fish captured"))
     output$peso_capturado_title <- renderText(ifelse(lang() == "ES","Peso capturado (kg)","Weight captured (kg)"))
     output$prop_capturas_matr_title <- renderText(ifelse(lang() == "ES","Proporción de capturas cerca de la talla de madurez","Proportion of captures near the length at maturity"))
-    output$prop_capturas_mspawn_title <- renderText(ifelse(lang() == "ES","Proporción de capturas que fueron mega-spawners","Proportion of captures that were mega-spawners"))
+    output$prop_capturas_mspawn_title <- renderText(ifelse(lang() == "ES","Proporción de capturas que fueron mega-reproductadores","Proportion of captures that were mega-spawners"))
     # And text
     output$num_capturado <- renderText(ss()$num_capturado)
     output$peso_capturado <- renderText(ss()$peso_capturado)
