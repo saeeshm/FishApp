@@ -71,17 +71,17 @@ app_ui <- function(request) {
         title = shiny::uiOutput('datGen_title'),
         mod_03_datGen_ui("datGen")
       ),
-      # Multispecies indicators
-      nav_panel(
-        # title="Indicadores Multiespecíficos", 
-        title = shiny::uiOutput('multiEsp_title'),
-        mod_01_multiEsp_ui(id='multiEsp')
-      ),
       # Per-species indicators
       nav_panel(
         # title="Indicadores Por Especie", 
         title = shiny::uiOutput('porEsp_title'),
         mod_02_porEsp_ui(id='porEsp')
+      ),
+      # Multispecies indicators
+      nav_panel(
+        # title="Indicadores Multiespecíficos", 
+        title = shiny::uiOutput('multiEsp_title'),
+        mod_01_multiEsp_ui(id='multiEsp')
       ),
       # A generalized language picker (this generates a warning, because bslib
       # doesn't like this inside nav_panel!)

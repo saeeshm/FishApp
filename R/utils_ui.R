@@ -66,7 +66,10 @@ build_desc <- function(lang){
   pesqueras de la Bahía de Tela. La base de datos muestra mejoras en la \
   sostenibilidad de los recursos marinos tras la implementación de estas\ 
   medidas.'
-    p4 <- 'Este trabajo es posible gracias al Comité Interinstitucional de \
+    p4 <- '¿Le interesa que sus datos aparezcan en el panel? Póngase en \
+    contacto con nosotros en info@coral.org o arivera@coral.org para saber \
+    cómo podemos incluir sus datos pesqueros en esta potente herramienta.'
+    p5 <- 'Este trabajo es posible gracias al Comité Interinstitucional de \
   Ambiente y Áreas Protegidas del Municipio de Tela (CIAT), la Dirección \
   General de Pesca y Acuicultura (DIGEPESCA), el Instituto de Conservación \
   Forestal (ICF), las ONGs PROLANSATE y AMATELA, los Científicos Comunitarios \
@@ -103,7 +106,10 @@ build_desc <- function(lang){
     Municipality of Tela (CIAT) and implemented collaboratively with the fishing communities of 
     Tela Bay. The database shows improvements in the sustainability of marine resources 
     following the implementation of these measures.'
-    p4 <- 'This work is made possible thanks to the Inter-Institutional Committee on 
+    p4 <- 'Interested in seeing your data featured on the dashboard? Reach out \
+    to us at info@coral.org or arivera@coral.org to learn how we can include \
+    your fisheries data in this powerful tool.'
+    p5 <- 'This work is made possible thanks to the Inter-Institutional Committee on 
     Environment and Protected Areas of the Municipality of Tela (CIAT), the General 
     Directorate of Fisheries and Aquaculture (DIGEPESCA), the Forest Conservation Institute 
     (ICF), local NGOs PROLANSATE and AMATELA, the Community Scientists, and all the fishers 
@@ -113,13 +119,15 @@ build_desc <- function(lang){
   tagList(
     h1(ifelse(lang == 'ES','Quiénes somos','Who we are')),
     p(p1),
-    h1(ifelse(lang == 'ES','Contexto de esta plataforma','Context of this platform')),
+    h1(ifelse(lang == 'ES','Contexto de esta plataforma','Context for this platform')),
     p(HTML(paste(p2_1, p2_2, p2_3))),
     tags$ol((list_to_li(items))),
     h1(ifelse(lang == 'ES','Descripción de la región','Description of the region')),
     p(p3),
-    h1(ifelse(lang == 'ES','Agradecimientos','Acknowledgment')),
+    h1(ifelse(lang == 'ES','¡Colabora con nosotros!','Join us!')),
     p(p4),
+    h1(ifelse(lang == 'ES','Agradecimientos','Acknowledgments')),
+    p(p5),
     tags$br()
   )
 }

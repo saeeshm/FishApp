@@ -44,7 +44,7 @@ mod_02_porEsp_ui <- function(id){
       theme = 'text-orange',
       title = textOutput(ns('prop_capturas_matr_title')),
       value = textOutput(ns('prop_capturas_matr')),
-      showcase = fontawesome::fa_i("calendar-days")
+      showcase = fontawesome::fa_i("ruler")
     ),
     # Proportion of captures that are mega-spawners
     bslib::value_box(
@@ -54,7 +54,7 @@ mod_02_porEsp_ui <- function(id){
       theme = 'text-blue',
       title = textOutput(ns('prop_capturas_mspawn_title')),
       value = textOutput(ns('prop_capturas_mspawn')),
-      showcase = fontawesome::fa_i("map-location-dot")
+      showcase = fontawesome::fa_i("fish-fins")
       # p(textOutput(ns('nombres_comunidades')))
     )
   )
