@@ -12,9 +12,9 @@
 
 # Calculating species richness, diversity and evenness indices for the given
 # data
-ms_div_indices <- function(lfqdbase, year_min, year_max){
+ms_div_indices <- function(lfqdb, year_min, year_max){
   # Filtering the data for the requested year range
-  plotdf <- lfqdbase[(lubridate::year(fecha) >= year_min) & (lubridate::year(fecha) < year_max), ]
+  plotdf <- lfqdb[(lubridate::year(fecha) >= year_min) & (lubridate::year(fecha) < year_max), ]
   # Getting a count of all unique species in this dataset (species richness)
   rich <- length(unique(plotdf$nombre_cientifico))
   
@@ -67,13 +67,13 @@ calc_log_bins <- function(lmin, lmax, logBase){
 }
 
 # Normalized Biomass density plot
-ms_bdens_plot <- function(fishdbase, year_min, year_max, lang){
+ms_bdens_plot <- function(fdb, year_min, year_max, lang){
   # Filtering the data for the requested year range
-  plotdf <- fishdbase[(lubridate::year(fecha) >= year_min) & (lubridate::year(fecha) < year_max), ]
+  plotdf <- fdb[(lubridate::year(fecha) >= year_min) & (lubridate::year(fecha) < year_max), ]
   
   # Min and max sizes (in grams) - uses the full database
-  lmin <- floor(min(fishdbase$peso, na.rm=T))
-  lmax <- ceiling(max(fishdbase$peso, na.rm=T))
+  lmin <- floor(min(fdb$peso, na.rm=T))
+  lmax <- ceiling(max(fdb$peso, na.rm=T))
   
   # Grouping sizes into Log-width bins, returning a list containing the breaks,
   # widths, and labels
@@ -166,9 +166,9 @@ ms_bdens_plot <- function(fishdbase, year_min, year_max, lang){
 }
 
 # Multispecies CPUE plot
-ms_cpue_plot <- function(lfqdbase, year_min, year_max,lang){
+ms_cpue_plot <- function(lfqdb, year_min, year_max,lang){
   # Filtering the data for the requested year range
-  plotdf <- lfqdbase[(lubridate::year(fecha) >= year_min) & (lubridate::year(fecha) < year_max), ]
+  plotdf <- lfqdb[(lubridate::year(fecha) >= year_min) & (lubridate::year(fecha) < year_max), ]
   
   # Preparing CPUE dataframe for summarization
   cpueDat <- plotdf |> 
@@ -225,11 +225,11 @@ ms_cpue_plot <- function(lfqdbase, year_min, year_max,lang){
 }
 
 # Multi-species length-frequency by trophic level and gear plot
-ms_lfq_plot <- function(lfqdbase, year_min, year_max, lang){
+ms_lfq_plot <- function(lfqdb, year_min, year_max, lang){
   # Setting gears to factor to make sure none are dropped
-  lfqdbase$tipo_arte <- factor(lfqdbase$tipo_arte)
+  lfqdb$tipo_arte <- factor(lfqdb$tipo_arte)
   # Filtering the data for the requested year range
-  plotdf <- lfqdbase[(lubridate::year(fecha) >= year_min) & (lubridate::year(fecha) < year_max), ]
+  plotdf <- lfqdb[(lubridate::year(fecha) >= year_min) & (lubridate::year(fecha) < year_max), ]
   # Plotting
   plotdf |> 
     ggplot2::ggplot() +
@@ -254,9 +254,9 @@ ms_lfq_plot <- function(lfqdbase, year_min, year_max, lang){
 }
 
 # Top-10 species captured as deviances from mean capture plot
-ms_top10_plot <- function(lfqdbase, year_min, year_max, lang){
+ms_top10_plot <- function(lfqdb, year_min, year_max, lang){
   # Filtering the data for the requested year range
-  plotdf <- lfqdbase[(lubridate::year(fecha) >= year_min) & (lubridate::year(fecha) < year_max), ]
+  plotdf <- lfqdb[(lubridate::year(fecha) >= year_min) & (lubridate::year(fecha) < year_max), ]
   ctab <- plotdf |> 
     # Calculating total catches by weight across the period
     _[, .(adjWt = sum(adjWt, na.rm=T)), by=c('nombre_comun_cln')] |> 

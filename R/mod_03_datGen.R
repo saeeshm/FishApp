@@ -141,7 +141,7 @@ mod_03_datGen_ui <- function(id){
         # Plot 1 - Sampled weight by community and gear
         bslib::card(
           fill = T, 
-          min_height = '600px',
+          min_height = '700px',
           full_screen = TRUE,
           # bslib::card_header('Peso muestreado por comunidad'),
           bslib::card_header(textOutput(ns('plot_muest_title'))),
@@ -150,7 +150,7 @@ mod_03_datGen_ui <- function(id){
         # Plot 2 - Catch seasonality by community
         bslib::card(
           fill = T,
-          min_height = '600px',
+          min_height = '700px',
           full_screen = TRUE,
           # bslib::card_header('Estacionalidad de capturas'),
           bslib::card_header(textOutput(ns('plot_ssn_title'))),

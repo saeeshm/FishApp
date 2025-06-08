@@ -138,7 +138,7 @@ mod_02_porEsp_ui <- function(id){
         bslib::layout_column_wrap(
           width = '450px',
           fixed_width=F,
-          max_height = '600px',
+          min_height = '700px',
           bslib::card(
             fill = T,
             full_screen = TRUE,
@@ -150,7 +150,7 @@ mod_02_porEsp_ui <- function(id){
         bslib::layout_column_wrap(
           width = '450px',
           fixed_width=F,
-          max_height = '600px',
+          min_height = '700px',
           # CPUE per length class
           bslib::card(
             fill = T,

@@ -112,7 +112,7 @@ mod_01_multiEsp_ui <- function(id){
         bslib::layout_column_wrap(
           width = '450px',
           fixed_width=F,
-          max_height = '600px',
+          min_height = '700px',
           bslib::card(
             fill = T, 
             full_screen = TRUE,
@@ -124,7 +124,7 @@ mod_01_multiEsp_ui <- function(id){
         bslib::layout_column_wrap(
           width = '450px',
           fixed_width=F,
-          max_height = '600px',
+          min_height = '700px',
           bslib::card(
             fill = T,
             full_screen = TRUE,
@@ -166,7 +166,7 @@ mod_01_multiEsp_server <- function(id, lang, region){
     
     # Multispecies CPUE trend
     cpue <- reactive(ms_cpue_plot(
-      lfqdbase=lfqdbase,
+      lfqdb=lfqdbase,
       year_min = input$sampleyear[1],
       year_max = input$sampleyear[2],
       lang = lang()
@@ -181,7 +181,7 @@ mod_01_multiEsp_server <- function(id, lang, region){
     
     # Value boxes (getting relevant diversity indices)
     di <- reactive(ms_div_indices(
-      lfqdbase = lfqdbase,
+      lfqdb = lfqdbase,
       input$sampleyear[1], 
       input$sampleyear[2]
     ))
@@ -209,7 +209,7 @@ mod_01_multiEsp_server <- function(id, lang, region){
     
     # Biomass density spectrum plot
     bd <- reactive(ms_bdens_plot(
-      fishdbase = fishdbase,
+      fdb = fishdbase,
       year_min = input$sampleyear[1],
       year_max = input$sampleyear[2],
       lang = lang()
@@ -229,7 +229,7 @@ mod_01_multiEsp_server <- function(id, lang, region){
       'Size Class Frequencies by Technique and Trophic Level'
     ))
     output$plot_lfq <- renderPlot(ms_lfq_plot(
-      lfqdbase,
+      lfqdb = lfqdbase,
       year_min = input$sampleyear[1],
       year_max = input$sampleyear[2],
       lang()
@@ -242,7 +242,7 @@ mod_01_multiEsp_server <- function(id, lang, region){
       'Captured weight by species relative to mean (10-most caught species)'
     ))
     output$plot_top10_dev <- renderPlot(ms_top10_plot(
-      lfqdbase,
+      lfqdb = lfqdbase,
       year_min = input$sampleyear[1],
       year_max = input$sampleyear[2],
       lang()

@@ -5,6 +5,6 @@ account: coralreefalliance
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 13613056
-bundleId: 10350669
+bundleId: 10404946
 url: https://coralreefalliance.shinyapps.io/fishapp/
 version: 1
