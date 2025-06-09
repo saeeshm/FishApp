@@ -5,6 +5,7 @@ Authors@R: person('Saeesh', 'Mangwani', email = 'saeesh.mangwani@imbrsea.eu', ro
 Description: Shiny interface to track and assess the state of artisanal fisheries in Northern Honduras, based on a multi-year, community-based catch landings database.
 License: MIT + file LICENSE
 Imports: 
+    anomalize,
     bslib,
     config (>= 0.3.2),
     data.table,
@@ -19,7 +20,9 @@ Imports:
     sf,
     shiny (>= 1.8.0),
     shinyWidgets,
+    showtext,
     stringr,
+    sysfonts,
     waffle
 Encoding: UTF-8
 LazyData: true

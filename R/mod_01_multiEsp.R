@@ -22,7 +22,8 @@ mod_01_multiEsp_ui <- function(id){
       # min_width = "300px",
       # min_height = '150px',
       theme='text-indigo',
-      title = textOutput(ns('spec_rich_title')),
+      # title = textOutput(ns('spec_rich_title')),
+      title = modal_UI(ns('spec_rich_title'),'Riqueza de especies'),
       value = textOutput(ns('spec_rich')),
       showcase = fontawesome::fa_i("fish-fins")
     ),
@@ -32,7 +33,8 @@ mod_01_multiEsp_ui <- function(id){
       # min_width = "300px",
       theme = 'text-teal',
       # min_height = '150px',
-      title = textOutput(ns('spec_div_title')),
+      # title = textOutput(ns('spec_div_title')),
+      title = modal_UI(ns('spec_div_title'),'Diversidad de especies (Índice de Shannon)'),
       value = textOutput(ns('spec_div')),
       showcase = fontawesome::fa_i("heading")
     ),
@@ -42,7 +44,8 @@ mod_01_multiEsp_ui <- function(id){
       # min_width = "300px",
       # min_height = '150px',
       theme = 'text-blue',
-      title = textOutput(ns('spec_eq_title')),
+      # title = textOutput(ns('spec_eq_title')),
+      title = modal_UI(ns('spec_eq_title'),'Equitabilidad de especies'),
       value = textOutput(ns('spec_eq')),
       showcase = fontawesome::fa_i("scale-balanced")
       # p(textOutput(ns('nombres_comunidades')))
@@ -78,7 +81,8 @@ mod_01_multiEsp_ui <- function(id){
           bslib::card(
             fill = T,
             full_screen = TRUE,
-            bslib::card_header(textOutput(ns('plot_cpue_total_title'))),
+            # bslib::card_header(textOutput(ns('plot_cpue_total_title'))),
+            bslib::card_header(modal_UI(ns('plot_cpue_total_title'),'Tendencia de capturas por unidad de esfuerzo')),
             bslib::card_body(plotOutput(ns('plot_cpue_total'))),
             bslib::card_footer(textOutput(ns('plot_cpue_total_desc')))
           )
@@ -97,7 +101,8 @@ mod_01_multiEsp_ui <- function(id){
           bslib::card(
             fill = T,
             full_screen = TRUE,
-            bslib::card_header(textOutput(ns('plot_bdens_title'))),
+            # bslib::card_header(textOutput(ns('plot_bdens_title'))),
+            bslib::card_header(modal_UI(ns('plot_bdens_title'),'Espectro de densidad de biomasa normalizada')),
             bslib::card_body(plotOutput(ns('plot_bdens'))),
             bslib::card_footer(textOutput(ns('plot_bdens_desc')))
           )
@@ -116,7 +121,8 @@ mod_01_multiEsp_ui <- function(id){
           bslib::card(
             fill = T, 
             full_screen = TRUE,
-            bslib::card_header(textOutput(ns('plot_lfq_title'))),
+            # bslib::card_header(textOutput(ns('plot_lfq_title'))),
+            bslib::card_header(modal_UI(ns('plot_lfq_title'),'Frecuencias de tallas por arte y nivel trófico')),
             bslib::card_body(plotOutput(ns('plot_lfq')))
           )
         ),
@@ -129,7 +135,8 @@ mod_01_multiEsp_ui <- function(id){
             fill = T,
             full_screen = TRUE,
             # bslib::card_header('Estacionalidad de capturas'),
-            bslib::card_header(textOutput(ns('plot_top10_dev_title'))),
+            # bslib::card_header(textOutput(ns('plot_top10_dev_title'))),
+            bslib::card_header(modal_UI(ns('plot_top10_dev_title'),'Peso capturado por especie con respecto a la media (las 10 especies más capturadas)')),
             bslib::card_body(plotOutput(ns('plot_top10_dev')))
           )
         )
@@ -171,11 +178,10 @@ mod_01_multiEsp_server <- function(id, lang, region){
       year_max = input$sampleyear[2],
       lang = lang()
     ))
-    output$plot_cpue_total_title <- renderText(ifelse(
-      lang() == 'ES',
-      'Tendencia de capturas por unidad de esfuerzo',
-      'Trend of catch per unit effort CPUE Trend'
-    ))
+    modal_Server('plot_cpue_total_title',lang,
+                 plot_title=c('Tendencia de capturas por unidad de esfuerzo','Trend of catch per unit effort CPUE Trend'),
+                 plot_info=c("Información sobre el gráfico","Information about the plot"))
+    
     output$plot_cpue_total_desc <- renderText(cpue()$cpue_desc)
     output$plot_cpue_total <- renderPlot(cpue()$cpue_plot)
     
@@ -186,25 +192,21 @@ mod_01_multiEsp_server <- function(id, lang, region){
       input$sampleyear[2]
     ))
     # Species richness
-    output$spec_rich_title <- renderText(ifelse(
-      lang() == 'ES',
-      'Riqueza de especies',
-      'Species Richness'
-    ))
+    modal_Server('spec_rich_title',lang,
+                 plot_title=c('Riqueza de especies','Species Richness'),
+                 plot_info=c("Información sobre el gráfico","Information about the plot"))
+    
     output$spec_rich <- renderText(di()$rich)
     # Species diversity
-    output$spec_div_title <- renderText(ifelse(
-      lang() == 'ES',
-      'Diversidad de especies (Índice de Shannon)',
-      'Species Diversity (Shannon Index)'
-    ))
+    modal_Server('spec_div_title',lang,
+                 plot_title=c('Diversidad de especies (Índice de Shannon)','Species Diversity (Shannon Index)'),
+                 plot_info=c("Información sobre el gráfico","Information about the plot"))
     output$spec_div <- renderText(di()$shannon)
+    
     # Species equitability
-    output$spec_eq_title <- renderText(ifelse(
-      lang() == 'ES',
-      'Equitabilidad de especies',
-      'Species Equitability'
-    ))
+    modal_Server('spec_eq_title',lang,
+                 plot_title=c('Equitabilidad de especies','Species Equitability'),
+                 plot_info=c("Información sobre el gráfico","Information about the plot"))
     output$spec_eq <- renderText(di()$eq)
     
     # Biomass density spectrum plot
@@ -214,20 +216,16 @@ mod_01_multiEsp_server <- function(id, lang, region){
       year_max = input$sampleyear[2],
       lang = lang()
     ))
-    output$plot_bdens_title <- renderText(ifelse(
-      lang() == 'ES',
-      'Espectro de densidad de biomasa normalizada',
-      'Normalized biomass density spectrum'
-    ))
+    modal_Server('plot_bdens_title',lang,
+                 plot_title=c('Espectro de densidad de biomasa normalizada','Normalized biomass density spectrum'),
+                 plot_info=c("Información sobre el gráfico","Information about the plot"))
     output$plot_bdens_desc <- renderText(bd()$bd_desc)
     output$plot_bdens <- renderPlot(bd()$bd_plot)
     
     # Length-frequency per gear and trophic level plot
-    output$plot_lfq_title <- renderText(ifelse(
-      lang() == 'ES',
-      'Frecuencias de tallas por arte y nivel trófico',
-      'Size Class Frequencies by Technique and Trophic Level'
-    ))
+    modal_Server('plot_lfq_title',lang,
+                 plot_title=c('Frecuencias de tallas por arte y nivel trófico','Size Class Frequencies by Technique and Trophic Level'),
+                 plot_info=c("Información sobre el gráfico","Information about the plot"))
     output$plot_lfq <- renderPlot(ms_lfq_plot(
       lfqdb = lfqdbase,
       year_min = input$sampleyear[1],
@@ -236,11 +234,10 @@ mod_01_multiEsp_server <- function(id, lang, region){
     ))
     
     # Top-10 species captured as deviances plot 
-    output$plot_top10_dev_title <- renderText(ifelse(
-      lang() == 'ES',
-      'Peso capturado por especie con respecto a la media (las 10 especies más capturadas)',
-      'Captured weight by species relative to mean (10-most caught species)'
-    ))
+    modal_Server('plot_top10_dev_title',lang,
+                 plot_title=c('Peso capturado por especie con respecto a la media (las 10 especies más capturadas)',
+                              'Captured weight by species relative to mean (10-most caught species)'),
+                 plot_info=c("Información sobre el gráfico","Information about the plot"))
     output$plot_top10_dev <- renderPlot(ms_top10_plot(
       lfqdb = lfqdbase,
       year_min = input$sampleyear[1],
