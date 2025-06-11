@@ -19,6 +19,12 @@ app_server <- function(input, output, session) {
   # Make reactive form of language toggle; pass this pre-resolved reactive form into modules.
   lang_r = reactive(input$lang)
   
+  # Because modals get summoned into a broader scope than the module that spawned them,
+  # we need to close them at this level.
+  observeEvent(input$close_modal_btn, {
+    shiny::removeModal()
+  })
+  
   mod_01_multiEsp_server('multiEsp', lang = lang_r, region='Bahia de Tela')
   mod_02_porEsp_server('porEsp', lang = lang_r, region='Bahia de Tela')
   mod_03_datGen_server("datGen", lang = lang_r, region = 'Bahia de Tela')

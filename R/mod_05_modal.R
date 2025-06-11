@@ -12,7 +12,7 @@ modal_UI <- function(id,default_title) {
   tagList(
   div(
     div(shiny::textOutput(ns('plot_label')), class = "shiny-text-output shiny-bound-output"),
-    actionButton(ns('modal_hook'),label = '?', class = 'modal-hook'),
+    actionButton(ns('modal_hook'),label = shiny::icon("info"), class = 'modal-hook'),
     style = 'display:ruby;'
   ),
   tags$script(
@@ -38,14 +38,16 @@ modal_Server <- function(id, lang, plot_title, plot_info) {
   moduleServer(
     id,
     function(input, output, session) {
-      
+      ns <- NS(id)
       p_title = reactive({
+        # print(lang())
         ifelse(
           lang() == 'ES',plot_title[1],plot_title[2]
         )
       })
       
       p_info = reactive({
+        # print(lang())
         ifelse(
           lang() == 'ES',plot_info[1],plot_info[2]
         )
@@ -56,14 +58,23 @@ modal_Server <- function(id, lang, plot_title, plot_info) {
       
       # Create and show modal dialogue window 
       observeEvent(input$modal_hook, {
+        # print("Triggered new modal")
+        # If there's a modal already visible on the page, remove it.
+        shiny::removeModal()
+        # Create and render shiny Modal window.
         showModal(
           modalDialog(
-            title = p_title(), 
+            title = p_title(),
             easyClose = TRUE,
-            p_info()
+            p_info(),
+            footer = tagList(
+              actionButton("close_modal_btn",ifelse(lang() == "ES", "Cerrar","Close"))
+            )
           )
         )
       })
+      
+      
     }
   )
 }

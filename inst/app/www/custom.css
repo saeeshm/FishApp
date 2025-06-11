@@ -119,6 +119,7 @@ body {
   justify-content: center;
   align-content: center;
   flex-wrap: wrap;
+  color: darkgrey;
 }
 
 .modal-hook:hover {
