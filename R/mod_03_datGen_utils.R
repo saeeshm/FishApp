@@ -50,7 +50,8 @@ dg_plot_por_arte <- function(dbase, year_min, year_max){
     # coord_polar(start=0) +
     ggplot2::scale_y_discrete(drop = FALSE) +
     ggplot2::scale_x_continuous(expand = c(0, 2)) +
-    ggplot2::scale_fill_discrete(drop=FALSE) +
+    # ggplot2::scale_fill_discrete(drop=FALSE) +
+    coral_colours_fill +
     qtheme() +
     ggplot2::guides('fill' = 'none') +
     ggplot2::labs(
@@ -84,11 +85,13 @@ dg_plot_esp_comunes <- function(dbase, year_min, year_max, lang){
     # Factorizing species name in the descending order of weight
     _[, nombre_cientifico := factor(nombre_cientifico, levels=nombre_cientifico)] |>
     # Plotting
-    ggplot2::ggplot(ggplot2::aes(y = nombre_cientifico, x=peso, fill=nombre_cientifico)) +
+    ggplot2::ggplot(ggplot2::aes(y = nombre_cientifico, x=peso, fill=nombre_cientifico, col=nombre_cientifico)) +
     ggplot2::geom_col(position='dodge', alpha=0.8, colour='black') +
     ggplot2::scale_y_discrete(drop = FALSE) +
     ggplot2::scale_x_continuous(expand = c(0, 2)) +
-    ggplot2::scale_fill_brewer(palette = 'Paired') +
+    # ggplot2::scale_fill_brewer(palette = 'Paired') +
+    coral_colours_fill +
+    coral_colours_outline + 
     qtheme() +
     ggplot2::guides('fill' = 'none') +
     ggplot2::labs(
@@ -139,6 +142,7 @@ dg_plot_artes <- function(dbase, year_min, year_max, lang){
       axis.minor.ticks.length = unit(0, "pt"), 
       panel.border = NULL
     ) +
+    coral_colours_fill +
     ggplot2::labs(
       y = NULL,
       fill=ifelse(lang() == 'ES','Arte','Technique')
@@ -166,7 +170,8 @@ dg_plot_peso <- function(dbase, year_min, year_max, lang){
     ggplot2::geom_col(position='dodge', alpha=0.8, colour='black') +
     ggplot2::scale_y_discrete(drop = FALSE) +
     ggplot2::scale_x_continuous(expand = c(0, 2)) +
-    ggplot2::scale_fill_discrete(drop=FALSE) +
+    # ggplot2::scale_fill_discrete(drop=FALSE) +
+    coral_colours_fill +
     ggplot2::facet_wrap('comunidad', ncol=1) +
     qtheme() +
     ggplot2::guides('fill' = 'none') +
@@ -195,10 +200,13 @@ dg_plot_ssn <- function(dbase, year_min, year_max, lang){
     _[, .(peso = sum(peso, na.rm=T)/1000), by=.(month, comunidad)] |> 
     ggplot2::ggplot(ggplot2::aes(x = month, y=peso, colour=comunidad, group=comunidad)) +
     # ggplot2::geom_col(position='dodge', alpha=0.8, colour='black') +
-    ggplot2::geom_line(alpha=0.6, show.legend = F) +
+    # ggplot2::geom_line(alpha=0.6, show.legend = F) +
+    ggplot2::geom_line(show.legend = F, linewidth = 1) +
     ggplot2::geom_point(alpha=0.8, show.legend = F) +
     ggplot2::scale_x_discrete(drop = FALSE) +
-    ggplot2::scale_fill_discrete(drop=FALSE) +
+    # ggplot2::scale_fill_discrete(drop=FALSE) +
+    coral_colours_fill +
+    coral_colours_outline + 
     ggplot2::facet_wrap('comunidad', ncol=1) +
     qtheme() +
     ggplot2::labs(

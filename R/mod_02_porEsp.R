@@ -14,89 +14,81 @@ mod_02_porEsp_ui <- function(id){
   
   # Preparing UI objects ----------
   
-  # Creating a list of value boxes for summary statistics
-  vbs <- list(
-    # Total number captured
-    bslib::value_box(
-      # fill=F,
-      min_width = "300px",
-      # min_height = '150px',
-      theme='text-indigo',
-      # title = textOutput(ns('num_capturado_title')),
-      title = modal_UI(ns('num_capturado_title'),'Número de pescas capturadas'),
-      value = textOutput(ns('num_capturado')),
-      showcase = fontawesome::fa_i("pen-to-square")
-    ),
-    # Total weight captured
-    bslib::value_box(
-      # fill=F,
-      min_width = "300px",
-      theme = 'text-teal',
-      # min_height = '150px',
-      # title = textOutput(ns('peso_capturado_title')),
-      title = modal_UI(ns('peso_capturado_title'),'Peso capturado (kg)'),
-      value = textOutput(ns('peso_capturado')),
-      showcase = fontawesome::fa_i("scale-unbalanced")
-    ),
-    # Proportion of captures that are close to the length at maturity
-    bslib::value_box(
-      # fill=F,
-      min_width = "300px",
-      # min_height = '150px',
-      theme = 'text-orange',
-      # title = textOutput(ns('prop_capturas_matr_title')),
-      title = modal_UI(ns('prop_capturas_matr_title'),'Proporción de capturas cerca de la talla de madurez'),
-      value = textOutput(ns('prop_capturas_matr')),
-      showcase = fontawesome::fa_i("ruler")
-    ),
-    # Proportion of captures that are mega-spawners
-    bslib::value_box(
-      # fill=F,
-      min_width = "300px",
-      # min_height = '150px',
-      theme = 'text-blue',
-      # title = textOutput(ns('prop_capturas_mspawn_title')),
-      title = modal_UI(ns('prop_capturas_mspawn_title'),'Proporción de capturas que fueron mega-reproductadores'),
-      value = textOutput(ns('prop_capturas_mspawn')),
-      showcase = fontawesome::fa_i("fish-fins")
-      # p(textOutput(ns('nombres_comunidades')))
-    )
+  # Value boxes
+  num_capt_v_box = bslib::value_box(
+    min_width = "300px",
+    theme='text-indigo',
+    title = modal_UI(ns('num_capturado_title'),'Número de pescas capturadas',inline=FALSE),
+    value = textOutput(ns('num_capturado')),
+    showcase = fontawesome::fa_i("pen-to-square")
+  )
+  
+  # Total weight captured
+  peso_cap_v_box = bslib::value_box(
+    min_width = "300px",
+    theme = 'text-teal',
+    title = modal_UI(ns('peso_capturado_title'),'Peso capturado (kg)',inline=FALSE),
+    value = textOutput(ns('peso_capturado')),
+    showcase = fontawesome::fa_i("scale-unbalanced")
+  )
+  
+  # Proportion of captures that are close to the length at maturity
+  prop_capt_matr_v_box = bslib::value_box(
+    min_width = "300px",
+    # min_height = '150px',
+    theme = 'text-orange',
+    # title = textOutput(ns('prop_capturas_matr_title')),
+    title = modal_UI(ns('prop_capturas_matr_title'),'Proporción de capturas cerca de la talla de madurez',inline=FALSE),
+    value = textOutput(ns('prop_capturas_matr')),
+    showcase = fontawesome::fa_i("ruler")
+  )
+  
+  # Proportion of captures that are mega-spawners
+  prop_capt_mspawn_v_box = bslib::value_box(
+    min_width = "300px",
+    theme = 'text-blue',
+    title = modal_UI(ns('prop_capturas_mspawn_title'),'Proporción de capturas que fueron mega-reproductadores',inline=FALSE),
+    value = textOutput(ns('prop_capturas_mspawn')),
+    showcase = fontawesome::fa_i("fish-fins")
   )
   
   # UI Layout ----------
   
-  layout_sidebar(
-    # Inputs and descriptions in the sidebar
-    sidebar = sidebar(
-      position='left',
-      # Text output describing currently focused region
-      tags$h4(textOutput(ns('region_title'))),
-      textOutput(ns('region_desc')),
-      # Date-range input
-      tags$h4(textOutput(ns('sampleyear_title'))),
-      shinyWidgets::sliderTextInput(
-        ns('sampleyear'), 
-        label=NULL,
-        # Using only Month-year combos as valid input choices
-        choices=unique(year(na.omit(fishdbase$fecha))),
-        selected=range(year(na.omit(fishdbase$fecha)))
-      ),
-      # Fish species input
-      tags$h4(textOutput(ns('species_title'))),
-      shinyWidgets::pickerInput(
-        ns('species'), 
-        label = NULL, 
-        choices = stringr::str_to_title(spectab$nombre_comun_cln),
-        selected = 'Calale',
-        choicesOpt = list(
-          subtext = spectab$nombre_cientifico,
-          sep = ' '
-        ),
-        options = list(
-          `live-search` = TRUE,
-          `container` = 'body')
-      )
+  the_sidebar = sidebar(
+    position='left',
+    # Text output describing currently focused region
+    tags$h4(textOutput(ns('region_title'))),
+    textOutput(ns('region_desc')),
+    # Date-range input
+    tags$h4(textOutput(ns('sampleyear_title'))),
+    shinyWidgets::sliderTextInput(
+      ns('sampleyear'), 
+      label=NULL,
+      # Using only Month-year combos as valid input choices
+      choices=unique(year(na.omit(fishdbase$fecha))),
+      selected=range(year(na.omit(fishdbase$fecha)))
     ),
+    # Fish species input
+    tags$h4(textOutput(ns('species_title'))),
+    shinyWidgets::pickerInput(
+      ns('species'), 
+      label = NULL, 
+      choices = stringr::str_to_title(spectab$nombre_comun_cln),
+      selected = 'Calale',
+      choicesOpt = list(
+        subtext = spectab$nombre_cientifico,
+        sep = ' '
+      ),
+      options = list(
+        `live-search` = TRUE,
+        `container` = 'body')
+    )
+  )
+  
+  bslib::layout_sidebar(
+    fillable = T,
+    # Inputs and descriptions in the sidebar
+    sidebar = the_sidebar,
     # Main body
     bslib::layout_column_wrap(
       width = 1,
@@ -115,7 +107,6 @@ mod_02_porEsp_ui <- function(id){
           bslib::card(
             fill = T,
             full_screen = TRUE,
-            # bslib::card_header(textOutput(ns('plot_cpue_total_title'))),
             bslib::card_header(modal_UI(ns('plot_cpue_total_title'),'Tendencia de capturas por unidad de esfuerzo')),
             bslib::card_body(plotOutput(ns('plot_cpue_total'))),
             bslib::card_footer(textOutput(ns('plot_cpue_total_desc')))
@@ -125,13 +116,8 @@ mod_02_porEsp_ui <- function(id){
         bslib::layout_column_wrap(
           min_height='300px',
           max_height = '300px',
-          !!!vbs[1:2]
-        ),
-        # Column 3 - Lenth-indicators (Froese)
-        bslib::layout_column_wrap(
-          min_height='300px',
-          max_height = '300px',
-          !!!vbs[3:4]
+          prop_capt_matr_v_box,
+          prop_capt_mspawn_v_box
         )
       ),
       # Row 2 - supplementary plots
@@ -147,7 +133,6 @@ mod_02_porEsp_ui <- function(id){
           bslib::card(
             fill = T,
             full_screen = TRUE,
-            # bslib::card_header(textOutput(ns('plot_lfq_title'))),
             bslib::card_header(modal_UI(ns('plot_lfq_title'),'Frecuencias de tallas por arte')),
             bslib::card_body(plotOutput(ns('plot_lfq'))),
           )
@@ -161,7 +146,6 @@ mod_02_porEsp_ui <- function(id){
           bslib::card(
             fill = T,
             full_screen = TRUE,
-            # bslib::card_header(textOutput(ns('plot_cpue_pl_title'))),
             bslib::card_header(modal_UI(ns('plot_cpue_pl_title'),'Capturas por unidad de esfuerzo (por talla)')),
             bslib::card_body(plotOutput(ns('plot_cpue_pl')))
           ),
@@ -169,65 +153,18 @@ mod_02_porEsp_ui <- function(id){
           bslib::card(
             fill = T,
             full_screen = TRUE,
-            # bslib::card_header(textOutput(ns('plot_est_title'))),
             bslib::card_header(modal_UI(ns('plot_est_title'),'Estacionalidad de capturas')),
             bslib::card_body(plotOutput(ns('plot_est'))),
           )
         )
+      ),
+      bslib::layout_column_wrap(
+        min_height='300px',
+        max_height = '300px',
+        num_capt_v_box,
+        peso_cap_v_box
       )
     )
-    # Column-left: Distributions by gear
-    # layout_column_wrap(
-    #   width = 1/2,
-    #   # LFQ and CPUE plots by gear as a card tab
-    #   navset_card_tab(
-    #     full_screen = T,
-    #     nav_panel(
-    #       'LFQ',
-    #       bslib::card_header(
-    #         textOutput(ns("plot_lfq_title"))
-    #       ),
-    #       # "Frecuencias de tallas por arte"
-    #       bslib::card_body(plotOutput(ns('plot_lfq')))
-    #     ),
-    #     nav_panel(
-    #       'CPUE',
-    #       bslib::card_header(
-    #         textOutput(ns("plot_cpue_arte_title"))
-    #       ),
-    #       # "Capturas por unidad de esfuerzo por arte"
-    #       bslib::card_body(plotOutput(ns('plot_cpue_arte')))
-    #     ),
-    #   ),
-    #   # Column-right - half sized plots split into rows
-    #   layout_column_wrap(
-    #     width = 1,
-    #     plot_card(#'Estacionalidad de capturas', 
-    #       textOutput(ns("plot_est_title")),
-    #       plotOutput(ns('plot_est'))
-    #     ),
-    #     navset_card_tab(
-    #       full_screen = T,
-    #       nav_panel(
-    #         'CPUE (Total)',
-    #         bslib::card_header(
-    #           textOutput(ns("plot_cpue_total_title"))
-    #           ),
-    #           # "Capturas por unidad de esfuerzo (total)"),
-    #           bslib::card_body(plotOutput(ns('plot_cpue_total')))
-    #       ),
-    #       nav_panel(
-    #         # 'CPUE (Longitud),'
-    #         textOutput(ns('cpue_long_title')),
-    #         bslib::card_header(
-    #           textOutput(ns("plot_cpue_pl_title"))
-    #           ),
-    #           # "Capturas por unidad de esfuerzo (por clase de talla)"),
-    #           bslib::card_body(plotOutput(ns('plot_cpue_pl')))
-    #       )
-    #     )
-    #   )
-    # )
   )
 }
     

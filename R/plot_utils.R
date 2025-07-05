@@ -16,3 +16,19 @@ qtheme <- function(size=24, family='Inter'){
       axis.text = element_text(size=rel(0.9))
     )
 }
+
+coral_colours = rep(c("#3ebbed","#f69a94","#eddfca","#90d6e5",
+    "#00afa4","#0d659a","#a8426e"),2)
+
+coral_colours_fill = ggplot2::scale_fill_manual(
+  values = coral_colours
+)
+
+coral_colours_outline = ggplot2::scale_color_manual(
+  values = coral_colours
+)
+
+# Additional options
+#ffb48f (peachy coral)
+#d98677 (muted clay rose)
+#c2e1dc (soft minty teal)

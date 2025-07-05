@@ -7,13 +7,13 @@
 #' @noRd 
 #'
 #' @importFrom shiny NS tagList 
-modal_UI <- function(id,default_title) {
+modal_UI <- function(id,default_title,inline = TRUE) {
   ns <- NS(id)
   tagList(
   div(
     div(shiny::textOutput(ns('plot_label')), class = "shiny-text-output shiny-bound-output"),
     actionButton(ns('modal_hook'),label = shiny::icon("info"), class = 'modal-hook'),
-    style = 'display:ruby;'
+    style = ifelse(inline,'display:ruby;','')
   ),
   tags$script(
     shiny::HTML(paste0("
