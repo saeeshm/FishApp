@@ -113,11 +113,14 @@ mod_02_porEsp_ui <- function(id){
           )
         ),
         # Column 2 - Weight and number boxes
-        bslib::layout_column_wrap(
-          min_height='300px',
-          max_height = '300px',
-          prop_capt_matr_v_box,
-          prop_capt_mspawn_v_box
+        bslib::card(
+          bslib::card_header("Indicadores de monitoreo"),
+          bslib::layout_column_wrap(
+            min_height='300px',
+            max_height = '300px',
+            prop_capt_matr_v_box,
+            prop_capt_mspawn_v_box
+          )
         )
       ),
       # Row 2 - supplementary plots
