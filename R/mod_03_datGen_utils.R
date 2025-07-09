@@ -9,6 +9,12 @@
 
 # ==== Functions ====
 
+# A spanish version of the month.abb vector
+month.abb.esp <- c(
+  'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
+  'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'
+)
+
 # Getting summary statistics for the current year period
 dg_summ_stats <- function(dbase, year_min, year_max){
   # Filtering the data for the requested year range
@@ -181,7 +187,8 @@ dg_plot_peso <- function(dbase, year_min, year_max, lang){
 dg_plot_ssn <- function(dbase, year_min, year_max, lang){
   # Filtering the data for the requested year range
   plotdf <- dbase[(year(fecha) >= year_min) & (year(fecha) < year_max), ]
-  
+  # Getting the correct month reference vector
+  mref_vec <- if(lang == 'ES') month.abb.esp else (month.abb)
   # Plotting total weight by commmunity and gear
   plotdf |> 
     # Removing any data not associated with a community
@@ -190,7 +197,7 @@ dg_plot_ssn <- function(dbase, year_min, year_max, lang){
     _[, month := lubridate::month(fecha)] |> 
     _[, `:=`(
       comunidad = factor(comunidad, levels=unique(comunidad)),
-      month = factor(month.abb[month], levels=month.abb)
+      month = factor(mref_vec[month], levels=mref_vec)
     )] |> 
     _[, .(peso = sum(peso, na.rm=T)/1000), by=.(month, comunidad)] |> 
     ggplot2::ggplot(ggplot2::aes(x = month, y=peso, colour=comunidad, group=comunidad)) +

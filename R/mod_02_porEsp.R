@@ -19,9 +19,10 @@ mod_02_porEsp_ui <- function(id){
     # Total number captured
     bslib::value_box(
       # fill=F,
-      min_width = "300px",
-      # min_height = '150px',
+      # min_width = "300px",
+      min_height = '100px',
       theme='text-indigo',
+      class = 'vb-no-pad',
       # title = textOutput(ns('num_capturado_title')),
       title = modal_UI(ns('num_capturado_title'),'Número de pescas capturadas'),
       value = textOutput(ns('num_capturado')),
@@ -30,9 +31,10 @@ mod_02_porEsp_ui <- function(id){
     # Total weight captured
     bslib::value_box(
       # fill=F,
-      min_width = "300px",
+      # min_width = "300px",
       theme = 'text-teal',
-      # min_height = '150px',
+      min_height = '100px',
+      class = 'vb-no-pad',
       # title = textOutput(ns('peso_capturado_title')),
       title = modal_UI(ns('peso_capturado_title'),'Peso capturado (kg)'),
       value = textOutput(ns('peso_capturado')),
@@ -41,20 +43,35 @@ mod_02_porEsp_ui <- function(id){
     # Proportion of captures that are close to the length at maturity
     bslib::value_box(
       # fill=F,
-      min_width = "300px",
-      # min_height = '150px',
+      # min_width = "300px",
+      min_height = '100px',
       theme = 'text-orange',
+      class = 'vb-no-pad',
       # title = textOutput(ns('prop_capturas_matr_title')),
       title = modal_UI(ns('prop_capturas_matr_title'),'Proporción de capturas cerca de la talla de madurez'),
       value = textOutput(ns('prop_capturas_matr')),
       showcase = fontawesome::fa_i("ruler")
     ),
+    # Proportion of captures that were immature
+    bslib::value_box(
+      # fill=F,
+      # min_width = "300px",
+      min_height = '100px',
+      theme = 'text-pink',
+      class = 'vb-no-pad',
+      # title = textOutput(ns('prop_capturas_matr_title')),
+      title = modal_UI(ns('prop_capturas_immat_title'),'Proporción de capturas inmaduras'),
+      value = textOutput(ns('prop_capturas_immat')),
+      showcase = fontawesome::fa_i("ruler")
+    ),
+    
     # Proportion of captures that are mega-spawners
     bslib::value_box(
       # fill=F,
-      min_width = "300px",
-      # min_height = '150px',
+      # min_width = "300px",
+      min_height = '100px',
       theme = 'text-blue',
+      class = 'vb-no-pad',
       # title = textOutput(ns('prop_capturas_mspawn_title')),
       title = modal_UI(ns('prop_capturas_mspawn_title'),'Proporción de capturas que fueron mega-reproductadores'),
       value = textOutput(ns('prop_capturas_mspawn')),
@@ -105,16 +122,20 @@ mod_02_porEsp_ui <- function(id){
       # Row 1 - 3-column box layout
       bslib::layout_column_wrap(
         # width = 1/3,
-        width = '300px',
+        width = '400px',
+        # style = css(grid_template_columns = "2.5fr 1.75fr 1.75fr"),
+        style = css(grid_template_columns = "repeat(auto-fill, minmax(400px, 30%))"),
         fixed_width=F,
         # Column 1 - CPUE plot card
         bslib::layout_column_wrap(
+          width = '400px',
           min_height='300px',
-          max_height = '300px',
+          max_height = '450px',
           fill=T,
           bslib::card(
             fill = T,
             full_screen = TRUE,
+            min_width='400px',
             # bslib::card_header(textOutput(ns('plot_cpue_total_title'))),
             bslib::card_header(modal_UI(ns('plot_cpue_total_title'),'Tendencia de capturas por unidad de esfuerzo')),
             bslib::card_body(plotOutput(ns('plot_cpue_total'))),
@@ -123,15 +144,37 @@ mod_02_porEsp_ui <- function(id){
         ),
         # Column 2 - Weight and number boxes
         bslib::layout_column_wrap(
+          width='250px',
           min_height='300px',
-          max_height = '300px',
-          !!!vbs[1:2]
+          max_height = '450px',
+          bslib::card(
+            fill = T,
+            full_screen = TRUE,
+            min_width='250px',
+            # bslib::card_header(textOutput(ns('plot_bdens_title'))),
+            bslib::card_header('test'),
+            bslib::card_body(
+              padding = '0.1rem',
+              !!!vbs[3:5]
+            )
+          )
         ),
         # Column 3 - Lenth-indicators (Froese)
         bslib::layout_column_wrap(
+          width='250px',
           min_height='300px',
-          max_height = '300px',
-          !!!vbs[3:4]
+          max_height = '450px',
+          bslib::card(
+            fill = T,
+            full_screen = TRUE,
+            min_width='250px',
+            # bslib::card_header(textOutput(ns('plot_bdens_title'))),
+            bslib::card_header('test'),
+            bslib::card_body(
+              padding = '0.1rem',
+              !!!vbs[1:2]
+            )
+          )
         )
       ),
       # Row 2 - supplementary plots
@@ -266,6 +309,9 @@ mod_02_porEsp_server <- function(id, lang, region){
     modal_Server('prop_capturas_matr_title',lang,
                  plot_title = c("Proporción de capturas cerca de la talla de madurez","Proportion of captures near the length at maturity"),
                  plot_info = c("Información sobre el gráfico","Information about the plot"))
+    modal_Server('prop_capturas_immat_title',lang,
+                 plot_title = c("Proporción de capturas inmaduras","Proportion of captures that were immature"),
+                 plot_info = c("Información sobre el gráfico","Information about the plot"))
     modal_Server('prop_capturas_mspawn_title',lang,
                  plot_title = c("Proporción de capturas que fueron mega-reproductadores","Proportion of captures that were mega-spawners"),
                  plot_info = c("Información sobre el gráfico","Information about the plot"))
@@ -273,6 +319,7 @@ mod_02_porEsp_server <- function(id, lang, region){
     output$num_capturado <- renderText(ss()$num_capturado)
     output$peso_capturado <- renderText(ss()$peso_capturado)
     output$prop_capturas_matr <- renderText(ss()$prop_capturas_matr)
+    output$prop_capturas_immat <- renderText(ss()$prop_capturas_immat)
     output$prop_capturas_mspawn <- renderText(ss()$prop_capturas_mspawn)
 
     # CPUE Trend card

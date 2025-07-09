@@ -10,6 +10,14 @@
 
 # ==== Functions ====
 
+# Reference objects ----------
+
+# A spanish version of the month.abb vector
+month.abb.esp <- c(
+  'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
+  'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'
+)
+
 # Data filtering ----------
 
 # Creating a plotting dataset by filtering for the provided species
@@ -81,6 +89,16 @@ ss_summ_stats <- function(fishdbase, lfqdbase, year_min, year_max, currspec){
     )] |> 
     unlist()
   
+  # Proportion of captured lengths that were immagure (below maturity range)
+  prop_immat <- curr_lfqdb |>
+    # Filtering for lengths below the maturity range
+    _[long_bin < froese$mat_range[1], ] |>
+    # Summarizing the proportion of captures in this range
+    _[, .(
+      prop_immat = (sum(adjCount, na.rm=T)/sum(curr_lfqdb$adjCount, na.rm=T)) * 100
+    )] |>
+    unlist()
+  
   # Proportion of captures within the optimal length range
   # prop_opt <- curr_lfqdb |> 
   #   # Filtering for lengths within the optimal range
@@ -109,6 +127,8 @@ ss_summ_stats <- function(fishdbase, lfqdbase, year_min, year_max, currspec){
     peso_capturado = round(sum(curr_lfqdb$adjWt, na.rm = T), 0),
     # Proportion of captures within the maturity range
     prop_capturas_matr = paste(round(prop_mat, 2), '%'),
+    # Proportion of captures that were immature (below maturity range)
+    prop_capturas_immat = paste(round(prop_immat, 2), '%'),
     # Proportion of captures that were mega-spawners
     prop_capturas_mspawn = paste(round(prop_mspawn, 2), '%'),
     # All froese indicators for reference
@@ -116,7 +136,7 @@ ss_summ_stats <- function(fishdbase, lfqdbase, year_min, year_max, currspec){
   )
 }
 
-# CPUE plots ----------
+# Plots ----------
 
 # Overall CPUE trend
 ss_cpue_trend_total <- function(lfqdbase, year_min, year_max, currspec, lang){
@@ -288,10 +308,12 @@ ss_lfq_plot <- function(lfqdbase, year_min, year_max, currspec, froese, lang){
 ss_plot_ssn <- function(lfqdbase, year_min, year_max, currspec, lang){
   # Getting plotting data
   plotdf <- make_plotdf(lfqdbase, year_min, year_max, currspec)
+  # Getting the correct month reference vector
+  mref_vec <- if(lang == 'ES') month.abb.esp else (month.abb)
   # Plotting
   plotdf |> 
     _[, month := lubridate::month(fecha)] |> 
-    _[, month := factor(month.abb[month], levels=month.abb)] |> 
+    _[, month := factor(mref_vec[month], levels=mref_vec)] |> 
     ggplot2::ggplot(ggplot2::aes(x = month,y = adjWt,)) +
     # ggplot2::geom_col(fill = '#008080', alpha=0.9) +
     ggplot2::geom_col(fill = 'darkorange', alpha=0.8) +

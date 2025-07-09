@@ -205,7 +205,7 @@ mod_01_multiEsp_server <- function(id, lang, region){
     
     # Species equitability
     modal_Server('spec_eq_title',lang,
-                 plot_title=c('Equitabilidad de especies','Species Equitability'),
+                 plot_title=c('Equitatividad de especies','Species Equitability'),
                  plot_info=c("Información sobre el gráfico","Information about the plot"))
     output$spec_eq <- renderText(di()$eq)
     
