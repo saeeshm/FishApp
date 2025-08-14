@@ -16,23 +16,24 @@ app_ui <- function(request) {
         bootswatch = "cerulean",
         bg = "#fff",
         fg = "#000000",
-        primary = "#0093d7",
-        secondary = "#f0f0f0",
-        info = '#0b639a',
-        success = "#bfdc5d",
-        warning = '#ffb43c',
-        danger = '#fc7a64',
+        primary = "#3ebbed",
+        secondary = "#eddfca",
+        info = '#90d6e5',
+        success = "#00afa4",
+        warning = '#f69a94',
+        danger = '#a8426e',
         base_font = font_google("Inter"),
         code_font = font_google("JetBrains Mono"),
         heading_font = font_google("Poppins"),
         # Further customizations
         # 'body-font-family' = font_google('Inter'),
         # Navbar background hill
-        navbar_bg = "#0093d7",
+        navbar_bg = "#3ebbed",
         # NAvbar text colour
         navbar_light_contrast="#fff",
         "bslib_spacer" = "0.75rem" # Squeeze out a bit of space between cards
       ),
+      # Coral Logo and app header
       title=tags$div(
         style='display:inline-flex;',
         tags$div(
@@ -55,7 +56,7 @@ app_ui <- function(request) {
         )
       ),
       id='main-page',
-      # Per-species indicators
+      # About us page
       nav_panel(
         title = shiny::uiOutput('desc_title'),
         shiny::uiOutput('desc_ui')

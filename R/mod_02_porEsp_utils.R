@@ -154,34 +154,71 @@ ss_cpue_trend_total <- function(lfqdbase, year_min, year_max, currspec, lang){
   
   # Fitting time-trend linear model
   modDat <- cpueDat |> 
+    setkey(fecha2) |>
     _[, `:=`(
       fecha2_days = difftime(fecha2, fecha2[1], units='days')
     )]
   lm_cpue <- lm(cpue ~ fecha2_days, data=modDat)
   # Extract the slope estimate and confidence interval (in per year units)
   slope_estimate <- round(coef(lm_cpue)[2]*365, 3)
-  conf_interval <- round(confint(lm_cpue)[2, ]*365, 3)
-  # Making description text
-  cpue_desc <- paste(
-    ifelse(lang == 'ES','Tendencia:','Trend:'),
-    paste0(
-      slope_estimate, 
-      ' (', 
-      conf_interval[1], 
-      ', ', 
-      conf_interval[2], 
-      ')',
-      ifelse(lang == 'ES',' kg/año',' kg/year')
-    )
+  ci <- round(confint(lm_cpue)[2, ]*365, 2)
+  if(all(is.nan(ci))){
+    # If the confidence interval is NaN (i.e not enough data in a given year),
+    # set it to NA
+    ci <- c(NA, NA)
+    signif <- F
+  }else{
+    # Is it significant?
+    signif <- !((ci[1] <= 0) & (ci[2] >= 0))
+  }
+  
+  # Calculating average CPUE for this time period
+  avg_cpue <- round(mean(cpueDat$cpue, na.rm=T), 2)
+  
+  # Making description texts (adding markdown emphasis formatting) ----------
+  
+  # Colour choice for trend based on significance
+  if(!signif){
+    trend_col <- '#eddfca' # light-green for non-significant trends
+  } else if(slope_estimate < 0){
+    trend_col <- '#B22222' # Red for significant negative trends
+  }else{
+    trend_col <- '#006400' # Green for significant positive trends
+  }
+  
+  # Trend description
+  cpue_trend_desc <- p(
+    strong(ifelse(lang == 'ES','Tendencia de CPUE: ','CPUE Trend: ')),
+    em(
+      paste0(slope_estimate, ' (', ci[1], ', ', ci[2], ') '), 
+      style = paste0('color: ', trend_col),
+    ),
+    ifelse(lang == 'ES',' kg/año',' kg/year')
   )
   
+  # Mean description
+  cpue_mean_desc <- p(
+    strong(ifelse(lang == 'ES','Media de CPUE: ','Mean CPUE: ')),
+    em(avg_cpue, style = 'color: #3ebbed'),
+    ifelse(lang == 'ES',' kg/dia',' kg/day')
+  )
+  
+  # Plotting ----------
+  
   # Plotting overall cpue trend
-  ov_cpue_plot <- cpueDat |> 
+  cpue_plot <- cpueDat |> 
     ggplot2:: ggplot(ggplot2::aes(x = fecha2, y=cpue)) +
     ggplot2::geom_point(alpha=0.4, show.legend = F) +
     ggplot2::geom_line(alpha=0.8, show.legend = F) +
-    # ggplot2::scale_y_continuous(limits = c(0, 5)) +
-    ggplot2::geom_smooth(method='lm', colour='#00AFA4', fill='#00AFA410', linewidth=0.6) +
+    # Adding trendline
+    ggplot2::geom_smooth(method='lm', colour=trend_col, fill=trend_col, alpha=0.4, linewidth=1.1) +
+    # Adding average reference line
+    ggplot2::geom_hline(
+      yintercept = avg_cpue, 
+      colour='#3ebbed', 
+      linewidth=1.1, 
+      linetype='dashed'
+    ) +
     # ggpmisc::stat_poly_eq(use_label(c("P", "R2"))) +
     qtheme() +
     ggplot2::labs(
@@ -190,8 +227,9 @@ ss_cpue_trend_total <- function(lfqdbase, year_min, year_max, currspec, lang){
     )
   # Returning all items as a list
   list(
-    'cpue_desc' = cpue_desc,
-    'plot' = ov_cpue_plot
+    'cpue_plot' = cpue_plot,
+    'cpue_trend_desc' = cpue_trend_desc,
+    'cpue_mean_desc' = cpue_mean_desc
   )
 }
 

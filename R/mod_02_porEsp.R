@@ -18,48 +18,32 @@ mod_02_porEsp_ui <- function(id){
   vbs <- list(
     # Total number captured
     bslib::value_box(
-      # fill=F,
-      # min_width = "300px",
-      min_height = '100px',
       theme='text-indigo',
       class = 'vb-no-pad',
-      # title = textOutput(ns('num_capturado_title')),
       title = modal_UI(ns('num_capturado_title'),'Número de pescas capturadas'),
       value = textOutput(ns('num_capturado')),
       showcase = fontawesome::fa_i("pen-to-square")
     ),
     # Total weight captured
     bslib::value_box(
-      # fill=F,
-      # min_width = "300px",
       theme = 'text-teal',
-      min_height = '100px',
       class = 'vb-no-pad',
-      # title = textOutput(ns('peso_capturado_title')),
       title = modal_UI(ns('peso_capturado_title'),'Peso capturado (kg)'),
       value = textOutput(ns('peso_capturado')),
       showcase = fontawesome::fa_i("scale-unbalanced")
     ),
     # Proportion of captures that are close to the length at maturity
     bslib::value_box(
-      # fill=F,
-      # min_width = "300px",
-      min_height = '100px',
       theme = 'text-orange',
       class = 'vb-no-pad',
-      # title = textOutput(ns('prop_capturas_matr_title')),
       title = modal_UI(ns('prop_capturas_matr_title'),'Proporción de capturas cerca de la talla de madurez'),
       value = textOutput(ns('prop_capturas_matr')),
       showcase = fontawesome::fa_i("ruler")
     ),
     # Proportion of captures that were immature
     bslib::value_box(
-      # fill=F,
-      # min_width = "300px",
-      min_height = '100px',
       theme = 'text-pink',
       class = 'vb-no-pad',
-      # title = textOutput(ns('prop_capturas_matr_title')),
       title = modal_UI(ns('prop_capturas_immat_title'),'Proporción de capturas inmaduras'),
       value = textOutput(ns('prop_capturas_immat')),
       showcase = fontawesome::fa_i("ruler")
@@ -67,16 +51,11 @@ mod_02_porEsp_ui <- function(id){
     
     # Proportion of captures that are mega-spawners
     bslib::value_box(
-      # fill=F,
-      # min_width = "300px",
-      min_height = '100px',
       theme = 'text-blue',
       class = 'vb-no-pad',
-      # title = textOutput(ns('prop_capturas_mspawn_title')),
       title = modal_UI(ns('prop_capturas_mspawn_title'),'Proporción de capturas que fueron mega-reproductadores'),
       value = textOutput(ns('prop_capturas_mspawn')),
       showcase = fontawesome::fa_i("fish-fins")
-      # p(textOutput(ns('nombres_comunidades')))
     )
   )
   
@@ -116,68 +95,60 @@ mod_02_porEsp_ui <- function(id){
     ),
     # Main body
     bslib::layout_column_wrap(
-      width = 1,
+      width=1,
       fill=F,
       heights_equal = 'row',
-      # Row 1 - 3-column box layout
+      # Row 1 - 2-column box layout
       bslib::layout_column_wrap(
-        # width = 1/3,
-        width = '400px',
+        width = '450px',
+        # width = NULL,
         # style = css(grid_template_columns = "2.5fr 1.75fr 1.75fr"),
-        style = css(grid_template_columns = "repeat(auto-fill, minmax(400px, 30%))"),
+        # style = css(grid_template_columns = "minmax(450px, 3fr) minmax(300px, 2fr)"),
+        # style = css(grid_template_columns = "repeat(auto-fit, minmax(500px, 1fr))"),
         fixed_width=F,
         # Column 1 - CPUE plot card
         bslib::layout_column_wrap(
-          width = '400px',
-          min_height='300px',
+          width = '450px',
+          # style = css(grid_column = "span 3"),
+          min_height='400px',
           max_height = '450px',
           fill=T,
-          bslib::card(
-            fill = T,
-            full_screen = TRUE,
-            min_width='400px',
-            # bslib::card_header(textOutput(ns('plot_cpue_total_title'))),
-            bslib::card_header(modal_UI(ns('plot_cpue_total_title'),'Tendencia de capturas por unidad de esfuerzo')),
-            bslib::card_body(plotOutput(ns('plot_cpue_total'))),
-            bslib::card_footer(textOutput(ns('plot_cpue_total_desc')))
+          plot_card_labelled(
+            plot = plotOutput(ns('cpue_plot')),
+            bottom_label = shiny::uiOutput(ns('cpue_mean_desc')),
+            card_title = modal_UI(ns('cpue_plot_title'),'default'),
+            top_label = shiny::uiOutput(ns('cpue_trend_desc'))
           )
         ),
-        # Column 2 - Weight and number boxes
+        # Column 2 - LFQ Froese Indicators
         bslib::layout_column_wrap(
-          width='250px',
-          min_height='300px',
+          width = '300px',
+          # style = css(grid_column = "span 1"),
+          min_height='400px',
           max_height = '450px',
           bslib::card(
             fill = T,
             full_screen = TRUE,
-            min_width='250px',
-            # bslib::card_header(textOutput(ns('plot_bdens_title'))),
-            bslib::card_header('test'),
+            # min_width = '300px',
+            # max_width = '350px',
+            bslib::card_header(textOutput(ns('froese_indics_title'))),
             bslib::card_body(
               padding = '0.1rem',
               !!!vbs[3:5]
             )
           )
-        ),
-        # Column 3 - Lenth-indicators (Froese)
-        bslib::layout_column_wrap(
-          width='250px',
-          min_height='300px',
-          max_height = '450px',
-          bslib::card(
-            fill = T,
-            full_screen = TRUE,
-            min_width='250px',
-            # bslib::card_header(textOutput(ns('plot_bdens_title'))),
-            bslib::card_header('test'),
-            bslib::card_body(
-              padding = '0.1rem',
-              !!!vbs[1:2]
-            )
-          )
         )
       ),
-      # Row 2 - supplementary plots
+      # Row 2 - Weight and number cards
+      bslib::layout_column_wrap(
+        width = '450px',
+        fixed_width = F,
+        fill = T,
+          min_height='150px',
+          max_height = '200px',
+        !!!vbs[1:2]
+      ),
+      # Row 3 - supplementary plots
       bslib::layout_column_wrap(
         width = '450px',
         fixed_width=F,
@@ -219,58 +190,6 @@ mod_02_porEsp_ui <- function(id){
         )
       )
     )
-    # Column-left: Distributions by gear
-    # layout_column_wrap(
-    #   width = 1/2,
-    #   # LFQ and CPUE plots by gear as a card tab
-    #   navset_card_tab(
-    #     full_screen = T,
-    #     nav_panel(
-    #       'LFQ',
-    #       bslib::card_header(
-    #         textOutput(ns("plot_lfq_title"))
-    #       ),
-    #       # "Frecuencias de tallas por arte"
-    #       bslib::card_body(plotOutput(ns('plot_lfq')))
-    #     ),
-    #     nav_panel(
-    #       'CPUE',
-    #       bslib::card_header(
-    #         textOutput(ns("plot_cpue_arte_title"))
-    #       ),
-    #       # "Capturas por unidad de esfuerzo por arte"
-    #       bslib::card_body(plotOutput(ns('plot_cpue_arte')))
-    #     ),
-    #   ),
-    #   # Column-right - half sized plots split into rows
-    #   layout_column_wrap(
-    #     width = 1,
-    #     plot_card(#'Estacionalidad de capturas', 
-    #       textOutput(ns("plot_est_title")),
-    #       plotOutput(ns('plot_est'))
-    #     ),
-    #     navset_card_tab(
-    #       full_screen = T,
-    #       nav_panel(
-    #         'CPUE (Total)',
-    #         bslib::card_header(
-    #           textOutput(ns("plot_cpue_total_title"))
-    #           ),
-    #           # "Capturas por unidad de esfuerzo (total)"),
-    #           bslib::card_body(plotOutput(ns('plot_cpue_total')))
-    #       ),
-    #       nav_panel(
-    #         # 'CPUE (Longitud),'
-    #         textOutput(ns('cpue_long_title')),
-    #         bslib::card_header(
-    #           textOutput(ns("plot_cpue_pl_title"))
-    #           ),
-    #           # "Capturas por unidad de esfuerzo (por clase de talla)"),
-    #           bslib::card_body(plotOutput(ns('plot_cpue_pl')))
-    #       )
-    #     )
-    #   )
-    # )
   )
 }
     
@@ -300,6 +219,11 @@ mod_02_porEsp_server <- function(id, lang, region){
     # output$peso_capturado_title <- renderText(ifelse(lang() == "ES","Peso capturado (kg)","Weight captured (kg)"))
     # output$prop_capturas_matr_title <- renderText(ifelse(lang() == "ES","Proporción de capturas cerca de la talla de madurez","Proportion of captures near the length at maturity"))
     # output$prop_capturas_mspawn_title <- renderText(ifelse(lang() == "ES","Proporción de capturas que fueron mega-reproductadores","Proportion of captures that were mega-spawners"))
+    output$froese_indics_title <- renderText(ifelse(
+      lang() == 'ES', 
+      'Indicadores de la Poblacion de Peces',
+      'Fishery Stock Indicators'
+    ))
     modal_Server('num_capturado_title',lang,
                  plot_title = c("Número de pescas capturadas","Number of fish captured"),
                  plot_info = c("Información sobre el gráfico","Information about the plot"))
@@ -323,7 +247,7 @@ mod_02_porEsp_server <- function(id, lang, region){
     output$prop_capturas_mspawn <- renderText(ss()$prop_capturas_mspawn)
 
     # CPUE Trend card
-    cpue_total <- reactive(ss_cpue_trend_total(
+    cpue <- reactive(ss_cpue_trend_total(
       lfqdbase=lfqdbase,
       year_min = input$sampleyear[1],
       year_max = input$sampleyear[2],
@@ -331,17 +255,21 @@ mod_02_porEsp_server <- function(id, lang, region){
       lang = lang()
     ))
     # output$plot_cpue_total_title <- renderText(ifelse(lang() == "ES","Tendencia de capturas por unidad de esfuerzo", "Trend of catch per unit effort"))
-    modal_Server('plot_cpue_total_title',lang,
+    modal_Server('cpue_plot_title',lang,
                  plot_title = c("Tendencia de capturas por unidad de esfuerzo", "Trend of catch per unit effort"),
                  plot_info = c("Información sobre el gráfico","Information about the plot"))
-    output$plot_cpue_total_desc <- renderText(cpue_total()$cpue_desc)
-    output$plot_cpue_total <- renderPlot(cpue_total()$plot)
+    output$cpue_trend_desc <- renderUI(cpue()$cpue_trend_desc)
+    output$cpue_plot <- renderPlot(cpue()$cpue_plot)
+    output$cpue_mean_desc <- renderUI(cpue()$cpue_mean_desc)
     
     # Length-frequencies by gear plot
     output$plot_lfq_title <- renderText(ifelse(lang() == "ES","Frecuencias de tallas por arte","Frequencies by Size Class"))
-    modal_Server('plot_lfq_title',lang,
-                 plot_title = c("Frecuencias de tallas por arte","Frequencies by Size Class"),
-                 plot_info = c("Información sobre el gráfico","Information about the plot"))
+    modal_Server(
+      'plot_lfq_title',
+      lang,
+      plot_title = c("Frecuencias de tallas por arte","Frequencies by Size Class"),
+      plot_info = c("Información sobre el gráfico","Information about the plot")
+    )
     output$plot_lfq <- renderPlot(ss_lfq_plot(
       lfqdbase,
       year_min = input$sampleyear[1],

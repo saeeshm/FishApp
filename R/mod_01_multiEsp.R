@@ -12,46 +12,6 @@
 mod_01_multiEsp_ui <- function(id){
   ns <- NS(id)
   
-  # Preparing UI objects ----------
-  
-  # Creating a list of value boxes for summary statistics
-  vbs <- list(
-    # Species richness
-    bslib::value_box(
-      # fill=F,
-      # min_width = "300px",
-      # min_height = '150px',
-      theme='text-indigo',
-      # title = textOutput(ns('spec_rich_title')),
-      title = modal_UI(ns('spec_rich_title'),'Riqueza de especies'),
-      value = textOutput(ns('spec_rich')),
-      showcase = fontawesome::fa_i("fish-fins")
-    ),
-    # Species diversity (Shannon Index)
-    bslib::value_box(
-      # fill=F,
-      # min_width = "300px",
-      theme = 'text-teal',
-      # min_height = '150px',
-      # title = textOutput(ns('spec_div_title')),
-      title = modal_UI(ns('spec_div_title'),'Diversidad de especies (Índice de Shannon)'),
-      value = textOutput(ns('spec_div')),
-      showcase = fontawesome::fa_i("heading")
-    ),
-    # Species Equitability Index
-    bslib::value_box(
-      # fill=F,
-      # min_width = "300px",
-      # min_height = '150px',
-      theme = 'text-blue',
-      # title = textOutput(ns('spec_eq_title')),
-      title = modal_UI(ns('spec_eq_title'),'Equitabilidad de especies'),
-      value = textOutput(ns('spec_eq')),
-      showcase = fontawesome::fa_i("scale-balanced")
-      # p(textOutput(ns('nombres_comunidades')))
-    )
-  )
-  
   # UI Layout ----------
   
   layout_sidebar(
@@ -71,40 +31,58 @@ mod_01_multiEsp_ui <- function(id){
       heights_equal = 'row',
       # Row 1 (Plot cards and value boxes)
       bslib::layout_column_wrap(
-        width = '300px',
+        width = '450px',
         fixed_width = F,
         # Column 1 (Total CPUE trend)
         bslib::layout_column_wrap(
           min_height='400px',
-          max_height = '400px',
+          max_height = '450px',
           fill=T,
-          bslib::card(
-            fill = T,
-            full_screen = TRUE,
-            # bslib::card_header(textOutput(ns('plot_cpue_total_title'))),
-            bslib::card_header(modal_UI(ns('plot_cpue_total_title'),'Tendencia de capturas por unidad de esfuerzo')),
-            bslib::card_body(plotOutput(ns('plot_cpue_total'))),
-            bslib::card_footer(textOutput(ns('plot_cpue_total_desc')))
+          plot_card_labelled(
+            plot = plotOutput(ns('cpue_plot')),
+            bottom_label = shiny::uiOutput(ns('cpue_mean_desc')),
+            card_title = modal_UI(ns('cpue_plot_title'), 'test'),
+            top_label = shiny::uiOutput(ns('cpue_trend_desc'))
           )
         ),
-        # Column 2 (Indicator value boxes)
+        # Column 2 (Diversity indicator timeseries plots)
         bslib::layout_column_wrap(
           min_height='400px',
-          max_height = '400px',
-          !!!vbs
-        ),
-        # Column 3 (Biomass density plot)
-        bslib::layout_column_wrap(
-          min_height='400px',
-          max_height = '400px',
+          max_height = '450px',
           fill=T,
-          bslib::card(
-            fill = T,
+          # Creating all plots and descriptions as a navset panel
+          bslib::navset_card_underline(
             full_screen = TRUE,
-            # bslib::card_header(textOutput(ns('plot_bdens_title'))),
-            bslib::card_header(modal_UI(ns('plot_bdens_title'),'Espectro de densidad de biomasa normalizada')),
-            bslib::card_body(plotOutput(ns('plot_bdens'))),
-            bslib::card_footer(textOutput(ns('plot_bdens_desc')))
+            # Species richness
+            bslib::nav_panel(
+              title = modal_UI(ns('div_rich_title'), 'test'),
+              plot_card_labelled(
+                plot = plotOutput(ns('div_rich_plot')),
+                bottom_label = shiny::uiOutput(ns('div_rich_ov_desc')),
+                card_title = NULL,
+                top_label = shiny::uiOutput(ns('div_rich_trend_desc'))
+              )
+            ),
+            # Species diversity
+            bslib::nav_panel(
+              title = modal_UI(ns('div_shannon_title'), 'test'),
+              plot_card_labelled(
+                plot = plotOutput(ns('div_shannon_plot')),
+                bottom_label = shiny::uiOutput(ns('div_shannon_ov_desc')),
+                card_title = NULL,
+                top_label = shiny::uiOutput(ns('div_shannon_trend_desc'))
+              )
+            ),
+            # Species equitability
+            bslib::nav_panel(
+              title = modal_UI(ns('div_eq_title'), 'test'),
+              plot_card_labelled(
+                plot = plotOutput(ns('div_eq_plot')),
+                bottom_label = shiny::uiOutput(ns('div_eq_ov_desc')),
+                card_title = NULL,
+                top_label = shiny::uiOutput(ns('div_eq_trend_desc'))
+              )
+            )
           )
         ),
       ),
@@ -126,16 +104,23 @@ mod_01_multiEsp_ui <- function(id){
             bslib::card_body(plotOutput(ns('plot_lfq')))
           )
         ),
-        # Column-right deviance plot of captured weight
+        # Column-right deviance plot and biomass density plot
         bslib::layout_column_wrap(
           width = '450px',
           fixed_width=F,
+          # Biomass density
           min_height = '700px',
           bslib::card(
             fill = T,
             full_screen = TRUE,
-            # bslib::card_header('Estacionalidad de capturas'),
-            # bslib::card_header(textOutput(ns('plot_top10_dev_title'))),
+            bslib::card_header(modal_UI(ns('plot_bdens_title'),'Espectro de densidad de biomasa normalizada')),
+            bslib::card_body(plotOutput(ns('plot_bdens')))
+            # bslib::card_footer(textOutput(ns('plot_bdens_desc')))
+          ),
+          # Top-10 species captured as deviances plot
+          bslib::card(
+            fill = T,
+            full_screen = TRUE,
             bslib::card_header(modal_UI(ns('plot_top10_dev_title'),'Peso capturado por especie con respecto a la media (las 10 especies más capturadas)')),
             bslib::card_body(plotOutput(ns('plot_top10_dev')))
           )
@@ -178,36 +163,45 @@ mod_01_multiEsp_server <- function(id, lang, region){
       year_max = input$sampleyear[2],
       lang = lang()
     ))
-    modal_Server('plot_cpue_total_title',lang,
-                 plot_title=c('Tendencia de capturas por unidad de esfuerzo','Trend of catch per unit effort CPUE Trend'),
-                 plot_info=c("Información sobre el gráfico","Information about the plot"))
+    modal_Server(
+      'cpue_plot_title', lang,
+      plot_title=c('Tendencia de capturas por unidad de esfuerzo','Trend of catch per unit effort CPUE Trend'),
+      plot_info=c("Información sobre el gráfico","Information about the plot")
+    )
+    output$cpue_trend_desc <- renderUI(cpue()$cpue_trend_desc)
+    output$cpue_plot <- renderPlot(cpue()$cpue_plot)
+    output$cpue_mean_desc <- renderUI(cpue()$cpue_mean_desc)
     
-    output$plot_cpue_total_desc <- renderText(cpue()$cpue_desc)
-    output$plot_cpue_total <- renderPlot(cpue()$cpue_plot)
-    
-    # Value boxes (getting relevant diversity indices)
-    di <- reactive(ms_div_indices(
+    # Calling helper function to generate all diversity index UI objects
+    div <- reactive(ms_div_ts_plots(
       lfqdb = lfqdbase,
-      input$sampleyear[1], 
-      input$sampleyear[2]
+      year_min = input$sampleyear[1],
+      year_max = input$sampleyear[2],
+      lang = lang()
     ))
     # Species richness
-    modal_Server('spec_rich_title',lang,
-                 plot_title=c('Riqueza de especies','Species Richness'),
+    modal_Server('div_rich_title',lang,
+                 plot_title=c('Riqueza','Richness'),
                  plot_info=c("Información sobre el gráfico","Information about the plot"))
+    output$div_rich_trend_desc <- renderUI(div()$rich$trend_desc)
+    output$div_rich_plot <- renderPlot(div()$rich$plot)
+    output$div_rich_ov_desc <- renderUI(div()$rich$ov_desc)
     
-    output$spec_rich <- renderText(di()$rich)
     # Species diversity
-    modal_Server('spec_div_title',lang,
-                 plot_title=c('Diversidad de especies (Índice de Shannon)','Species Diversity (Shannon Index)'),
+    modal_Server('div_shannon_title',lang,
+                 plot_title=c('Diversidad (Shannon)','Diversity (Shannon)'),
                  plot_info=c("Información sobre el gráfico","Information about the plot"))
-    output$spec_div <- renderText(di()$shannon)
+    output$div_shannon_trend_desc <- renderUI(div()$shannon$trend_desc)
+    output$div_shannon_plot <- renderPlot(div()$shannon$plot)
+    output$div_shannon_ov_desc <- renderUI(div()$shannon$ov_desc)
     
     # Species equitability
-    modal_Server('spec_eq_title',lang,
-                 plot_title=c('Equitatividad de especies','Species Equitability'),
+    modal_Server('div_eq_title',lang,
+                 plot_title=c('Equitatividad','Equitability'),
                  plot_info=c("Información sobre el gráfico","Information about the plot"))
-    output$spec_eq <- renderText(di()$eq)
+    output$div_eq_trend_desc <- renderUI(div()$eq$trend_desc)
+    output$div_eq_plot <- renderPlot(div()$eq$plot)
+    output$div_eq_ov_desc <- renderUI(div()$eq$ov_desc)
     
     # Biomass density spectrum plot
     bd <- reactive(ms_bdens_plot(

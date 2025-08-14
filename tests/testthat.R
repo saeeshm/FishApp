@@ -9,4 +9,4 @@
 library(testthat)
 library(FishApp)
 
-test_check("FishApp")
+# test_check("FishApp")

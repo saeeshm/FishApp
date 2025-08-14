@@ -188,7 +188,7 @@ dg_plot_ssn <- function(dbase, year_min, year_max, lang){
   # Filtering the data for the requested year range
   plotdf <- dbase[(year(fecha) >= year_min) & (year(fecha) < year_max), ]
   # Getting the correct month reference vector
-  mref_vec <- if(lang == 'ES') month.abb.esp else (month.abb)
+  mref_vec <- if(lang() == 'ES') month.abb.esp else (month.abb)
   # Plotting total weight by commmunity and gear
   plotdf |> 
     # Removing any data not associated with a community

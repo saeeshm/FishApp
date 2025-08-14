@@ -1,7 +1,7 @@
+/* Whole page options */
 .bslib-page-fill {
   overflow-x: hidden !important;
 }
-
 body {
   overflow-x: hidden;
 }
@@ -16,6 +16,16 @@ body {
   display:inline-block;
 }
 
+.app-logo-container {
+  position: relative;
+  display: grid;
+}
+
+.app-title{
+  display: inline-block;
+  font-size: 1.2em;
+}
+
 .app-logo{
   max-width: 2em;
   max-height: 2em;
@@ -27,6 +37,7 @@ body {
   margin-top: -0.75rem;
 }
 
+/* Coral logo animation */
 .app-logo-fish {
   animation: 4s linear 0s infinite bob;
 }
@@ -53,16 +64,6 @@ body {
   100% {
       transform: translateY(-8%) rotate(0deg);
   }
-}
-
-.app-logo-container {
-  position: relative;
-  display: grid;
-}
-
-.app-title{
-  display: inline-block;
-  font-size: 1.2em;
 }
 
 /* Language toggle */
@@ -124,4 +125,12 @@ body {
 
 .modal-hook:hover {
   background: var(--brand-coral-blue) !important;
+}
+
+/* Value boxes */
+div.vb-no-pad {
+  border: 0;
+}
+div.vb-no-pad .value-box-area{
+  padding: 0;
 }

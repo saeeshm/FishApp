@@ -10,11 +10,114 @@
 
 # ==== Functions ====
 
-# Calculating species richness, diversity and evenness indices for the given
-# data
-ms_div_indices <- function(lfqdb, year_min, year_max){
+# Multispecies CPUE plot and related descriptions
+ms_cpue_plot <- function(lfqdb, year_min, year_max,lang){
+  
+  # Preparing relevant data ----------
+  
   # Filtering the data for the requested year range
   plotdf <- lfqdb[(lubridate::year(fecha) >= year_min) & (lubridate::year(fecha) < year_max), ]
+  
+  # Preparing CPUE dataframe for summarization
+  cpueDat <- plotdf |> 
+    _[, `:=`(
+      cpue = adjWt/tot_boats,
+      year = lubridate::year(fecha),
+      month = lubridate::month(fecha)
+    )] |> 
+    _[, fecha2 := lubridate::ymd(paste(year, month, '01', sep='-'))] |> 
+    _[, .(cpue = mean(cpue, na.rm=T)), by=.(fecha2)]
+  
+  # Calculating trends and averages ----------
+  
+  # Fitting time-trend linear model
+  modDat <- cpueDat |> 
+    setkey(fecha2) |> 
+    _[, `:=`(
+      fecha2_days = difftime(fecha2, fecha2[1], units='days')
+    )]
+  lm_cpue <- lm(cpue ~ fecha2_days, data=modDat)
+  
+  # Extract the slope estimate and confidence interval (in per year units)
+  slope_estimate <- round(coef(lm_cpue)[2]*365, 2)
+  ci <- round(confint(lm_cpue)[2, ]*365, 2)
+  if(all(is.nan(ci))){
+    # If the confidence interval is NaN (i.e not enough data in a given year),
+    # set it to NA
+    ci <- c(NA, NA)
+    signif <- F
+  }else{
+    # Is it significant?
+    signif <- !((ci[1] <= 0) & (ci[2] >= 0))
+  }
+  
+  
+  # Calculating average CPUE for this time period
+  avg_cpue <- round(mean(cpueDat$cpue, na.rm=T), 2)
+  
+  # Making description texts (adding markdown emphasis formatting) ----------
+  
+  # Colour choice for trend based on significance
+  if(!signif){
+    trend_col <- '#eddfca' # light-green for non-significant trends
+  } else if(slope_estimate < 0){
+    trend_col <- '#B22222' # Red for significant negative trends
+  }else{
+    trend_col <- '#006400' # Green for significant positive trends
+  }
+  
+  # Trend description
+  cpue_trend_desc <- p(
+    strong(ifelse(lang == 'ES','Tendencia de CPUE: ','CPUE Trend: ')),
+    em(
+      paste0(slope_estimate, ' (', ci[1], ', ', ci[2], ') '), 
+      style = paste0('color: ', trend_col),
+    ),
+    ifelse(lang == 'ES',' kg/año',' kg/year')
+  )
+  
+  # Mean description
+  cpue_mean_desc <- p(
+    strong(ifelse(lang == 'ES','Media de CPUE: ','Mean CPUE: ')),
+    em(avg_cpue, style = 'color: #3ebbed'),
+    ifelse(lang == 'ES',' kg/dia',' kg/day')
+  )
+  
+  # Plotting ----------
+  
+  # Plotting overall cpue trend
+  cpue_plot <- cpueDat |> 
+    ggplot2:: ggplot(ggplot2::aes(x = fecha2, y=cpue)) +
+    ggplot2::geom_point(alpha=0.4, show.legend = F) +
+    ggplot2::geom_line(alpha=0.8, show.legend = F) +
+    # Adding trendline
+    ggplot2::geom_smooth(method='lm', colour=trend_col, fill=trend_col, alpha=0.4, linewidth=1.1) +
+    # Adding average reference line
+    ggplot2::geom_hline(
+      yintercept = avg_cpue, 
+      colour='#3ebbed', 
+      linewidth=1.1, 
+      linetype='dashed'
+    ) +
+    # ggpmisc::stat_poly_eq(use_label(c("P", "R2"))) +
+    qtheme() +
+    ggplot2::labs(
+      x = NULL,
+      y = ifelse(lang == 'ES','CPUE (kg/dia)','CPUE (kg/day)')
+    )
+  # Returning all items as a list
+  return(list(
+    'cpue_plot' = cpue_plot,
+    'cpue_trend_desc' = cpue_trend_desc,
+    'cpue_mean_desc' = cpue_mean_desc
+  ))
+}
+
+# Calculating species richness, diversity and evenness indices for an entire
+# given dataperiod
+ms_div_indices <- function(lfqdb, year_min, year_max){
+  # Filtering the data for the requested year range
+  plotdf <- lfqdb[(lubridate::year(fecha) >= year_min) & (lubridate::year(fecha) <= year_max), ]
   # Getting a count of all unique species in this dataset (species richness)
   rich <- length(unique(plotdf$nombre_cientifico))
   
@@ -41,6 +144,136 @@ ms_div_indices <- function(lfqdb, year_min, year_max){
     'eq' = round(eq, 3)
   ))
 }
+
+# Plotting diversity indices as timeseries plots
+ms_div_ts_plots <- function(lfqdb, year_min, year_max, lang){
+  
+  # Preparing initial objects ----------
+  
+  # Sequence of years in this year period
+  years <- seq(year_min, year_max, 1)
+  # Calculating overall index values for this period
+  overall_indices <- ms_div_indices(lfqdb, year_min, year_max)
+  # Index vector of keywords for all the diversity variables we are plotting
+  varlist <- c('rich', 'shannon', 'eq') |> setNames(c('rich', 'shannon', 'eq'))
+  
+  # Calculating a timseries dataframe indices for each individual year in this
+  # period
+  divts <- purrr::map_dfr(years, \(curryear){
+    # Filtering the data for the requested year
+    plotdf <- lfqdbase[(lubridate::year(fecha) == curryear), ]
+    # Calculating the diversity indices for this year
+    div_output <- ms_div_indices(plotdf, curryear, curryear+1)
+    # Formatting output dataframe
+    otab <- as.data.frame(cbind(div_output))
+    names(otab) <- 'value'
+    otab$value <- as.numeric(otab$value)
+    otab$var <- rownames(otab)
+    otab$year <- curryear
+    otab <- as.data.table(otab)
+    return(otab)
+  })
+  
+  # Trend descriptions ----------
+  
+  # Calculating trends for each variable
+  divTrends <- purrr::map(varlist, \(currvar){
+    # Filtering only the current variable
+    divts_var <- divts[divts$var == currvar, ]
+    # Fitting a linear model to the timeseries
+    lm_mod <- lm(value ~ year, data=divts_var)
+    # Extracting slope and confidence interval
+    slope_estimate <- round(coef(lm_mod)[2], 2)
+    ci <- round(confint(lm_mod, level=0.95)[2,], 2)
+    
+    # If the confidence interval is NaN, set it to NA
+    if(all(is.nan(ci))){
+      ci <- c(NA, NA)
+      signif <- F
+    }else{
+      # Is it significant?
+      signif <- !((ci[1] <= 0) & (ci[2] >= 0))
+    }
+    
+    # What trend colour, based on signifcance
+    if(!signif){
+      trend_col <- '#eddfca' # light-green for non-significant trends
+    } else if(slope_estimate < 0){
+      trend_col <- '#B22222' # Red for significant negative trends
+    }else{
+      trend_col <- '#006400' # Green for significant positive trends
+    }
+    
+    # Making trend description text
+    trend_desc <- p(
+      strong(ifelse(lang == 'ES','Tendencia: ','Trend: ')),
+      em(
+        paste0(slope_estimate, ' (', ci[1], ', ', ci[2], ') '), 
+        style = paste0('color: ', trend_col),
+      )
+    )
+    # Returning trend description text
+    return(list(
+      # The colour associated with this trend, based on significance (used for
+      # the plot)
+      'trend_col' = trend_col,
+      'trend_desc' = trend_desc
+    ))
+  })
+  
+  # Timeseries plots ----------
+  
+  # A vector of y-axis labels for each diversity index variable
+  varlabs <- c(
+    ifelse(lang == 'ES', 'Riqueza de especies', 'Species Richness'),
+    ifelse(lang == 'ES', 'Diversidad de especies (Índice de Shannon)', 'Species Diversity (Shannon Index)'),
+    ifelse(lang == 'ES', 'Equitatividad de especies', 'Species Equitability')
+  ) |> setNames(varlist)
+  
+  # Plotting timeseries for each variable
+  divPlots <- purrr::imap(varlabs, function(ylab, currvar){
+    # Filtering only the current variable
+    divts_var <- divts[divts$var == currvar, ]
+    trend_col <- divTrends[[currvar]]$trend_col
+    # Plotting
+    ggplot2::ggplot(divts_var, ggplot2::aes(x=year, y=value)) +
+      ggplot2::geom_point(alpha=0.4, show.legend = F) +
+      ggplot2::geom_line(alpha=0.8, show.legend = F) +
+      ggplot2::geom_smooth(method='lm', colour=trend_col, fill=trend_col, linewidth=0.6) +
+      qtheme() +
+      ggplot2::labs(
+        x = NULL,
+        y = ylab
+      ) +
+      # ggplot2::scale_x_continuous(breaks=years) +
+      ggplot2::theme(
+        # Changing x-axis labels to vertical
+        axis.text.x = ggplot2::element_text(angle=90, vjust=0.5, hjust=1)
+      )
+  })
+  
+  # Creating output lists
+  olist <- purrr::map(varlist, \(currvar){
+    # Building overall index description text for the med variable
+    ov_desc <- p(
+      strong(ifelse(lang == 'ES','Valor del Indice General : ','Overall Index Value: ')),
+      em(
+        round(overall_indices[[currvar]], 2),
+        style = 'color: #3ebbed'
+      )
+    )
+    # Returning all plots and descriptions for this variable
+    list(
+      'plot' = divPlots[[currvar]],
+      'trend_desc' = divTrends[[currvar]]$trend_desc,
+      'ov_desc' = ov_desc
+    )
+  })
+  
+  # Returning output list
+  return(olist)
+}
+
 
 # Helper function for calculating log-sized bins across a given numeric range
 calc_log_bins <- function(lmin, lmax, logBase){
@@ -165,65 +398,6 @@ ms_bdens_plot <- function(fdb, year_min, year_max, lang){
   ))
 }
 
-# Multispecies CPUE plot
-ms_cpue_plot <- function(lfqdb, year_min, year_max,lang){
-  # Filtering the data for the requested year range
-  plotdf <- lfqdb[(lubridate::year(fecha) >= year_min) & (lubridate::year(fecha) < year_max), ]
-  
-  # Preparing CPUE dataframe for summarization
-  cpueDat <- plotdf |> 
-    _[, `:=`(
-      cpue = adjWt/tot_boats,
-      year = lubridate::year(fecha),
-      month = lubridate::month(fecha)
-    )] |> 
-    _[, fecha2 := lubridate::ymd(paste(year, month, '01', sep='-'))] |> 
-    _[, .(cpue = mean(cpue, na.rm=T)), by=.(fecha2)]
-  
-  # Fitting time-trend linear model
-  modDat <- cpueDat |> 
-    _[, `:=`(
-      fecha2_days = difftime(fecha2, fecha2[1], units='days')
-    )]
-  lm_cpue <- lm(cpue ~ fecha2_days, data=modDat)
-  
-  # Extract the slope estimate and confidence interval (in per year units)
-  slope_estimate <- round(coef(lm_cpue)[2]*365, 3)
-  conf_interval <- round(confint(lm_cpue)[2, ]*365, 3)
-  # Making description text
-  cpue_desc <- paste(
-    ifelse(lang == 'ES','Tendencia:','Trend:'),
-    paste0(
-      slope_estimate, 
-      ' (', 
-      conf_interval[1], 
-      ', ', 
-      conf_interval[2], 
-      ')',
-      ifelse(lang == 'ES',' kg/año',' kg/year')
-    )
-  )
-  
-  # Plotting overall cpue trend
-  cpue_plot <- cpueDat |> 
-    ggplot2:: ggplot(ggplot2::aes(x = fecha2, y=cpue)) +
-    ggplot2::geom_point(alpha=0.4, show.legend = F) +
-    ggplot2::geom_line(alpha=0.8, show.legend = F) +
-    # ggplot2::scale_y_continuous(limits = c(0, 5)) +
-    ggplot2::geom_smooth(method='lm', colour='#00AFA4', fill='#00AFA410', linewidth=0.6) +
-    # ggpmisc::stat_poly_eq(use_label(c("P", "R2"))) +
-    qtheme() +
-    ggplot2::labs(
-      x = NULL,
-      y = ifelse(lang == 'ES','CPUE (kg/dia)','CPUE (kg/day)')
-    )
-  # Returning all items as a list
-  return(list(
-    'cpue_plot' = cpue_plot,
-    'cpue_desc' = cpue_desc
-  ))
-}
-
 # Multi-species length-frequency by trophic level and gear plot
 ms_lfq_plot <- function(lfqdb, year_min, year_max, lang){
   # Setting gears to factor to make sure none are dropped
@@ -280,7 +454,7 @@ ms_top10_plot <- function(lfqdb, year_min, year_max, lang){
   # Plotting data as mean and deviances from the mean
   dev_plot <- ctab |> 
     ggplot2::ggplot(
-      ggplot2::aes(y = nombre_comun_cln, fill=devWt, x=devWt)
+      ggplot2::aes(x = nombre_comun_cln, fill=devWt, y=devWt)
     ) +
     ggplot2::geom_col(
       colour='white', 
@@ -289,17 +463,21 @@ ms_top10_plot <- function(lfqdb, year_min, year_max, lang){
     ) +
     ggplot2::geom_vline(
       xintercept = 0, 
-      colour='black', 
-      linewidth=0.5, 
+      colour='black',
+      linewidth=1, 
       linetype='dashed'
     ) +
     ggplot2::scale_fill_steps2(low='#fc7a64', high='#fc7a64', mid='#bfdc5d', limits=c(-maxDevWt, maxDevWt)) +
     # ggplot2::scale_fill_brewer(palette = 'RdYlBu', direction=-1) +
     # ggplot2::scale_x_continuous(limits=c(0, 700)) +
     qtheme() +
+    ggplot2::theme(
+      axis.text.x = ggplot2::element_text(angle=90, vjust=0.5, hjust=1)
+    ) +
     ggplot2::labs(
-      x = ifelse(lang == 'ES','Desviación del peso capturado con respecto a la media (kg)','Deviance of captured weight relative to mean (kg)'),
-      y= NULL,
+      y = ifelse(lang == 'ES','Desviación del peso capturado (kg)','Deviance of captured weight (kg)'),
+      x= NULL,
+      colour = ifelse(lang == 'ES','Peso capturado medio (kg)','Mean captured weight (kg)')
     )
   # Returning the plot
   return(dev_plot)

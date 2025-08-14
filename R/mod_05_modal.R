@@ -7,22 +7,22 @@
 #' @noRd 
 #'
 #' @importFrom shiny NS tagList 
-modal_UI <- function(id,default_title) {
+modal_UI <- function(id, default_title) {
   ns <- NS(id)
   tagList(
-  div(
-    div(shiny::textOutput(ns('plot_label')), class = "shiny-text-output shiny-bound-output"),
-    actionButton(ns('modal_hook'),label = shiny::icon("info"), class = 'modal-hook'),
-    style = 'display:ruby;'
-  ),
-  tags$script(
-    shiny::HTML(paste0("
-          /// Find the element in the DOM
-          the_el = document.querySelector(`[id*=\"",id,"\"]`);
-          /// Hard-code the initial value of the element with the Spanish option.
-          the_el.innerText = '",default_title,"';"
-    ))
-  )
+    div(
+      div(shiny::textOutput(ns('plot_label')), class = "shiny-text-output shiny-bound-output"),
+      actionButton(ns('modal_hook'), label = shiny::icon("info"), class = 'modal-hook'),
+      style = 'display:ruby;'
+    )
+    # tags$script(
+    #   shiny::HTML(paste0("
+    #       /// Find the element in the DOM
+    #       the_el = document.querySelector(`[id*=\"",id,"\"]`);
+    #       /// Hard-code the initial value of the element with the Spanish option.
+    #       the_el.innerText = '",default_title,"';"
+    #   ))
+    # )
   )
 }
 
@@ -73,8 +73,6 @@ modal_Server <- function(id, lang, plot_title, plot_info) {
           )
         )
       })
-      
-      
     }
   )
 }
