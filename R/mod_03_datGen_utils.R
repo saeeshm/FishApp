@@ -81,7 +81,16 @@ dg_plot_esp_comunes <- function(dbase, year_min, year_max, lang){
   
   # What proportion of weight do these 10 species comprise, relative to the
   # total caught weight
-  prop_capt <- (sum(plotdf$peso)/(sum(currdf$peso, na.rm=T)/1000)) * 100
+  prop_capt <- round(
+    (sum(plotdf$peso)/(sum(currdf$peso, na.rm=T)/1000)) * 100,
+    2
+  )
+  
+  # Creating a description text element based on the proportion captured:
+  prop_capt_desc <- cpue_mean_desc <- p(
+    strong(ifelse(lang == 'ES','Proporción del peso total capturado: ','Proportion of total captured weight: ')),
+    paste0(prop_capt, '%')
+  )
   
   # Plotting total weight by species
   top10_plot <- plotdf |> 
@@ -99,13 +108,13 @@ dg_plot_esp_comunes <- function(dbase, year_min, year_max, lang){
     ggplot2::guides('fill' = 'none') +
     ggplot2::labs(
       y = NULL,
-      x = ifelse(lang() == 'ES','Peso muestreado (kg)','Sampled Weight (kg)'),
-      fill=ifelse(lang() == 'ES','Especie','Species')
+      x = ifelse(lang == 'ES','Peso muestreado (kg)','Sampled Weight (kg)'),
+      fill=ifelse(lang == 'ES','Especie','Species')
     )
   # Returning results as a list
   list(
     'top10_plot' = top10_plot,
-    'prop_capt' = round(prop_capt, 0)
+    'prop_capt' = prop_capt_desc
   )
 }
 

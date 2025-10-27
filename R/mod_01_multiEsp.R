@@ -41,7 +41,7 @@ mod_01_multiEsp_ui <- function(id){
           plot_card_labelled(
             plot = plotOutput(ns('cpue_plot')),
             bottom_label = shiny::uiOutput(ns('cpue_mean_desc')),
-            card_title = modal_UI(ns('cpue_plot_title'), 'test'),
+            card_title = modal_UI(ns('cpue_plot_title')),
             top_label = shiny::uiOutput(ns('cpue_trend_desc'))
           )
         ),
@@ -55,7 +55,7 @@ mod_01_multiEsp_ui <- function(id){
             full_screen = TRUE,
             # Species richness
             bslib::nav_panel(
-              title = modal_UI(ns('div_rich_title'), 'test'),
+              title = modal_UI(ns('div_rich_title')),
               plot_card_labelled(
                 plot = plotOutput(ns('div_rich_plot')),
                 bottom_label = shiny::uiOutput(ns('div_rich_ov_desc')),
@@ -65,7 +65,7 @@ mod_01_multiEsp_ui <- function(id){
             ),
             # Species diversity
             bslib::nav_panel(
-              title = modal_UI(ns('div_shannon_title'), 'test'),
+              title = modal_UI(ns('div_shannon_title')),
               plot_card_labelled(
                 plot = plotOutput(ns('div_shannon_plot')),
                 bottom_label = shiny::uiOutput(ns('div_shannon_ov_desc')),
@@ -75,7 +75,7 @@ mod_01_multiEsp_ui <- function(id){
             ),
             # Species equitability
             bslib::nav_panel(
-              title = modal_UI(ns('div_eq_title'), 'test'),
+              title = modal_UI(ns('div_eq_title')),
               plot_card_labelled(
                 plot = plotOutput(ns('div_eq_plot')),
                 bottom_label = shiny::uiOutput(ns('div_eq_ov_desc')),
@@ -99,8 +99,7 @@ mod_01_multiEsp_ui <- function(id){
           bslib::card(
             fill = T, 
             full_screen = TRUE,
-            # bslib::card_header(textOutput(ns('plot_lfq_title'))),
-            bslib::card_header(modal_UI(ns('plot_lfq_title'),'Frecuencias de tallas por arte y nivel trófico')),
+            bslib::card_header(modal_UI(ns('plot_lfq_title'))),
             bslib::card_body(plotOutput(ns('plot_lfq')))
           )
         ),
@@ -113,15 +112,17 @@ mod_01_multiEsp_ui <- function(id){
           bslib::card(
             fill = T,
             full_screen = TRUE,
-            bslib::card_header(modal_UI(ns('plot_bdens_title'),'Espectro de densidad de biomasa normalizada')),
-            bslib::card_body(plotOutput(ns('plot_bdens')))
-            # bslib::card_footer(textOutput(ns('plot_bdens_desc')))
+            plot_card_labelled(
+              plot = plotOutput(ns('plot_bdens')),
+              card_title = modal_UI(ns('plot_bdens_title')),
+              top_label = shiny::uiOutput(ns('plot_bdens_desc'))
+            )
           ),
           # Top-10 species captured as deviances plot
           bslib::card(
             fill = T,
             full_screen = TRUE,
-            bslib::card_header(modal_UI(ns('plot_top10_dev_title'),'Peso capturado por especie con respecto a la media (las 10 especies más capturadas)')),
+            bslib::card_header(modal_UI(ns('plot_top10_dev_title'))),
             bslib::card_body(plotOutput(ns('plot_top10_dev')))
           )
         )
@@ -137,7 +138,7 @@ mod_01_multiEsp_server <- function(id, lang, region){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
     
-    # Input objects ----------
+    # Sidebar/Input elements ----------
     
     # Adding the selected region description
     output$region_title <- renderText(ifelse(lang() == "ES","Región","Region"))
@@ -154,6 +155,36 @@ mod_01_multiEsp_server <- function(id, lang, region){
       )
     })
     
+    # Modals and descriptions ----------
+    
+    # List of title/description keywords - to use for generating modals and
+    # descriptions
+    idx_list <- c(
+      'cpue_plot',
+      'div_rich',
+      'div_shannon',
+      'div_eq',
+      'plot_bdens',
+      'plot_lfq',
+      'plot_top10_dev'
+    )
+    
+    # TEST - Checking that all present
+    # idx_list %in% descriptions$idx
+    
+    # Creating modals
+    purrr::walk(idx_list, \(curr_idx){
+      desc <- reactive(get_desc(curr_idx, 'Multispecies Indicators', lang))
+      modal_Server(
+        # Assigning an object name to this modal which is the idx + '_title"
+        paste0(curr_idx,'_title'),
+        # Pass lang as a reactive
+        lang = lang,
+        plot_title = reactive(desc()$title),
+        plot_info = reactive(desc()$desc)
+      )
+    })
+    
     # Output objects ----------
     
     # Multispecies CPUE trend
@@ -163,16 +194,11 @@ mod_01_multiEsp_server <- function(id, lang, region){
       year_max = input$sampleyear[2],
       lang = lang()
     ))
-    modal_Server(
-      'cpue_plot_title', lang,
-      plot_title=c('Tendencia de capturas por unidad de esfuerzo','Trend of catch per unit effort CPUE Trend'),
-      plot_info=c("Información sobre el gráfico","Information about the plot")
-    )
     output$cpue_trend_desc <- renderUI(cpue()$cpue_trend_desc)
     output$cpue_plot <- renderPlot(cpue()$cpue_plot)
     output$cpue_mean_desc <- renderUI(cpue()$cpue_mean_desc)
     
-    # Calling helper function to generate all diversity index UI objects
+    # Diversity plots and UI object list
     div <- reactive(ms_div_ts_plots(
       lfqdb = lfqdbase,
       year_min = input$sampleyear[1],
@@ -180,25 +206,14 @@ mod_01_multiEsp_server <- function(id, lang, region){
       lang = lang()
     ))
     # Species richness
-    modal_Server('div_rich_title',lang,
-                 plot_title=c('Riqueza','Richness'),
-                 plot_info=c("Información sobre el gráfico","Information about the plot"))
     output$div_rich_trend_desc <- renderUI(div()$rich$trend_desc)
     output$div_rich_plot <- renderPlot(div()$rich$plot)
     output$div_rich_ov_desc <- renderUI(div()$rich$ov_desc)
-    
     # Species diversity
-    modal_Server('div_shannon_title',lang,
-                 plot_title=c('Diversidad (Shannon)','Diversity (Shannon)'),
-                 plot_info=c("Información sobre el gráfico","Information about the plot"))
     output$div_shannon_trend_desc <- renderUI(div()$shannon$trend_desc)
     output$div_shannon_plot <- renderPlot(div()$shannon$plot)
     output$div_shannon_ov_desc <- renderUI(div()$shannon$ov_desc)
-    
     # Species equitability
-    modal_Server('div_eq_title',lang,
-                 plot_title=c('Equitatividad','Equitability'),
-                 plot_info=c("Información sobre el gráfico","Information about the plot"))
     output$div_eq_trend_desc <- renderUI(div()$eq$trend_desc)
     output$div_eq_plot <- renderPlot(div()$eq$plot)
     output$div_eq_ov_desc <- renderUI(div()$eq$ov_desc)
@@ -210,16 +225,10 @@ mod_01_multiEsp_server <- function(id, lang, region){
       year_max = input$sampleyear[2],
       lang = lang()
     ))
-    modal_Server('plot_bdens_title',lang,
-                 plot_title=c('Espectro de densidad de biomasa normalizada','Normalized biomass density spectrum'),
-                 plot_info=c("Información sobre el gráfico","Information about the plot"))
-    output$plot_bdens_desc <- renderText(bd()$bd_desc)
+    output$plot_bdens_desc <- renderUI(bd()$bd_desc)
     output$plot_bdens <- renderPlot(bd()$bd_plot)
     
     # Length-frequency per gear and trophic level plot
-    modal_Server('plot_lfq_title',lang,
-                 plot_title=c('Frecuencias de tallas por arte y nivel trófico','Size Class Frequencies by Technique and Trophic Level'),
-                 plot_info=c("Información sobre el gráfico","Information about the plot"))
     output$plot_lfq <- renderPlot(ms_lfq_plot(
       lfqdb = lfqdbase,
       year_min = input$sampleyear[1],
@@ -228,10 +237,6 @@ mod_01_multiEsp_server <- function(id, lang, region){
     ))
     
     # Top-10 species captured as deviances plot 
-    modal_Server('plot_top10_dev_title',lang,
-                 plot_title=c('Peso capturado por especie con respecto a la media (las 10 especies más capturadas)',
-                              'Captured weight by species relative to mean (10-most caught species)'),
-                 plot_info=c("Información sobre el gráfico","Information about the plot"))
     output$plot_top10_dev <- renderPlot(ms_top10_plot(
       lfqdb = lfqdbase,
       year_min = input$sampleyear[1],

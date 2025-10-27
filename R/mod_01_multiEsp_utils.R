@@ -233,13 +233,16 @@ ms_div_ts_plots <- function(lfqdb, year_min, year_max, lang){
   # Plotting timeseries for each variable
   divPlots <- purrr::imap(varlabs, function(ylab, currvar){
     # Filtering only the current variable
-    divts_var <- divts[divts$var == currvar, ]
+    divts_var <- divts[divts$var == currvar, ] |> 
+     # Converting year to date format for better x-axis labelling
+      _[, year := lubridate::ymd(paste0(year, '-01-01'))]
     trend_col <- divTrends[[currvar]]$trend_col
     # Plotting
     ggplot2::ggplot(divts_var, ggplot2::aes(x=year, y=value)) +
       ggplot2::geom_point(alpha=0.4, show.legend = F) +
       ggplot2::geom_line(alpha=0.8, show.legend = F) +
       ggplot2::geom_smooth(method='lm', colour=trend_col, fill=trend_col, linewidth=0.6) +
+      ggplot2::scale_x_date(date_labels = "%Y", date_breaks = "1 year") +
       qtheme() +
       ggplot2::labs(
         x = NULL,
@@ -348,16 +351,31 @@ ms_bdens_plot <- function(fdb, year_min, year_max, lang){
   # Extracting slope and confidence interval
   slope_estimate <- round(m$coefficients[2], 3)
   slope_ci <- round(confint(m, level=0.95)[2,], 3)
+  
+  # Setting a flag for significance If the confidence interval is NaN, set it to
+  # NA
+  if(all(is.nan(slope_ci))){
+    slope_ci <- c(NA, NA)
+    signif <- F
+  }else{
+    # Is it significant? - i.e does the CI not include -1 (-1 is considered the
+    # ideal slope)
+    signif <- !between(-1, slope_ci[1], slope_ci[2])
+  }
+  
+  # What trend colour, based on signifcance
+  if(!signif){
+    trend_col <- '#006400' # light-green for non-significant trends
+  } else{
+    trend_col <- '#B22222' # Red for significant negative trends
+  }
+  
   # Making description text
-  bd_desc <- paste(
-    ifelse(lang == 'ES','Pendiente:','Slope:'),
-    paste0(
-      slope_estimate, 
-      ' (', 
-      slope_ci[1], 
-      ', ', 
-      slope_ci[2], 
-      ')'
+  bd_desc <- p(
+    strong(ifelse(lang == 'ES','Pendiente:','Slope:')),
+    em(
+      paste0(slope_estimate, ' (', slope_ci[1], ', ', slope_ci[2], ')'),
+      style = paste0('color: ', trend_col)
     )
   )
   
@@ -387,7 +405,7 @@ ms_bdens_plot <- function(fdb, year_min, year_max, lang){
       method = 'lm',
       linewidth=0.6,
       # colour='black',
-      colour='firebrick',
+      colour=trend_col,
       alpha=0.4
     )
   

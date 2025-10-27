@@ -7,7 +7,7 @@
 #' @noRd 
 #'
 #' @importFrom shiny NS tagList 
-modal_UI <- function(id, default_title) {
+modal_UI <- function(id, default_title='Sin Título') {
   ns <- NS(id)
   tagList(
     div(
@@ -15,23 +15,15 @@ modal_UI <- function(id, default_title) {
       actionButton(ns('modal_hook'), label = shiny::icon("info"), class = 'modal-hook'),
       style = 'display:ruby;'
     )
-    # tags$script(
-    #   shiny::HTML(paste0("
-    #       /// Find the element in the DOM
-    #       the_el = document.querySelector(`[id*=\"",id,"\"]`);
-    #       /// Hard-code the initial value of the element with the Spanish option.
-    #       the_el.innerText = '",default_title,"';"
-    #   ))
-    # )
   )
 }
 
 #' 05_modal Server Functions
 #'
 #' @param id 
-#' @param lang language toggle for app
-#' @param plot_title title for modal window
-#' @param plot_info additional info for modal window
+#' @param lang language toggle for app (must be a reactive object, character string)
+#' @param plot_title A title for modal window (must be a reactive object, character string)
+#' @param plot_info additional info for modal window (must be a reactive object, character string)
 #'
 #' @noRd
 modal_Server <- function(id, lang, plot_title, plot_info) {
@@ -39,19 +31,10 @@ modal_Server <- function(id, lang, plot_title, plot_info) {
     id,
     function(input, output, session) {
       ns <- NS(id)
-      p_title = reactive({
-        # print(lang())
-        ifelse(
-          lang() == 'ES',plot_title[1],plot_title[2]
-        )
-      })
-      
-      p_info = reactive({
-        # print(lang())
-        ifelse(
-          lang() == 'ES',plot_info[1],plot_info[2]
-        )
-      })
+      # Setting title and description reactively, so that they update with each
+      # new change
+      p_title = reactive(plot_title()[1])
+      p_info = reactive(plot_info()[1])
       
       # Title for card header.
       output$plot_label = shiny::renderText(p_title())
@@ -68,7 +51,7 @@ modal_Server <- function(id, lang, plot_title, plot_info) {
             easyClose = TRUE,
             p_info(),
             footer = tagList(
-              actionButton("close_modal_btn",ifelse(lang() == "ES", "Cerrar","Close"))
+              actionButton("close_modal_btn", ifelse(lang() == "ES", "Cerrar","Close"))
             )
           )
         )

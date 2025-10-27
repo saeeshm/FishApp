@@ -34,7 +34,7 @@ cols_coral = c(
 # consistent outputs, that can also responsively show the trend and average as
 # labels around the plot. It is assumed that the labels are provided as html
 # parseable taglists
-plot_card_labelled <- function(plot, bottom_label, card_title=NULL, top_label = NULL){
+plot_card_labelled <- function(plot, bottom_label=NULL, card_title=NULL, top_label = NULL){
   # Option of no top label
   if(is.null(top_label)){
     currbody <- bslib::card_body(
@@ -42,6 +42,14 @@ plot_card_labelled <- function(plot, bottom_label, card_title=NULL, top_label = 
       plot,
       tagList(bottom_label)
     )
+  # Option of no bottom label
+  }else if(is.null(bottom_label)){
+    currbody <- bslib::card_body(
+      class = 'align-items-center',
+      tagList(top_label),
+      plot
+    )
+  # Option of both labels
   }else{
     currbody <- bslib::card_body(
       class = 'align-items-center',

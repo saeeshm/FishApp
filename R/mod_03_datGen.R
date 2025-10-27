@@ -38,8 +38,7 @@ mod_03_datGen_ui <- function(id){
       min_width = "300px",
       # min_height = '150px',
       theme = 'text-blue',
-      # title = textOutput(ns('num_comunidades_title')),
-      title = modal_UI(ns('num_comunidades_title'), 'Comunidades muestreadas'),
+      title = modal_UI(ns('num_comunidades_title')),
       value = textOutput(ns('num_comunidades')),
       showcase = fontawesome::fa_i("map-location-dot")
       # p(textOutput(ns('nombres_comunidades')))
@@ -49,8 +48,7 @@ mod_03_datGen_ui <- function(id){
       min_width = "300px",
       theme = 'text-teal',
       # min_height = '150px',
-      # title = textOutput(ns('peso_muestreado_title')),
-      title = modal_UI(ns('peso_muestreado_title'), 'Peso total muestreado'),
+      title = modal_UI(ns('peso_muestreado_title')),
       value = textOutput(ns('peso_muestreado')),
       showcase = fontawesome::fa_i("scale-unbalanced")
     ),
@@ -59,9 +57,7 @@ mod_03_datGen_ui <- function(id){
       min_width = "300px",
       # min_height = '150px',
       theme = 'text-pink',
-      # title = 'Especies muestreadas',
-      # title = textOutput(ns('num_especies_title')),
-      title = modal_UI(ns('num_especies_title'),'Especies muestreadas'),
+      title = modal_UI(ns('num_especies_title')),
       value = textOutput(ns('num_especies')),
       showcase = fontawesome::fa_i("fish-fins")
     ),
@@ -70,8 +66,7 @@ mod_03_datGen_ui <- function(id){
       min_width = "300px",
       theme = 'text-purple',
       # min_height = '150px',
-      # title = textOutput(ns('num_individuos_title')),
-      title = modal_UI(ns('num_individuos_title'),'Individuos muestreados'),
+      title = modal_UI(ns('num_individuos_title')),
       value = textOutput(ns('num_individuos')),
       showcase = fontawesome::fa_i("ruler")
     )
@@ -118,27 +113,20 @@ mod_03_datGen_ui <- function(id){
       # Row 3: Short plots
       bslib::layout_column_wrap(
         width = '400px',
+        min_height = '600px',
         fill = F,
         # Plot 1 - Top 10-species
-        bslib::card(
-          fill = T,
-          full_screen = TRUE,
-          min_height = '600px',
-          # bslib::card_header('Especies más capturadas'),
-          # bslib::card_header(textOutput(ns('plot_esp_comunes_title'))),
-          bslib::card_header(modal_UI(ns('plot_esp_comunes_title'),'Especies más capturadas')),
-          # PLACEHOLDER PLOT - UPDATE THIS
-          bslib::card_body(plotOutput(ns('plot_esp_comunes'))),
+        plot_card_labelled(
+          plot = plotOutput(ns('plot_esp_comunes')),
+          # top_label = shiny::uiOutput(ns('prop_capt_desc')),
+          card_title = modal_UI(ns('plot_esp_comunes_title'))
         ),
         # Plot 2 - Gears
         bslib::card(
           fill = T,
           full_screen = TRUE,
           min_height = '600px',
-          # bslib::card_header('Artes de pesca utilizada'),
-          # bslib::card_header(textOutput(ns('plot_artes_title'))),
-          bslib::card_header(modal_UI(ns('plot_artes_title'),'Artes de pesca utilizada')),
-          # PLACEHOLDER PLOT - UPDATE THIS
+          bslib::card_header(modal_UI(ns('plot_artes_title'))),
           bslib::card_body(plotOutput(ns('plot_artes')))
         )
       ),
@@ -150,9 +138,7 @@ mod_03_datGen_ui <- function(id){
           fill = T, 
           min_height = '700px',
           full_screen = TRUE,
-          # bslib::card_header('Peso muestreado por comunidad'),
-          # bslib::card_header(textOutput(ns('plot_muest_title'))),
-          bslib::card_header(modal_UI(ns('plot_muest_title'),'Peso muestreado por comunidad')),
+          bslib::card_header(modal_UI(ns('plot_muest_title'))),
           bslib::card_body(plotOutput(ns('plot_muest')))
         ),
         # Plot 2 - Catch seasonality by community
@@ -160,8 +146,7 @@ mod_03_datGen_ui <- function(id){
           fill = T,
           min_height = '700px',
           full_screen = TRUE,
-          # bslib::card_header('Estacionalidad de capturas'),
-          bslib::card_header(modal_UI(ns('plot_ssn_title'),'Estacionalidad de capturas')),
+          bslib::card_header(modal_UI(ns('plot_ssn_title'))),
           bslib::card_body(plotOutput(ns('plot_ssn')))
         )
       )
@@ -180,25 +165,53 @@ mod_03_datGen_server <- function(id, lang, region){
     # Adding the selected region description
     output$region_title <- renderText(ifelse(lang() == "ES","Región","Region"))
     output$region_desc <- renderText(region)
-    
     output$sampleyear_title <- renderText(ifelse(lang() == "ES","Año de Muestreo","Sampling Year(s)"))
+    
+    # Modals and descriptions ----------
+    
+    # List of title/description keywords - to use for generating modals and
+    # descriptions
+    idx_list <- c(
+      # Plots
+      'plot_esp_comunes',
+      'plot_artes',
+      'plot_muest',
+      'plot_ssn',
+      # Value boxes
+      'num_muestreos',
+      'num_dias_muestreo',
+      'num_comunidades',
+      'peso_muestreado',
+      'num_especies',
+      'num_individuos'
+    )
+    
+    # TEST - Checking that all present
+    # idx_list %in% descriptions$idx
+    
+    # Creating modals
+    purrr::walk(idx_list, \(curr_idx){
+      desc <- reactive(get_desc(curr_idx, 'Datos Generales', lang))
+      modal_Server(
+        # Assigning an object name to this modal which is the idx + '_title"
+        paste0(curr_idx,'_title'),
+        # We pass lang as a reactive object
+        lang = lang,
+        plot_title = reactive(desc()$title),
+        plot_info = reactive(desc()$desc)
+      )
+    })
+    
     # Main body elements ----------
     
-    # Summary statistics
+    # Summary statistics object (used to populate value boxes)
     ss <- reactive(dg_summ_stats(
       fishdbase, 
       input$sampleyear[1], 
       input$sampleyear[2]
     ))
     
-    # # Render up them titles!
-    # output$num_muestreos_title <- renderText(ifelse(lang() == 'ES','Número de muestreos','Number of Samples'))
-    # output$num_dias_muestreo_title <- renderText(ifelse(lang() == 'ES','Dias muestreado','Days Sampled'))
-    # output$num_comunidades_title <- renderText(ifelse(lang() == 'ES','Comunidades muestreadas','Communities Sampled'))
-    # output$peso_muestreado_title <- renderText(ifelse(lang() == 'ES','Peso total muestreado','Total Weight Sampled'))
-    # output$num_especies_title <- renderText(ifelse(lang() == 'ES','Especies muestreadas','Species Sampled'))
-    # output$num_individuos_title <- renderText(ifelse(lang() == 'ES','Individuos muestreados','Individuals Sampled'))
-    
+    # Text outputs for value box UIs
     output$num_muestreos <- renderText(ss()$num_muestreos)
     output$num_dias_muestreo <- renderText(ss()$num_dias_muestreo)
     output$num_comunidades <- renderText(ss()$num_comunidades)
@@ -207,66 +220,17 @@ mod_03_datGen_server <- function(id, lang, region){
     output$num_especies <- renderText(ss()$num_especies)
     output$num_individuos <- renderText(ss()$num_individuos)
     
-    # Petite servers of modal dialogue windows.
-    # Plots modal server pieces.
-    modal_Server('plot_esp_comunes_title',
-                 lang,
-                 plot_title = c("Especies más capturadas","Most Commonly Caught Species"),
-                 plot_info = c("Información sobre el gráfico","Information about the plot"))
-    
-    modal_Server('plot_artes_title',
-                 lang, 
-                 plot_title = c("Artes de pesca utilizada","Fishing Technique Used"),
-                 plot_info = c("Información sobre el gráfico","Information about the plot"))
-    
-    modal_Server('plot_muest_title',
-                 lang,
-                 plot_title = c("Peso muestreado por comunidad","Weight Sampled by Community"),
-                 plot_info = c("Información sobre el gráfico","Information about the plot"))
-    
-    modal_Server('plot_ssn_title',
-                 lang, 
-                 plot_title = c("Estacionalidad de capturas","Seasonality of Catches"),
-                 plot_info = c("Información sobre el gráfico","Information about the plot"))
-    
-    # Value card modal server pieces.
-    modal_Server('num_muestreos_title',lang,
-                 plot_title=c('Número de muestreos','Number of Samples'),
-                 plot_info=c("Información sobre el gráfico","Information about the plot"))
-    
-    modal_Server('num_dias_muestreo_title',lang,
-                 plot_title=c('Dias muestreado','Days Sampled'),
-                 plot_info=c("Información sobre el gráfico","Information about the plot"))
-    
-    modal_Server('num_comunidades_title',lang,
-                 plot_title=c('Comunidades muestreadas','Communities Sampled'),
-                 plot_info=c("Información sobre el gráfico","Information about the plot"))
-    
-    modal_Server('peso_muestreado_title',lang,
-                 plot_title=c('Peso total muestreado','Total Weight Sampled'),
-                 plot_info=c("Información sobre el gráfico","Information about the plot"))
-    
-    modal_Server('num_especies_title',lang,
-                 plot_title=c('Especies muestreadas','Species Sampled'),
-                 plot_info=c("Información sobre el gráfico","Information about the plot"))
-    
-    modal_Server('num_individuos_title',lang,
-                 plot_title=c('Individuos muestreados','Individuals Sampled'),
-                 plot_info=c("Información sobre el gráfico","Information about the plot"))
-    
     # Top 10 captured species data
-    esp_comunies <- reactive(dg_plot_esp_comunes(
+    esp_comunes <- reactive(dg_plot_esp_comunes(
       fishdbase, 
       input$sampleyear[1], 
       input$sampleyear[2],
-      lang
+      lang()
     ))
-    output$plot_esp_comunes_title = renderText(ifelse(lang() == "ES","Especies más capturadas","Most Commonly Caught Species"))
-    output$plot_esp_comunes <- renderPlot(esp_comunies()$top10_plot)
-    output$prop_peso_esp_comunes <- renderText(esp_comunies()$prop_capt)
+    output$plot_esp_comunes <- renderPlot(esp_comunes()$top10_plot)
+    output$prop_capt_desc <- renderUI(esp_comunes()$prop_capt)
     
-    # Gear usage
-    output$plot_artes_title <- renderText(ifelse(lang() == "ES","Artes de pesca utilizada","Fishing Technique Used"))
+    # Gear usage plot
     output$plot_artes <- renderPlot(dg_plot_artes(
       fishdbase, 
       year_min = input$sampleyear[1],
@@ -275,7 +239,6 @@ mod_03_datGen_server <- function(id, lang, region){
     ))
     
     # LFQ by trophic level plot
-    output$plot_muest_title <- renderText(ifelse(lang() == "ES","Peso muestreado por comunidad","Weight Sampled by Community"))
     output$plot_muest <- renderPlot(dg_plot_peso(
       fishdbase, 
       year_min = input$sampleyear[1],
@@ -283,7 +246,6 @@ mod_03_datGen_server <- function(id, lang, region){
       lang
     ))
     # Top-captured species plot
-    output$plot_ssn_title <- renderText(ifelse(lang() == "ES","Estacionalidad de capturas","Seasonality of Catches"))
     output$plot_ssn <- renderPlot(dg_plot_ssn(
       fishdbase,
       year_min = input$sampleyear[1],

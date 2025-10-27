@@ -116,7 +116,7 @@ mod_02_porEsp_ui <- function(id){
           plot_card_labelled(
             plot = plotOutput(ns('cpue_plot')),
             bottom_label = shiny::uiOutput(ns('cpue_mean_desc')),
-            card_title = modal_UI(ns('cpue_plot_title'),'default'),
+            card_title = modal_UI(ns('cpue_plot_title')),
             top_label = shiny::uiOutput(ns('cpue_trend_desc'))
           )
         ),
@@ -161,8 +161,7 @@ mod_02_porEsp_ui <- function(id){
           bslib::card(
             fill = T,
             full_screen = TRUE,
-            # bslib::card_header(textOutput(ns('plot_lfq_title'))),
-            bslib::card_header(modal_UI(ns('plot_lfq_title'),'Frecuencias de tallas por arte')),
+            bslib::card_header(modal_UI(ns('plot_lfq_title'))),
             bslib::card_body(plotOutput(ns('plot_lfq'))),
           )
         ),
@@ -175,16 +174,14 @@ mod_02_porEsp_ui <- function(id){
           bslib::card(
             fill = T,
             full_screen = TRUE,
-            # bslib::card_header(textOutput(ns('plot_cpue_pl_title'))),
-            bslib::card_header(modal_UI(ns('plot_cpue_pl_title'),'Capturas por unidad de esfuerzo (por talla)')),
+            bslib::card_header(modal_UI(ns('plot_cpue_pl_title'))),
             bslib::card_body(plotOutput(ns('plot_cpue_pl')))
           ),
           # Catch seasonality
           bslib::card(
             fill = T,
             full_screen = TRUE,
-            # bslib::card_header(textOutput(ns('plot_est_title'))),
-            bslib::card_header(modal_UI(ns('plot_est_title'),'Estacionalidad de capturas')),
+            bslib::card_header(modal_UI(ns('plot_est_title'))),
             bslib::card_body(plotOutput(ns('plot_est'))),
           )
         )
@@ -205,7 +202,52 @@ mod_02_porEsp_server <- function(id, lang, region){
     output$sampleyear_title <- renderText(ifelse(lang() == "ES","Año de Muestreo","Sampling Year(s)"))
     output$species_title <- renderText(ifelse(lang() == "ES","Especie","Species"))
     
-    # Value boxes (getting relevant summary statistics)
+    # Modals and descriptions ----------
+    
+    # List of title/description keywords - to use for generating modals and
+    # descriptions
+    idx_list <- c(
+      # Plots
+      'cpue_plot',
+      'plot_lfq',
+      'plot_est',
+      'plot_cpue_pl',
+      # 'plot_cpue_arte'
+      # Value boxes
+      'num_capturado',
+      'peso_capturado',
+      'prop_capturas_matr',
+      'prop_capturas_immat',
+      'prop_capturas_mspawn'
+    )
+    
+    # TEST - Checking that all present
+    # idx_list %in% descriptions$idx
+    
+    # Creating modals
+    purrr::walk(idx_list, \(curr_idx){
+      desc <- reactive(get_desc(curr_idx, 'Single Species Indicators', lang))
+      modal_Server(
+        # Assigning an object name to this modal which is the idx + '_title"
+        paste0(curr_idx,'_title'),
+        # Pass lang as a reactive
+        lang = lang,
+        plot_title = reactive(desc()$title),
+        plot_info = reactive(desc()$desc)
+      )
+    })
+    
+    # Sectional title for the fishery indicators (no modal associated with this
+    # ATM)
+    output$froese_indics_title <- renderText(ifelse(
+      lang() == 'ES', 
+      'Indicadores de la Poblacion de Peces',
+      'Fishery Stock Indicators'
+    ))
+    
+    # Main body elements ----------
+    
+    # Summary statistics object (used to populate value boxes)
     ss <- reactive(ss_summ_stats(
       fishdbase = fishdbase, 
       lfqdbase = lfqdbase,
@@ -214,32 +256,7 @@ mod_02_porEsp_server <- function(id, lang, region){
       currspec = input$species
     ))
     
-    # Filling in value box titles
-    # output$num_capturado_title <- renderText(ifelse(lang() == "ES","Número de pescas capturadas","Number of fish captured"))
-    # output$peso_capturado_title <- renderText(ifelse(lang() == "ES","Peso capturado (kg)","Weight captured (kg)"))
-    # output$prop_capturas_matr_title <- renderText(ifelse(lang() == "ES","Proporción de capturas cerca de la talla de madurez","Proportion of captures near the length at maturity"))
-    # output$prop_capturas_mspawn_title <- renderText(ifelse(lang() == "ES","Proporción de capturas que fueron mega-reproductadores","Proportion of captures that were mega-spawners"))
-    output$froese_indics_title <- renderText(ifelse(
-      lang() == 'ES', 
-      'Indicadores de la Poblacion de Peces',
-      'Fishery Stock Indicators'
-    ))
-    modal_Server('num_capturado_title',lang,
-                 plot_title = c("Número de pescas capturadas","Number of fish captured"),
-                 plot_info = c("Información sobre el gráfico","Information about the plot"))
-    modal_Server('peso_capturado_title',lang,
-                 plot_title = c("Peso capturado (kg)","Weight captured (kg)"),
-                 plot_info = c("Información sobre el gráfico","Information about the plot"))
-    modal_Server('prop_capturas_matr_title',lang,
-                 plot_title = c("Proporción de capturas cerca de la talla de madurez","Proportion of captures near the length at maturity"),
-                 plot_info = c("Información sobre el gráfico","Information about the plot"))
-    modal_Server('prop_capturas_immat_title',lang,
-                 plot_title = c("Proporción de capturas inmaduras","Proportion of captures that were immature"),
-                 plot_info = c("Información sobre el gráfico","Information about the plot"))
-    modal_Server('prop_capturas_mspawn_title',lang,
-                 plot_title = c("Proporción de capturas que fueron mega-reproductadores","Proportion of captures that were mega-spawners"),
-                 plot_info = c("Información sobre el gráfico","Information about the plot"))
-    # And text
+    # Populating value boxes
     output$num_capturado <- renderText(ss()$num_capturado)
     output$peso_capturado <- renderText(ss()$peso_capturado)
     output$prop_capturas_matr <- renderText(ss()$prop_capturas_matr)
@@ -254,22 +271,12 @@ mod_02_porEsp_server <- function(id, lang, region){
       currspec = input$species,
       lang = lang()
     ))
-    # output$plot_cpue_total_title <- renderText(ifelse(lang() == "ES","Tendencia de capturas por unidad de esfuerzo", "Trend of catch per unit effort"))
-    modal_Server('cpue_plot_title',lang,
-                 plot_title = c("Tendencia de capturas por unidad de esfuerzo", "Trend of catch per unit effort"),
-                 plot_info = c("Información sobre el gráfico","Information about the plot"))
+    # Outputs for the labelled plot
     output$cpue_trend_desc <- renderUI(cpue()$cpue_trend_desc)
     output$cpue_plot <- renderPlot(cpue()$cpue_plot)
     output$cpue_mean_desc <- renderUI(cpue()$cpue_mean_desc)
     
     # Length-frequencies by gear plot
-    output$plot_lfq_title <- renderText(ifelse(lang() == "ES","Frecuencias de tallas por arte","Frequencies by Size Class"))
-    modal_Server(
-      'plot_lfq_title',
-      lang,
-      plot_title = c("Frecuencias de tallas por arte","Frequencies by Size Class"),
-      plot_info = c("Información sobre el gráfico","Information about the plot")
-    )
     output$plot_lfq <- renderPlot(ss_lfq_plot(
       lfqdbase,
       year_min = input$sampleyear[1],
@@ -280,11 +287,6 @@ mod_02_porEsp_server <- function(id, lang, region){
     ))
     
     # CPUE by gear plot
-    # output$plot_cpue_arte_title <- renderText(
-    #   ifelse(lang() == "ES",
-    #          "Capturas por unidad de esfuerzo por arte",
-    #          "Captures by unit of effort")
-    # )
     # output$ss_cpue_por_arte <- renderPlot(ss_cpue_plot(
     #   lfqdbase,
     #   year_min = input$sampleyear[1],
@@ -295,9 +297,6 @@ mod_02_porEsp_server <- function(id, lang, region){
     # ))
     
     # Catch-seasonality plot
-    modal_Server('plot_est_title',lang,
-                 plot_title = c("Estacionalidad de capturas","Catch seasonality"),
-                 plot_info = c("Información sobre el gráfico","Information about the plot"))
     output$plot_est <- renderPlot(ss_plot_ssn(
       lfqdbase,
       year_min = input$sampleyear[1],
@@ -307,14 +306,6 @@ mod_02_porEsp_server <- function(id, lang, region){
     ))
     
     # CPUE per length-class plot
-    output$plot_cpue_pl_title <- renderText(ifelse(
-      lang() == "ES",
-      "Capturas por unidad de esfuerzo (por talla)",
-      "Catch per unit effort (by size)")
-    )
-    modal_Server('plot_cpue_pl_title',lang,
-                 plot_title = c("Capturas por unidad de esfuerzo (por talla)","Catch per unit effort (by size)"),
-                 plot_info = c("Información sobre el gráfico","Information about the plot"))
     output$plot_cpue_pl <- renderPlot(ss_plot_cpue_pl(
       lfqdbase,
       year_min = input$sampleyear[1],

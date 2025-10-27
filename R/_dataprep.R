@@ -70,4 +70,8 @@
 
 # ==== Description data ====
 
-
+# # CSV file of description text for dashboard
+# path <- '/Users/saeesh/Downloads/Shiny App Plot Descriptions - Sheet1.csv'
+# descriptions <- fread(path)
+# # Saving
+# save(descriptions, file='data/descriptions.rda')
