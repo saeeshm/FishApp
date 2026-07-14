@@ -1,9 +1,98 @@
 # Author: Saeesh Mangwani
 # Date: 2024-02-19
 
-# Description: Shared utility functions for all plots
+# Description: Shared utility functions for the entire app. Functions defined
+# broadly deal with plot themeing, font management, card design, and querying
+# databases for appropriate data based on provided filters
 
 # ==== Functions ====
+
+# Database querying functions ----------
+
+# Querying the appropriate length-frequency database based on the chosen region
+pick_lfq_database <- function(dbname){
+  # Choosing database based on region
+  if(!dbname %in% c('Tela', 'Trujillo')){
+    stop("No valid database found with that name! Check database picker input options")
+  }
+  # Choosing the appropriate database based on the dbname input
+  db <- switch(
+    dbname,
+    'Tela' = databases$tela_marino_lfqdb,
+    'Trujillo' = databases$truj_marino_lfqdb
+  )
+  return(db)
+}
+
+pick_fish_database <- function(dbname){
+  # Choosing database based on region
+  if(!dbname %in% c('Tela', 'Trujillo')){
+    stop("No valid database found with that name! Check database picker input options")
+  }
+  # Choosing the appropriate database based on the dbname input
+  db <- switch(
+    dbname,
+    'Tela' = databases$tela_marino_fdb,
+    'Trujillo' = databases$truj_marino_fdb
+  )
+  return(db)
+}
+
+pick_spectab <- function(dbname){
+  # Choosing database based on region
+  if(!dbname %in% c('Tela', 'Trujillo')){
+    stop("No valid database found with that name! Check database picker input options")
+  }
+  # Choosing the appropriate database based on the dbname input
+  db <- switch(
+    dbname,
+    'Tela' = databases$tela_marino_spectab,
+    'Trujillo' = databases$truj_marino_spectab
+  )
+  return(db)
+}
+
+# Functions for getting relevant metadata for populating sidebar input selectors
+# based on the chosen database ----------
+get_year_periods <- function(dbname){
+  db <- pick_fish_database(dbname)
+  year_period <- range(year(na.omit(db$fecha)))
+  # Appending the end of the range by 1 year so data within the final year
+  # gets included
+  year_period[2] <- year_period[2] + 1
+  # Completing the whole range, and returning as a character vector (required
+  # for sliderTextInput)
+  as.character(seq(year_period[1], year_period[2]))
+}
+
+get_spec_cmn_names <- function(dbname){
+  curr_spectab <- pick_spectab(dbname)
+  curr_fdb <- pick_lfq_database(dbname)
+  # Top-15 species caught (only ones with sufficient sample size for analysis)
+  top_specs <- curr_fdb[,.N, by=c('nombre_comun_cln')] |> setkey(x=_, N) |> tail(15)
+  # Finaly database of species names to use
+  db <- merge(top_specs, curr_spectab, by='nombre_comun_cln', all.x = T, all.y=F) |> 
+    setkey(x=_, N)
+  # Arranging by capture amount (descending)
+  spec_cmn_names <- rev(stringr::str_to_title(unique(db$nombre_comun_cln)))
+  return(spec_cmn_names)
+}
+
+get_spec_sci_names <- function(dbname){
+  curr_spectab <- pick_spectab(dbname)
+  curr_fdb <- pick_lfq_database(dbname)
+  # Top-15 species caught (only ones with sufficient sample size for analysis)
+  top_specs <- curr_fdb[,.N, by=c('nombre_comun_cln')] |> setkey(x=_, N) |> tail(15)
+  # Finaly database of species names to use
+  db <- merge(top_specs, curr_spectab, by='nombre_comun_cln', all.x = T, all.y=F) |> 
+    setkey(x=_, N)
+  # Arranging by capture amount (descending)
+  spec_sci_names <- rev(stringr::str_to_title(unique(db$nombre_cientifico)))
+  return(spec_sci_names)
+}
+
+
+# Themeing and plot functions ----------
 
 # Adding google fonts
 sysfonts::font_add_google('Inter', 'Inter')

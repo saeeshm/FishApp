@@ -161,7 +161,7 @@ ms_div_ts_plots <- function(lfqdb, year_min, year_max, lang){
   # period
   divts <- purrr::map_dfr(years, \(curryear){
     # Filtering the data for the requested year
-    plotdf <- lfqdbase[(lubridate::year(fecha) == curryear), ]
+    plotdf <- lfqdb[(lubridate::year(fecha) == curryear), ]
     # Calculating the diversity indices for this year
     div_output <- ms_div_indices(plotdf, curryear, curryear+1)
     # Formatting output dataframe
@@ -494,8 +494,8 @@ ms_top10_plot <- function(lfqdb, year_min, year_max, lang){
     ) +
     ggplot2::labs(
       y = ifelse(lang == 'ES','Desviación del peso capturado (kg)','Deviance of captured weight (kg)'),
-      x= NULL,
-      colour = ifelse(lang == 'ES','Peso capturado medio (kg)','Mean captured weight (kg)')
+      # fill = ifelse(lang == 'ES','Peso capturado medio (kg)','Mean captured weight (kg)')
+      x= NULL
     )
   # Returning the plot
   return(dev_plot)

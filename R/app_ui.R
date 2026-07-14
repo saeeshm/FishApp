@@ -10,7 +10,7 @@ app_ui <- function(request) {
     golem_add_external_resources(),
     page_navbar(
       shiny::includeScript("inst/app/www/code.js"),
-      # THEME
+      # Theming
       theme = bslib::bs_theme(
         brand = 'inst/app/www/brand.yml',
         bootswatch = "cerulean",
@@ -33,7 +33,8 @@ app_ui <- function(request) {
         navbar_light_contrast="#fff",
         "bslib_spacer" = "0.75rem" # Squeeze out a bit of space between cards
       ),
-      # Coral Logo and app header
+      
+      # ==== App header ====
       title=tags$div(
         style='display:inline-flex;',
         tags$div(
@@ -47,45 +48,45 @@ app_ui <- function(request) {
           ),
           class = 'app-logo-container'
         ),
-        tags$div(
-          class='app-title',
-          'PescApp'
-        ),
-        tags$div(
-          class = 'waves-container'
-        )
+        tags$div(class='app-title','PescApp'),
+        tags$div(class = 'waves-container')
       ),
       id='main-page',
-      # About us page
+      
+      # ==== App pages ====
+      
+      # About page ----------
       nav_panel(
         title = shiny::uiOutput('desc_title'),
         shiny::uiOutput('desc_ui')
       ),
-      # Zone map
+      
+      # Map page ----------
       nav_panel(
         title = shiny::uiOutput('map_title'),
         mod_04_mapaReg_ui(id='mapaReg')
       ),
-      # General sampling effort information
+      
+      # General sampling summary (stakeholder report) page ----------\
       nav_panel(
-        # title="Datos Generales",
         title = shiny::uiOutput('datGen_title'),
         mod_03_datGen_ui("datGen")
       ),
-      # Per-species indicators
+      
+      # Per-species fishery indicators ----------
       nav_panel(
-        # title="Indicadores Por Especie", 
         title = shiny::uiOutput('porEsp_title'),
         mod_02_porEsp_ui(id='porEsp')
       ),
-      # Multispecies indicators
+      
+      # Multi-species fishery indicators ----------
       nav_panel(
-        # title="Indicadores Multiespecíficos", 
         title = shiny::uiOutput('multiEsp_title'),
         mod_01_multiEsp_ui(id='multiEsp')
       ),
+      
       # A generalized language picker (this generates a warning, because bslib
-      # doesn't like this inside nav_panel!)
+      # doesn't like this floating loosely inside nav_panel!)
       tags$div(
         class='lang-picker',
         # shiny::icon('language'),
