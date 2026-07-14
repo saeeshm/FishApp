@@ -13,12 +13,10 @@ mod_04_mapaReg_ui <- function(id){
   layout_sidebar(
     # Inputs and descriptions in the sidebar
     sidebar = bslib::sidebar(
-      width = '20%',
+      width = '15%',
       position='left',
-      # Text output describing currently focused region
-      # tags$h4('Región'),
-      tags$h4(textOutput(ns('region_title'))),
-      textOutput(ns('region_desc'))
+      # Instantiating share sidebar UI, specifying filters for this page
+      mod_06_sidebar_filters_ui(ns('shared_sidebar'), show=c('database'))
     ),
     bslib::card(
       leaflet::leafletOutput(ns('mapa'), height = "100%")
@@ -29,20 +27,19 @@ mod_04_mapaReg_ui <- function(id){
 #' 04_mapaReg Server Functions
 #'
 #' @noRd 
-mod_04_mapaReg_server <- function(id, lang, region){
+mod_04_mapaReg_server <- function(id, lang, filters){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
-    # Title of Sidebar
-    output$region_title <- renderText(ifelse(lang() == 'ES','Región','Region'))
-    # Region description text output
-    output$region_desc <- renderText(region)
-      # Producing map
-    output$mapa <- leaflet::renderLeaflet(mapa_regional(region))
+    
+    # Filter server for this page, using the filter_state reactive object as the
+    # shared source of truth
+    mod_06_sidebar_filters_server(
+      'shared_sidebar',
+      filter_state = filters,
+      lang = lang
+    )
+    
+      # Producing map - reactive based on chosen region
+    output$mapa <- leaflet::renderLeaflet(mapa_regional(filters$database))
   })
 }
-    
-## To be copied in the UI
-# mod_04_mapaReg_ui("04_mapaReg_1")
-    
-## To be copied in the server
-# mod_04_mapaReg_server("04_mapaReg_1")

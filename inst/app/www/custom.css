@@ -106,9 +106,16 @@ body {
   color: #fff;
 }
 
-/*Species picker input scientific name text style*/
-.text-muted{
-  color: var(--bs-tertiary-color) !important;
+/*Picker input texts should be allowed to overflow*/
+.picker-input {
+  white-space: nowrap;
+  overflow: visible;
+  text-overflow: clip;
+}
+
+/*Species picker input common name text box (prevents text overflow being cut-off)*/
+.filter-option-inner-inner{
+  width: fit-content;
 }
 
 /* Style for Modal-dialogue triggering question marks */

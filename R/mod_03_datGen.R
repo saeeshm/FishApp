@@ -78,21 +78,10 @@ mod_03_datGen_ui <- function(id){
   bslib::layout_sidebar(
     # Inputs and descriptions in the sidebar
     sidebar = bslib::sidebar(
+      width = '15%',
       position='left',
-      # Text output describing currently focused region
-      # tags$h4('Región'),
-      tags$h4(textOutput(ns('region_title'))),
-      textOutput(ns('region_desc')),
-      # Date-range input
-      # tags$h4('Año de Muestreo'),
-      tags$h4(textOutput(ns('sampleyear_title'))),
-      shinyWidgets::sliderTextInput(
-        ns('sampleyear'), 
-        label=NULL,
-        # Using only Month-year combos as valid input choices
-        choices=unique(year(na.omit(fishdbase$fecha))),
-        selected=range(year(na.omit(fishdbase$fecha)))
-      )
+      # Instantiating share sidebar UI, specifying filters for this page
+      mod_06_sidebar_filters_ui(ns('shared_sidebar'), show=c('database', 'years'))
     ),
     # Main body
     bslib::layout_column_wrap(
@@ -157,15 +146,24 @@ mod_03_datGen_ui <- function(id){
 #' 03_datMuestro Server Functions
 #'
 #' @noRd 
-mod_03_datGen_server <- function(id, lang, region){
+mod_03_datGen_server <- function(id, lang, filters){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
-    # Sidebar elements ----------
+    # Sidebar/Input elements ----------
     
-    # Adding the selected region description
-    output$region_title <- renderText(ifelse(lang() == "ES","Región","Region"))
-    output$region_desc <- renderText(region)
-    output$sampleyear_title <- renderText(ifelse(lang() == "ES","Año de Muestreo","Sampling Year(s)"))
+    # Filter server for this page, using the filter_state reactive object as the
+    # shared source of truth
+    mod_06_sidebar_filters_server(
+      'shared_sidebar',
+      filter_state = filters,
+      lang = lang
+    )
+    
+    # Picking the appropriate databases based on the provided region
+    curr_lfqdb <- reactive({pick_lfq_database(dbname = filters$database)}) |> 
+      bindCache(filters$database)
+    curr_fdb <- reactive({pick_fish_database(dbname = filters$database)}) |> 
+      bindCache(filters$database)
     
     # Modals and descriptions ----------
     
@@ -206,10 +204,10 @@ mod_03_datGen_server <- function(id, lang, region){
     
     # Summary statistics object (used to populate value boxes)
     ss <- reactive(dg_summ_stats(
-      fishdbase, 
-      input$sampleyear[1], 
-      input$sampleyear[2]
-    ))
+      dbase = curr_fdb(), 
+      year_min = filters$years[1],
+      year_max = filters$years[2]
+    )) |> bindCache(curr_fdb(), filters$years)
     
     # Text outputs for value box UIs
     output$num_muestreos <- renderText(ss()$num_muestreos)
@@ -222,41 +220,37 @@ mod_03_datGen_server <- function(id, lang, region){
     
     # Top 10 captured species data
     esp_comunes <- reactive(dg_plot_esp_comunes(
-      fishdbase, 
-      input$sampleyear[1], 
-      input$sampleyear[2],
-      lang()
-    ))
+      dbase = curr_fdb(), 
+      year_min = filters$years[1],
+      year_max = filters$years[2],
+      lang = lang
+    )) |> bindCache(curr_fdb(), filters$years, lang())
+    
     output$plot_esp_comunes <- renderPlot(esp_comunes()$top10_plot)
     output$prop_capt_desc <- renderUI(esp_comunes()$prop_capt)
     
     # Gear usage plot
     output$plot_artes <- renderPlot(dg_plot_artes(
-      fishdbase, 
-      year_min = input$sampleyear[1],
-      year_max = input$sampleyear[2],
-      lang
-    ))
+      dbase = curr_fdb(), 
+      year_min = filters$years[1],
+      year_max = filters$years[2],
+      lang = lang
+    )) |> bindCache(curr_fdb(), filters$years, lang())
     
     # LFQ by trophic level plot
     output$plot_muest <- renderPlot(dg_plot_peso(
-      fishdbase, 
-      year_min = input$sampleyear[1],
-      year_max = input$sampleyear[2],
-      lang
-    ))
+      dbase = curr_fdb(), 
+      year_min = filters$years[1],
+      year_max = filters$years[2],
+      lang = lang
+    )) |> bindCache(curr_fdb(), filters$years, lang())
+    
     # Top-captured species plot
     output$plot_ssn <- renderPlot(dg_plot_ssn(
-      fishdbase,
-      year_min = input$sampleyear[1],
-      year_max = input$sampleyear[2],
-      lang
-    ))
+      dbase = curr_fdb(), 
+      year_min = filters$years[1],
+      year_max = filters$years[2],
+      lang = lang
+    )) |> bindCache(curr_fdb(), filters$years, lang())
   })
 }
-    
-## To be copied in the UI
-# mod_03_datGen_ui("03_datMuestro_1")
-    
-## To be copied in the server
-# mod_03_datGen_server("03_datMuestro_1")

@@ -65,33 +65,8 @@ mod_02_porEsp_ui <- function(id){
     # Inputs and descriptions in the sidebar
     sidebar = sidebar(
       position='left',
-      # Text output describing currently focused region
-      tags$h4(textOutput(ns('region_title'))),
-      textOutput(ns('region_desc')),
-      # Date-range input
-      tags$h4(textOutput(ns('sampleyear_title'))),
-      shinyWidgets::sliderTextInput(
-        ns('sampleyear'), 
-        label=NULL,
-        # Using only Month-year combos as valid input choices
-        choices=unique(year(na.omit(fishdbase$fecha))),
-        selected=range(year(na.omit(fishdbase$fecha)))
-      ),
-      # Fish species input
-      tags$h4(textOutput(ns('species_title'))),
-      shinyWidgets::pickerInput(
-        ns('species'), 
-        label = NULL, 
-        choices = stringr::str_to_title(spectab$nombre_comun_cln),
-        selected = 'Calale',
-        choicesOpt = list(
-          subtext = spectab$nombre_cientifico,
-          sep = ' '
-        ),
-        options = list(
-          `live-search` = TRUE,
-          `container` = 'body')
-      )
+      # Instantiating share sidebar UI, specifying filters for this page
+      mod_06_sidebar_filters_ui(ns('shared_sidebar'), show=c('database', 'years', 'species'))
     ),
     # Main body
     bslib::layout_column_wrap(
@@ -189,18 +164,29 @@ mod_02_porEsp_ui <- function(id){
     )
   )
 }
-    
+
 #' 02_porEsp Server Functions
 #'
 #' @noRd 
-mod_02_porEsp_server <- function(id, lang, region){
+mod_02_porEsp_server <- function(id, lang, filters){
   moduleServer(id, function(input, output, session){
     ns <- session$ns
-    # Sidebar metadata
-    output$region_title <- renderText(ifelse(lang() == "ES","Región","Region"))
-    output$region_desc <- renderText(region)
-    output$sampleyear_title <- renderText(ifelse(lang() == "ES","Año de Muestreo","Sampling Year(s)"))
-    output$species_title <- renderText(ifelse(lang() == "ES","Especie","Species"))
+    
+    # Sidebar/Input elements ----------
+    
+    # Filter server for this page, using the filter_state reactive object as the
+    # shared source of truth
+    mod_06_sidebar_filters_server(
+      'shared_sidebar',
+      filter_state = filters,
+      lang = lang
+    )
+    
+    # Picking the appropriate databases based on the provided region
+    curr_lfqdb <- reactive({pick_lfq_database(dbname = filters$database)}) |> 
+      bindCache(filters$database)
+    curr_fdb <- reactive({pick_fish_database(dbname = filters$database)}) |> 
+      bindCache(filters$database)
     
     # Modals and descriptions ----------
     
@@ -249,11 +235,11 @@ mod_02_porEsp_server <- function(id, lang, region){
     
     # Summary statistics object (used to populate value boxes)
     ss <- reactive(ss_summ_stats(
-      fishdbase = fishdbase, 
-      lfqdbase = lfqdbase,
-      input$sampleyear[1], 
-      input$sampleyear[2],
-      currspec = input$species
+      fishdbase = curr_fdb(), 
+      lfqdbase = curr_lfqdb(),
+      year_min = filters$years[1], 
+      year_max = filters$years[2],
+      currspec = filters$species
     ))
     
     # Populating value boxes
@@ -265,10 +251,10 @@ mod_02_porEsp_server <- function(id, lang, region){
 
     # CPUE Trend card
     cpue <- reactive(ss_cpue_trend_total(
-      lfqdbase=lfqdbase,
-      year_min = input$sampleyear[1],
-      year_max = input$sampleyear[2],
-      currspec = input$species,
+      lfqdbase = curr_lfqdb(),
+      year_min = filters$years[1], 
+      year_max = filters$years[2],
+      currspec = filters$species,
       lang = lang()
     ))
     # Outputs for the labelled plot
@@ -278,10 +264,10 @@ mod_02_porEsp_server <- function(id, lang, region){
     
     # Length-frequencies by gear plot
     output$plot_lfq <- renderPlot(ss_lfq_plot(
-      lfqdbase,
-      year_min = input$sampleyear[1],
-      year_max = input$sampleyear[2],
-      currspec = input$species,
+      lfqdbase = curr_lfqdb(),
+      year_min = filters$years[1], 
+      year_max = filters$years[2],
+      currspec = filters$species,
       froese = ss()$froese,
       lang = lang()
     ))
@@ -289,8 +275,8 @@ mod_02_porEsp_server <- function(id, lang, region){
     # CPUE by gear plot
     # output$ss_cpue_por_arte <- renderPlot(ss_cpue_plot(
     #   lfqdbase,
-    #   year_min = input$sampleyear[1],
-    #   year_max = input$sampleyear[2],
+    #   year_min = input$years[1],
+    #   year_max = input$years[2],
     #   currspec = input$species,
     #   bygear = T,
     #   lang=lang()
@@ -298,26 +284,20 @@ mod_02_porEsp_server <- function(id, lang, region){
     
     # Catch-seasonality plot
     output$plot_est <- renderPlot(ss_plot_ssn(
-      lfqdbase,
-      year_min = input$sampleyear[1],
-      year_max = input$sampleyear[2],
-      currspec = input$species,
+      lfqdbase = curr_lfqdb(),
+      year_min = filters$years[1], 
+      year_max = filters$years[2],
+      currspec = filters$species,
       lang = lang()
     ))
     
     # CPUE per length-class plot
     output$plot_cpue_pl <- renderPlot(ss_plot_cpue_pl(
-      lfqdbase,
-      year_min = input$sampleyear[1],
-      year_max = input$sampleyear[2],
-      currspec = input$species,
+      lfqdbase = curr_lfqdb(),
+      year_min = filters$years[1], 
+      year_max = filters$years[2],
+      currspec = filters$species,
       lang = lang()
     ))
   })
 }
-    
-## To be copied in the UI
-# mod_02_porEsp_ui("02_porEsp_1")
-    
-## To be copied in the server
-# mod_02_porEsp_server("02_porEsp_1")

@@ -5,12 +5,48 @@
 
 # ==== Functions ====
 
+# Setting map views based on database
+get_map_views <- function(region){
+  if(!region %in% c('Tela', 'Trujillo')){
+    stop('Date region provided is not valid! Check database input options')
+  }
+  views <- switch(
+    region,
+    'Tela' = list(
+      lng = -87.56, 
+      lat = 15.93,
+      zoom = 10
+    ),
+    'Trujillo' = list(
+      lng = -85.92, 
+      lat = 15.94,
+      zoom = 10.5
+     )
+   )
+  return(views)
+}
+
 # Function for drawing the map for the Tela Bay region
 mapa_regional <- function(region){
-  # This argument does nothing yet
-  if(region == 'Bahia de Tela') invisible()
+  # Choosing community location coordinates based on the region
+  if(!region %in% c('Tela', 'Trujillo')){
+    stop('Date region provided is not valid! Check database input options')
+  }
+  curr_comunidades <- switch(
+    region,
+    'Tela' = tela_locs,
+    'Trujillo' = truj_locs
+  )
+  # Getting the map view options based on the region
+  viewOpts <- get_map_views(region)
+  
+  # Drawing leaflet map
   leaflet::leaflet() |> 
-    leaflet::setView(-87.56, 15.93, zoom = 10) |>
+    leaflet::setView(
+      lng = viewOpts$lng, 
+      lat = viewOpts$lat, 
+      zoom = viewOpts$zoom
+    ) |>
     # leaflet::setMaxBounds(-88, 14, -86, 17) |>
     # leaflet::addProviderTiles(leaflet::providers$Esri.WorldShadedRelief,
     #                           options = leaflet::providerTileOptions(opacity = 0.4)) |> 
@@ -20,12 +56,12 @@ mapa_regional <- function(region){
     leaflet::addMapPane('comunidades', zIndex=550) |>
     # Communities
     leaflet::addCircles(
-      data=comunidades,
-      label = comunidades$nombre,
+      data = curr_comunidades,
+      label = curr_comunidades$nombre,
       group = 'Comunidades',
       color = 'darkorange',
       fill = T,
-      radius = 6,
+      radius = 10,
       options = leaflet::pathOptions(pane = 'comunidades')
     ) |> 
     # National Administrative layers
@@ -57,10 +93,19 @@ mapa_regional <- function(region){
       overlayGroups = c("APMCs", "ZRPs Tela", "Comunidades"),
       options = leaflet::layersControlOptions(collapsed = FALSE)
     ) |> 
-    # Button for resetting the view
+    # Button for resetting the view - defines view of interest based on region
+    # chosen using the viewOpts object defined above
     leaflet::addEasyButton(leaflet::easyButton(
       icon="fa-globe", title="Vuelva a la región",
-      onClick=leaflet::JS("function(btn, map){ map.setView([15.93, -87.56], 10); }"))) |> 
+      onClick=leaflet::JS(paste0(
+        "function(btn, map){ map.setView([", 
+        viewOpts$lat,
+        ", ", 
+        viewOpts$lng,
+        "], ", 
+        viewOpts$zoom,
+        "); }"
+      )))) |> 
     # Optional: map inset to show where we are in the world.
     leaflet::addMiniMap(position = 'bottomleft', width = 125, height = 125, toggleDisplay = T, zoomLevelFixed = 5)
 }

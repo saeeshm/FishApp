@@ -18,12 +18,8 @@ mod_01_multiEsp_ui <- function(id){
     # Inputs and descriptions in the sidebar
     sidebar = sidebar(
       position='left',
-      # Text output describing currently focused region
-      tags$h4(textOutput(ns("region_title"))),
-      textOutput(ns('region_desc')),
-      # Date-range input
-      tags$h4(textOutput(ns("sampleyear_title"))),
-      uiOutput(ns("sampleyear_ui"))
+      # Instantiating share sidebar UI, specifying filters for this page
+      mod_06_sidebar_filters_ui(ns('shared_sidebar'), show=c('database', 'years'))
     ),
     bslib::layout_column_wrap(
       width = 1,
@@ -134,26 +130,25 @@ mod_01_multiEsp_ui <- function(id){
 #' 01_multiEsp Server Functions
 #'
 #' @noRd 
-mod_01_multiEsp_server <- function(id, lang, region){
+mod_01_multiEsp_server <- function(id, lang, filters){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
     
     # Sidebar/Input elements ----------
     
-    # Adding the selected region description
-    output$region_title <- renderText(ifelse(lang() == "ES","Región","Region"))
-    output$region_desc <- renderText(region)
-    # Slider input for year filter
-    output$sampleyear_title <- renderText(ifelse(lang() == "ES","Año de Muestreo","Sampling Year(s)"))
-    output$sampleyear_ui <- renderUI({
-      shinyWidgets::sliderTextInput(
-        ns('sampleyear'),
-        label=NULL,
-        # Using only Month-year combos as valid input choices
-        choices=unique(year(na.omit(fishdbase$fecha))),
-        selected=range(year(na.omit(fishdbase$fecha)))
-      )
-    })
+    # Filter server for this page, using the filter_state reactive object as the
+    # shared source of truth
+    mod_06_sidebar_filters_server(
+      'shared_sidebar',
+      filter_state = filters,
+      lang = lang
+    )
+    
+    # Picking the appropriate databases based on the provided region
+    curr_lfqdb <- reactive({pick_lfq_database(dbname = filters$database)}) |> 
+      bindCache(filters$database)
+    curr_fdb <- reactive({pick_fish_database(dbname = filters$database)}) |> 
+      bindCache(filters$database)
     
     # Modals and descriptions ----------
     
@@ -189,22 +184,22 @@ mod_01_multiEsp_server <- function(id, lang, region){
     
     # Multispecies CPUE trend
     cpue <- reactive(ms_cpue_plot(
-      lfqdb=lfqdbase,
-      year_min = input$sampleyear[1],
-      year_max = input$sampleyear[2],
+      lfqdb = curr_lfqdb(),
+      year_min = filters$years[1],
+      year_max = filters$years[2],
       lang = lang()
-    ))
+    )) |> bindCache(curr_lfqdb(), filters$years)
     output$cpue_trend_desc <- renderUI(cpue()$cpue_trend_desc)
     output$cpue_plot <- renderPlot(cpue()$cpue_plot)
     output$cpue_mean_desc <- renderUI(cpue()$cpue_mean_desc)
     
     # Diversity plots and UI object list
     div <- reactive(ms_div_ts_plots(
-      lfqdb = lfqdbase,
-      year_min = input$sampleyear[1],
-      year_max = input$sampleyear[2],
+      lfqdb = curr_lfqdb(),
+      year_min = filters$years[1],
+      year_max = filters$years[2],
       lang = lang()
-    ))
+    )) |> bindCache(curr_lfqdb(), filters$years)
     # Species richness
     output$div_rich_trend_desc <- renderUI(div()$rich$trend_desc)
     output$div_rich_plot <- renderPlot(div()$rich$plot)
@@ -220,29 +215,29 @@ mod_01_multiEsp_server <- function(id, lang, region){
     
     # Biomass density spectrum plot
     bd <- reactive(ms_bdens_plot(
-      fdb = fishdbase,
-      year_min = input$sampleyear[1],
-      year_max = input$sampleyear[2],
+      fdb = curr_fdb(),
+      year_min = filters$years[1],
+      year_max = filters$years[2],
       lang = lang()
-    ))
+    )) |> bindCache(curr_fdb(), filters$years)
     output$plot_bdens_desc <- renderUI(bd()$bd_desc)
     output$plot_bdens <- renderPlot(bd()$bd_plot)
     
     # Length-frequency per gear and trophic level plot
     output$plot_lfq <- renderPlot(ms_lfq_plot(
-      lfqdb = lfqdbase,
-      year_min = input$sampleyear[1],
-      year_max = input$sampleyear[2],
+      lfqdb = curr_lfqdb(),
+      year_min = filters$years[1],
+      year_max = filters$years[2],
       lang()
-    ))
+    )) |> bindCache(curr_lfqdb(), filters$years)
     
     # Top-10 species captured as deviances plot 
     output$plot_top10_dev <- renderPlot(ms_top10_plot(
-      lfqdb = lfqdbase,
-      year_min = input$sampleyear[1],
-      year_max = input$sampleyear[2],
+      lfqdb = curr_lfqdb(),
+      year_min = filters$years[1],
+      year_max = filters$years[2],
       lang()
-    ))
+    )) |> bindCache(curr_lfqdb(), filters$years)
   })
 }
 

@@ -29,8 +29,8 @@ dg_summ_stats <- function(dbase, year_min, year_max){
     num_comunidades = unique(currdf$comunidad) |> na.omit() |> length(),
     # Named list of communities sampled
     nombres_comunidades = unique(currdf$comunidad) |> na.omit() |> paste(collapse=', '),
-    # Total weight sampled
-    peso_muestreado = round(sum(currdf$peso, na.rm=T)/1000, 0),
+    # Total weight sampled - assuming already in kg (done during dataprep)
+    peso_muestreado = round(sum(currdf$peso, na.rm=T), 0),
     # Total number of species sampled
     num_especies = uniqueN(currdf$nombre_cientifico),
     # Total number of individuals sampled
@@ -47,7 +47,7 @@ dg_plot_por_arte <- function(dbase, year_min, year_max){
   plotdf <- currdf |> 
     _[, tipo_arte := ifelse(is.na(tipo_arte), 'Desconocido', tipo_arte)] |> 
     _[, `:=`(tipo_arte = factor(tipo_arte, levels=c('Desconocido', uartes)))] |> 
-    _[, .(peso = sum(peso, na.rm=T)/1000), by=.(tipo_arte)]
+    _[, .(peso = sum(peso, na.rm=T)), by=.(tipo_arte)]
   
   # Plotting
   plotdf |> 
@@ -74,7 +74,7 @@ dg_plot_esp_comunes <- function(dbase, year_min, year_max, lang){
   
   # Getting the 10 most commonly caught species
   plotdf <- currdf |> 
-    _[, .(peso = sum(peso, na.rm=T)/1000), by=.(nombre_cientifico)] |> 
+    _[, .(peso = sum(peso, na.rm=T)), by=.(nombre_cientifico)] |> 
     _[, .(peso = sum(peso)), by=.(nombre_cientifico)] |> 
     _[order(-peso)] |> 
     head(10)
@@ -82,13 +82,13 @@ dg_plot_esp_comunes <- function(dbase, year_min, year_max, lang){
   # What proportion of weight do these 10 species comprise, relative to the
   # total caught weight
   prop_capt <- round(
-    (sum(plotdf$peso)/(sum(currdf$peso, na.rm=T)/1000)) * 100,
+    (sum(plotdf$peso)/(sum(currdf$peso, na.rm=T))) * 100,
     2
   )
   
   # Creating a description text element based on the proportion captured:
   prop_capt_desc <- cpue_mean_desc <- p(
-    strong(ifelse(lang == 'ES','Proporción del peso total capturado: ','Proportion of total captured weight: ')),
+    strong(ifelse(lang() == 'ES','Proporción del peso total capturado: ','Proportion of total captured weight: ')),
     paste0(prop_capt, '%')
   )
   
@@ -108,8 +108,8 @@ dg_plot_esp_comunes <- function(dbase, year_min, year_max, lang){
     ggplot2::guides('fill' = 'none') +
     ggplot2::labs(
       y = NULL,
-      x = ifelse(lang == 'ES','Peso muestreado (kg)','Sampled Weight (kg)'),
-      fill=ifelse(lang == 'ES','Especie','Species')
+      x = ifelse(lang() == 'ES','Peso muestreado (kg)','Sampled Weight (kg)'),
+      fill=ifelse(lang() == 'ES','Especie','Species')
     )
   # Returning results as a list
   list(
@@ -176,7 +176,7 @@ dg_plot_peso <- function(dbase, year_min, year_max, lang){
       comunidad = factor(comunidad, levels=unique(comunidad)),
       tipo_arte = factor(tipo_arte, levels=c('Desconocido', uartes))
     )] |> 
-    _[, .(peso = sum(peso, na.rm=T)/1000), by=.(comunidad, tipo_arte)] |> 
+    _[, .(peso = sum(peso, na.rm=T)), by=.(comunidad, tipo_arte)] |> 
     ggplot2::ggplot(ggplot2::aes(y = tipo_arte, x=peso, fill=tipo_arte)) +
     ggplot2::geom_col(position='dodge', alpha=0.8, colour='black') +
     ggplot2::scale_y_discrete(drop = FALSE) +
@@ -208,7 +208,7 @@ dg_plot_ssn <- function(dbase, year_min, year_max, lang){
       comunidad = factor(comunidad, levels=unique(comunidad)),
       month = factor(mref_vec[month], levels=mref_vec)
     )] |> 
-    _[, .(peso = sum(peso, na.rm=T)/1000), by=.(month, comunidad)] |> 
+    _[, .(peso = sum(peso, na.rm=T)), by=.(month, comunidad)] |> 
     ggplot2::ggplot(ggplot2::aes(x = month, y=peso, colour=comunidad, group=comunidad)) +
     # ggplot2::geom_col(position='dodge', alpha=0.8, colour='black') +
     ggplot2::geom_line(alpha=0.6, show.legend = F) +
