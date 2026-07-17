@@ -9,10 +9,9 @@ app_ui <- function(request) {
     # Golem external resources
     golem_add_external_resources(),
     page_navbar(
-      shiny::includeScript("inst/app/www/code.js"),
       # Theming
       theme = bslib::bs_theme(
-        brand = 'inst/app/www/brand.yml',
+        brand = app_sys("app/www/brand.yml"),
         bootswatch = "cerulean",
         bg = "#fff",
         fg = "#000000",
@@ -29,9 +28,10 @@ app_ui <- function(request) {
         # 'body-font-family' = font_google('Inter'),
         # Navbar background hill
         navbar_bg = "#3ebbed",
-        # NAvbar text colour
+        # Navbar text colour
         navbar_light_contrast="#fff",
-        "bslib_spacer" = "0.75rem" # Squeeze out a bit of space between cards
+        # Squeeze out a bit of space between cards
+        "bslib_spacer" = "0.75rem" 
       ),
       
       # ==== App header ====
