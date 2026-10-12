@@ -93,3 +93,20 @@
 #' @source data-raw/timeline_milestones.R, from
 #'   data-raw/app_metadata/timeline_milestones.csv.
 "timeline_milestones"
+
+#' Gear name lookup
+#'
+#' Lookup table translating the standardized (Spanish) gear names in
+#' `databases` to display names in English and Spanish, with a consistent
+#' display order and colour per gear. Used by `translate_gear()`.
+#'
+#' @format A `data.table` with columns:
+#' \describe{
+#'   \item{tipo_arte}{Standardized gear name, as it appears in the `tipo_arte`
+#'     column of `databases`. This is the join key.}
+#'   \item{sort_order}{Display order of the gear in plots and legends.}
+#'   \item{name_es, name_en}{Gear display name in Spanish and English.}
+#'   \item{colour}{Hex colour for the gear, from the CORAL palette.}
+#' }
+#' @source data-raw/gear_names.R, from data-raw/app_metadata/gear_names.csv.
+"gear_names"

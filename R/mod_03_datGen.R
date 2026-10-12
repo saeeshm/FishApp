@@ -115,7 +115,7 @@ mod_03_datGen_ui <- function(id){
         # Plot 1 - Top 10-species
         plot_card_labelled(
           plot = plotOutput(ns('plot_esp_comunes')),
-          # top_label = shiny::uiOutput(ns('prop_capt_desc')),
+          top_label = shiny::uiOutput(ns('prop_capt_desc')),
           card_title = modal_UI(ns('plot_esp_comunes_title'))
         ),
         # Plot 2 - Gears

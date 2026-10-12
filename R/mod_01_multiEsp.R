@@ -228,8 +228,8 @@ mod_01_multiEsp_server <- function(id, lang, filters){
       lfqdb = curr_lfqdb(),
       year_min = filters$years[1],
       year_max = filters$years[2],
-      lang()
-    )) |> bindCache(curr_lfqdb(), filters$years)
+      lang = lang()
+    )) |> bindCache(curr_lfqdb(), filters$years, lang())
     
     # Top-10 species captured as deviances plot 
     output$plot_top10_dev <- renderPlot(ms_top10_plot(

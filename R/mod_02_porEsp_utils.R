@@ -266,9 +266,13 @@ ss_cpue_trend_total <- function(lfqdbase, spectab, year_min, year_max, currspec,
 # Plotting length-frequencies by gear for this species
 ss_lfq_plot <- function(lfqdbase, spectab, year_min, year_max, currspec, froese, lang){
   # Getting plotting data
-  plotdf <- make_plotdf(lfqdbase, spectab, year_min, year_max, currspec)
+  plotdf <- make_plotdf(lfqdbase, spectab, year_min, year_max, currspec) |> 
+    # Translate and factorize gear names as required
+    _[, tipo_arte := translate_gear(tipo_arte, lang)]
+  
   # Getting ylimits based on the total summed weights for this species by gear
   # ylim_max <- max(plotdf[, .(tot_wt=sum(adjWt)), by=tipo_arte]$tot_wt)
+  
   # Making plot
   plotdf |> 
     ggplot2::ggplot() +
@@ -279,7 +283,7 @@ ss_lfq_plot <- function(lfqdbase, spectab, year_min, year_max, currspec, froese,
       alpha=0.8,
       linewidth=0.4,
       show.legend=F) +
-    ggplot2::facet_wrap('tipo_arte', scales = 'fixed', drop=F, ncol=1) +
+    ggplot2::facet_wrap('tipo_arte', scales = 'fixed', ncol=1) +
     # ggplot2::scale_fill_brewer(palette = 'Dark2') +
     # Setting scale limits for clean viewing
     coord_cartesian(

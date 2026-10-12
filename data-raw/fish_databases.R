@@ -30,13 +30,44 @@ prep_fish_dbases <- function(fdb_path, lfqdb_path, troph_cwalk){
   fdb <- fread(fdb_path)
   lfqdb <- fread(lfqdb_path)
 
-  # Renaming gear-types
+  # Renaming gear-types (both databases) to standardized Spanish names (the 
+  # gear-name crosswalk is used to translate between Spanish and English names)
+  fdb$tipo_arte <- dplyr::case_when(
+    fdb$tipo_arte == 'Atarraya' ~ 'Atarraya',
+    fdb$tipo_arte == 'Chinchorro' ~ 'Chinchorro',
+    # Handlines
+    fdb$tipo_arte == 'Cuerda' ~ 'Linea de Mano',
+    fdb$tipo_arte == 'Handline' ~ 'Linea de Mano',
+    fdb$tipo_arte == 'Linea de Mano' ~ 'Linea de Mano',
+    fdb$tipo_arte == 'Manual' ~ 'Linea de Mano',
+    # Gillnets
+    fdb$tipo_arte == 'Gillnet - 2in' ~ 'Trasmallo - 2"',
+    fdb$tipo_arte == 'Trasmallo - 2"' ~ 'Trasmallo - 2"',
+    fdb$tipo_arte == 'Gillnet - 3in' ~ 'Trasmallo - 3"',
+    fdb$tipo_arte == 'Trasmallo - 3"' ~ 'Trasmallo - 3"',
+    fdb$tipo_arte == 'Gillnet - Unknown' ~ 'Trasmallo - Desconocido',
+    fdb$tipo_arte == 'Trasmallo - Desconocido' ~ 'Trasmallo - Desconocido',
+    fdb$tipo_arte == 'Netes' ~ 'Trasmallo - Desconocido',
+    T ~ 'Arte Desconocido'
+  )
+  
   lfqdb$tipo_arte <- dplyr::case_when(
-    lfqdb$tipo_arte == 'Gillnet - 2in' ~ 'Trasmallo - 2"',
-    lfqdb$tipo_arte == 'Gillnet - 3in' ~ 'Trasmallo - 3"',
-    lfqdb$tipo_arte == 'Gillnet - Unknown' ~ 'Trasmallo - Desconocido',
+    lfqdb$tipo_arte == 'Atarraya' ~ 'Atarraya',
+    lfqdb$tipo_arte == 'Chinchorro' ~ 'Chinchorro',
+    # Handlines
+    lfqdb$tipo_arte == 'Cuerda' ~ 'Linea de Mano',
     lfqdb$tipo_arte == 'Handline' ~ 'Linea de Mano',
-    T ~ lfqdb$tipo_arte
+    lfqdb$tipo_arte == 'Linea de Mano' ~ 'Linea de Mano',
+    lfqdb$tipo_arte == 'Manual' ~ 'Linea de Mano',
+    # Gillnets
+    lfqdb$tipo_arte == 'Gillnet - 2in' ~ 'Trasmallo - 2"',
+    lfqdb$tipo_arte == 'Trasmallo - 2"' ~ 'Trasmallo - 2"',
+    lfqdb$tipo_arte == 'Gillnet - 3in' ~ 'Trasmallo - 3"',
+    lfqdb$tipo_arte == 'Trasmallo - 3"' ~ 'Trasmallo - 3"',
+    lfqdb$tipo_arte == 'Gillnet - Unknown' ~ 'Trasmallo - Desconocido',
+    lfqdb$tipo_arte == 'Trasmallo - Desconocido' ~ 'Trasmallo - Desconocido',
+    lfqdb$tipo_arte == 'Netes' ~ 'Trasmallo - Desconocido',
+    T ~ 'Arte Desconocido'
   )
 
   # Joining trophic level data to lfqadj database

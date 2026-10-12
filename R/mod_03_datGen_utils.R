@@ -38,39 +38,14 @@ dg_summ_stats <- function(dbase, year_min, year_max){
   )
 }
 
-# Plotting total weight sampled per gear for the current data
-dg_plot_por_arte <- function(dbase, year_min, year_max){
-  # Filtering the data for the requested year range
-  currdf <- dbase[(year(fecha) >= year_min) & (year(fecha) < year_max), ]
-  
-  # Preparing data for plotting
-  plotdf <- currdf |> 
-    _[, tipo_arte := ifelse(is.na(tipo_arte), 'Desconocido', tipo_arte)] |> 
-    _[, `:=`(tipo_arte = factor(tipo_arte, levels=c('Desconocido', uartes)))] |> 
-    _[, .(peso = sum(peso, na.rm=T)), by=.(tipo_arte)]
-  
-  # Plotting
-  plotdf |> 
-    ggplot2::ggplot(ggplot2::aes(y = tipo_arte, x=peso, fill=tipo_arte)) +
-    ggplot2::geom_col(position='dodge', alpha=0.8, colour='black') +
-    # coord_polar(start=0) +
-    ggplot2::scale_y_discrete(drop = FALSE) +
-    ggplot2::scale_x_continuous(expand = c(0, 2)) +
-    ggplot2::scale_fill_discrete(drop=FALSE) +
-    qtheme() +
-    ggplot2::guides('fill' = 'none') +
-    ggplot2::labs(
-      x = 'Arte',
-      y = 'Peso muestreado (kg)',
-      fill='Arte'
-    )
-}
-
 # Plotting total weight sampled for the 10 most commonly caught species (by
 # weight) from the current data
 dg_plot_esp_comunes <- function(dbase, year_min, year_max, lang){
   # Filtering the data for the requested year range
-  currdf <- dbase[(year(fecha) >= year_min) & (year(fecha) < year_max), ]
+  currdf <- dbase[(year(fecha) >= year_min) & (year(fecha) < year_max), ] |> 
+    # Removing species with NA scientific names from this table (we only want to
+    # plot identified fish species in the top 10)
+    _[!is.na(nombre_cientifico),]
   
   # Getting the 10 most commonly caught species
   plotdf <- currdf |> 
@@ -121,28 +96,23 @@ dg_plot_esp_comunes <- function(dbase, year_min, year_max, lang){
 # Plotting gears most used (by weight) as a waffle/grid plot (proportional)
 dg_plot_artes <- function(dbase, year_min, year_max, lang){
   # Filtering the data for the requested year range
-  plotdf <- dbase[(year(fecha) >= year_min) & (year(fecha) < year_max), ]
-  # All unique combinations of gears
-  uartes <- na.omit(unique(plotdf$tipo_arte))
+  plotdf <- dbase[(year(fecha) >= year_min) & (year(fecha) < year_max), ] |> 
+    # Translate and factorize gear names as required
+    _[, tipo_arte := translate_gear(tipo_arte, lang())]
   
   # Creating waffle chart with ggplot
   plotdf |> 
-    # Classifying unknown gear type data, and factorizing
-    _[, tipo_arte := ifelse(is.na(tipo_arte), 'Desconocido', tipo_arte)] |> 
-    _[, `:=`(
-      tipo_arte = factor(tipo_arte, levels=c('Desconocido', uartes))
-    )] |> 
     # Getting the total number of observations (rows) grouped by gear
-    _[, .N, by=tipo_arte] |> 
-  # test |> 
-    ggplot2::ggplot(ggplot2::aes(values = N, fill=tipo_arte)) +
+    _[, .(peso = sum(peso, na.rm=T)), by=tipo_arte] |> 
+    ggplot2::ggplot(ggplot2::aes(values = peso, fill=tipo_arte)) +
     waffle::geom_waffle(
       colour = "black", 
       make_proportional = T,
       n_rows = 10,
       linewidth=0.5
     ) +
-    # coord_equal() +
+    # Adding manual fill colours for the gears, based on the language
+    ggplot2::scale_fill_manual(values = gear_colours(lang())) +
     theme_void() +
     qtheme() +
     theme(
@@ -156,39 +126,38 @@ dg_plot_artes <- function(dbase, year_min, year_max, lang){
     ) +
     ggplot2::labs(
       y = NULL,
-      fill=ifelse(lang() == 'ES','Arte','Technique')
+      fill=ifelse(lang() == 'ES','Arte','Gear')
     )
 }
 
 # Plotting community sampling effort for the current data
 dg_plot_peso <- function(dbase, year_min, year_max, lang){
   # Filtering the data for the requested year range
-  plotdf <- dbase[(year(fecha) >= year_min) & (year(fecha) < year_max), ]
-  # All unique combinations of gears
-  uartes <- na.omit(unique(plotdf$tipo_arte))
+  plotdf <- dbase[(year(fecha) >= year_min) & (year(fecha) < year_max), ] |> 
+    # Translate and factorize gear names as required
+    _[, tipo_arte := translate_gear(tipo_arte, lang())]
   
   # Plotting total weight by commmunity and gear
   plotdf |> 
     # Removing any data not associated with a community
     _[!is.na(comunidad),] |> 
-    _[, tipo_arte := ifelse(is.na(tipo_arte), 'Desconocido', tipo_arte)] |> 
     _[, `:=`(
-      comunidad = factor(comunidad, levels=unique(comunidad)),
-      tipo_arte = factor(tipo_arte, levels=c('Desconocido', uartes))
+      comunidad = factor(comunidad, levels=unique(comunidad))
     )] |> 
     _[, .(peso = sum(peso, na.rm=T)), by=.(comunidad, tipo_arte)] |> 
     ggplot2::ggplot(ggplot2::aes(y = tipo_arte, x=peso, fill=tipo_arte)) +
     ggplot2::geom_col(position='dodge', alpha=0.8, colour='black') +
     ggplot2::scale_y_discrete(drop = FALSE) +
     ggplot2::scale_x_continuous(expand = c(0, 2)) +
-    ggplot2::scale_fill_discrete(drop=FALSE) +
+    # Adding manual fill colours for the gears, based on the language
+    ggplot2::scale_fill_manual(values = gear_colours(lang())) +
     ggplot2::facet_wrap('comunidad', ncol=1) +
     qtheme() +
     ggplot2::guides('fill' = 'none') +
     ggplot2::labs(
       y = NULL,
       x = ifelse(lang() == 'ES','Peso muestreado (kg)','Sampled Weight (kg)'),
-      fill=ifelse(lang() == 'ES','Arte','Technique')
+      fill=ifelse(lang() == 'ES','Arte','Gear')
     )
 }
 
@@ -202,7 +171,6 @@ dg_plot_ssn <- function(dbase, year_min, year_max, lang){
   plotdf |> 
     # Removing any data not associated with a community
     _[!is.na(comunidad),] |> 
-    _[, tipo_arte := ifelse(is.na(tipo_arte), 'Desconocido', tipo_arte)] |> 
     _[, month := lubridate::month(fecha)] |> 
     _[, `:=`(
       comunidad = factor(comunidad, levels=unique(comunidad)),

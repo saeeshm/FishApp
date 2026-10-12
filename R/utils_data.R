@@ -1,9 +1,9 @@
 # Author: Saeesh Mangwani
 # Date: 2024-02-19
 
-# Description: Shared utility functions for the entire app. Functions defined
-# broadly deal with plot themeing, font management, card design, and querying
-# databases for appropriate data based on provided filters
+# Description: Shared data utility functions for the entire app. Functions
+# defined here query the package databases for appropriate data based on
+# provided filters, and get metadata for populating sidebar input selectors.
 
 # ==== Functions ====
 
@@ -97,69 +97,37 @@ get_spec_sci_names <- function(dbname){
   return(spec_sci_names)
 }
 
+# Gear name translation ----------
 
-# Themeing and plot functions ----------
-
-# Adding google fonts
-sysfonts::font_add_google('Inter', 'Inter')
-showtext::showtext_auto()
-
-# Generic ggplot theme
-qtheme <- function(base_size=24, base_family='Inter'){
-  ggplot2::theme_minimal(base_size, base_family) +
-    ggplot2::theme(
-      plot.background = ggplot2::element_rect(fill='white', colour=NA),
-      # legend.position = 'bottom',
-      panel.border = ggplot2::element_rect(colour = "black", fill=NA, linewidth=0.5),
-      strip.text = element_text(size=rel(0.8), face='bold'),
-      legend.title = element_text(size=rel(0.8)),
-      axis.title = element_text(size=rel(0.8)),
-      axis.text = element_text(size=rel(0.6)),
-      legend.text = element_text(size=rel(0.6)),
-    )
+# Translates standardized (Spanish) gear names to display names in the chosen
+# language, as a factor ordered by the gear_names lookup table. Only gears
+# present in x are kept as levels. lang is a plain value ('ES' or 'EN'), not a
+# reactive. NOTE: only apply this to a filtered copy of the data, never with :=
+# directly on the `databases` package object, as data.table modifies by
+# reference and the change would persist across sessions and language toggles.
+translate_gear <- function(x, lang){
+  # Matching each gear to its row in the lookup table
+  idx <- match(x, gear_names$tipo_arte)
+  # Warning if any gears are missing from the lookup table
+  if(anyNA(idx)){
+    warning("Gear names not found in gear_names lookup: ",
+            paste(unique(x[is.na(idx)]), collapse = ', '))
+  }
+  # Display name column for the chosen language
+  name_col <- if(lang == 'ES') 'name_es' else 'name_en'
+  # Gears present in x, in lookup table order
+  ord <- gear_names[order(gear_names$sort_order), ]
+  ord <- ord[ord$tipo_arte %in% x, ]
+  factor(gear_names[[name_col]][idx], levels = ord[[name_col]])
 }
 
-# Coral colour palette (used for styling plots with manual scales)
-cols_coral = c(
-  "#3ebbed","#f69a94","#eddfca","#90d6e5","#00afa4","#0d659a","#a8426e"
-)
-
-# Helper function to render a plot card with some description text at the bottom
-# and optionally at the top. It is assumed that the labels are provided as html
-# parseable taglists
-plot_card_labelled <- function(plot, bottom_label=NULL, card_title=NULL, top_label = NULL){
-  # Option of no top label
-  if(is.null(top_label)){
-    currbody <- bslib::card_body(
-      class = 'align-items-center',
-      plot,
-      tagList(bottom_label)
-    )
-  # Option of no bottom label
-  }else if(is.null(bottom_label)){
-    currbody <- bslib::card_body(
-      class = 'align-items-center',
-      tagList(top_label),
-      plot
-    )
-  # Option of both labels
-  }else{
-    currbody <- bslib::card_body(
-      class = 'align-items-center',
-      tagList(top_label),
-      plot,
-      tagList(bottom_label)
-    )
-  }
-  # If there is no header/title, just returning the card body
-  if(is.null(card_title)){
-    return(currbody)
-  }
-  # Otherwise returning a full card object
-  bslib::card(
-    fill = T,
-    full_screen = TRUE,
-    bslib::card_header(card_title),
-    currbody
-  )
+# Returns the gear colours from the gear_names lookup table as a vector named
+# by gear display name in the chosen language, for use as
+# ggplot2::scale_fill_manual(values = gear_colours(lang)). Being named, the
+# colours match the levels produced by translate_gear() regardless of which
+# gears are present, keeping each gear's colour consistent across plots and
+# databases. lang is a plain value ('ES' or 'EN'), not a reactive.
+gear_colours <- function(lang){
+  name_col <- if(lang == 'ES') 'name_es' else 'name_en'
+  setNames(gear_names$colour, gear_names[[name_col]])
 }

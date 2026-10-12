@@ -1,9 +1,20 @@
+# Author: Saeesh Mangwani
+# Date: 2024-02-19
+
+# Description: Shared UI utility functions for the entire app. Functions
+# defined here build plot cards, look up card titles/descriptions, build the
+# project description page, and convert R lists to HTML.
+
+# ==== Functions ====
+
+# Plot cards ----------
+
 #' Create a standard bslib card with a plot output
 #'
-#' @param list An R list
-#' @param class a class for the list
+#' @param header The card header (title)
+#' @param ... Contents of the card body (e.g. a plot output)
 #'
-#' @return an HTML list
+#' @return a bslib card
 #' @noRd
 #'
 #' @importFrom bslib card
@@ -16,10 +27,51 @@ plot_card <- function(header, ...) {
   )
 }
 
+# Helper function to render a plot card with some description text at the bottom
+# and optionally at the top. It is assumed that the labels are provided as html
+# parseable taglists
+plot_card_labelled <- function(plot, bottom_label=NULL, card_title=NULL, top_label = NULL){
+  # Option of no top label
+  if(is.null(top_label)){
+    currbody <- bslib::card_body(
+      class = 'align-items-center',
+      plot,
+      tagList(bottom_label)
+    )
+  # Option of no bottom label
+  }else if(is.null(bottom_label)){
+    currbody <- bslib::card_body(
+      class = 'align-items-center',
+      tagList(top_label),
+      plot
+    )
+  # Option of both labels
+  }else{
+    currbody <- bslib::card_body(
+      class = 'align-items-center',
+      tagList(top_label),
+      plot,
+      tagList(bottom_label)
+    )
+  }
+  # If there is no header/title, just returning the card body
+  if(is.null(card_title)){
+    return(currbody)
+  }
+  # Otherwise returning a full card object
+  bslib::card(
+    fill = T,
+    full_screen = TRUE,
+    bslib::card_header(card_title),
+    currbody
+  )
+}
+# Descriptions ----------
+
 #' Returns the text description given an input index string, page name, and
 #' language
 #'
-#' @param idx Index string (to identify the right description). See the
+#' @param in_idx Index string (to identify the right description). See the
 #'   card_descriptions object for a list of available indices
 #' @param page_name the category name to index the right set of descriptions
 #' @param lang A reactive input determining the language (one of ES (Espanol) or EN (English))
@@ -63,9 +115,7 @@ get_desc <- function(in_idx, page_name, lang) {
 #' @param lang One of ES (Espanol) or EN (English) 
 #'
 #' @returns paragraphs of HTML text that describe the project
-#'
-#' @examples
-#' \dontrun
+#' @noRd
 build_desc <- function(lang){
   if(lang == 'ES'){
     p1 <- 'Coral Reef Alliance (CORAL) es una ONG dedicada a salvar los \
@@ -172,4 +222,47 @@ build_desc <- function(lang){
     p(p5),
     tags$br()
   )
+}
+
+# HTML helpers ----------
+
+# list_to_li() is taken from the golem boilerplate UI utilities
+# (golem::use_utils_ui()). The other functions from those utilities were not
+# used in this app and so have been removed, along with their tests.
+
+#' Turn an R list into an HTML list
+#'
+#' @param list An R list
+#' @param class a class for the list
+#'
+#' @return an HTML list
+#' @noRd
+#'
+#' @examples
+#' list_to_li(c("a", "b"))
+#' @importFrom shiny tags tagAppendAttributes tagList
+list_to_li <- function(list, class = NULL) {
+  if (is.null(class)) {
+    tagList(
+      lapply(
+        list,
+        tags$li
+      )
+    )
+  } else {
+    res <- lapply(
+      list,
+      tags$li
+    )
+    res <- lapply(
+      res,
+      function(x) {
+        tagAppendAttributes(
+          x,
+          class = class
+        )
+      }
+    )
+    tagList(res)
+  }
 }

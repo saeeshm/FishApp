@@ -418,10 +418,13 @@ ms_bdens_plot <- function(fdb, year_min, year_max, lang){
 
 # Multi-species length-frequency by trophic level and gear plot
 ms_lfq_plot <- function(lfqdb, year_min, year_max, lang){
-  # Setting gears to factor to make sure none are dropped
-  lfqdb$tipo_arte <- factor(lfqdb$tipo_arte)
   # Filtering the data for the requested year range
-  plotdf <- lfqdb[(lubridate::year(fecha) >= year_min) & (lubridate::year(fecha) < year_max), ]
+  plotdf <- lfqdb[(lubridate::year(fecha) >= year_min) & (lubridate::year(fecha) < year_max), ] |> 
+    # Translate gear names (note that since we do it after filter, panels only 
+    # get drawn for gears used within this period. Any gears not used are simply
+    # dropped)
+    _[, tipo_arte := translate_gear(tipo_arte, lang)]
+
   # Plotting
   plotdf |> 
     ggplot2::ggplot() +
@@ -436,7 +439,7 @@ ms_lfq_plot <- function(lfqdb, year_min, year_max, lang){
       linewidth=0.01
     ) +
     ggplot2::scale_fill_distiller(palette = 'RdYlGn', direction=-1) +
-    ggplot2::facet_wrap('tipo_arte', scales = 'fixed', drop=F, ncol=1) +
+    ggplot2::facet_wrap('tipo_arte', scales = 'fixed', ncol=1) +
     qtheme() +
     ggplot2::labs(
       y = ifelse(lang == 'ES', 'Peso capturado (kg)','Catch Weight (kg)'),
