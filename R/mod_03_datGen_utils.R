@@ -223,3 +223,69 @@ dg_plot_ssn <- function(dbase, year_min, year_max, lang){
       colour = ifelse(lang() == 'ES','Comunidad','Community')
     ) 
 }
+
+#' Timeline of key management milestones for the selected database
+#'
+#' Milestones are read from the `timeline_milestones` package dataset (built
+#' from data-raw/timeline_milestones.csv), filtered to the selected database
+#' and ordered by `sort_order`. Different databases show different timelines
+#' with different period granularity: Tela's periods are years (2015-2019),
+#' while Trujillo's are months within a single year (July-October).
+#'
+#' The bold "period" label above each node (a year or a month) is bilingual
+#' via the `period_en`/`period_es` columns. A blank period means the node
+#' continues under the previous period (e.g. a second milestone in the same
+#' month) - it renders a marker and caption but no repeated period label.
+#'
+#' @param database The selected database name, e.g. 'Tela' or 'Trujillo'
+#'   (matches the `database` column of `timeline_milestones`).
+#' @param lang One of 'ES' or 'EN'
+#' @returns an htmltools tag structure rendering the milestone timeline
+dg_timeline <- function(curr_dbase, lang) {
+
+  # --- Pull milestones for this database, ordered left-to-right ---
+  
+  # `timeline_milestones` is lazy-loaded package data (columns: database,
+  # sort_order, period_en, period_es, label_en, label_es)
+  ms <- timeline_milestones[database == curr_dbase][order(sort_order)]
+
+  # --- Empty state: database has no milestones defined yet ---
+  if (nrow(ms) == 0) {
+    msg <- if (lang == 'ES') {
+      'No hay hitos disponibles para esta base de datos.'
+    } else {
+      'No milestones available for this database.'
+    }
+    return(htmltools::div(class = "dg-timeline-empty", msg))
+  }
+
+  # --- Pick the period + caption columns for the active language ---
+  if (lang == 'ES') {
+    ms[, `:=`(period = period_es, caption = label_es)]
+  } else {
+    ms[, `:=`(period = period_en, caption = label_en)]
+  }
+
+  # --- Build one node per milestone ---
+  nodes <- lapply(seq_len(nrow(ms)), function(i) {
+    # A blank/NA period renders an empty (but space-reserving) slot so the
+    # marker still lines up on the track.
+    period <- ms$period[i]
+    if (is.na(period)) period <- ""
+    htmltools::div(
+      class = "dg-timeline-node",
+      htmltools::div(class = "dg-timeline-period", period),
+      htmltools::div(class = "dg-timeline-marker"),        # the square dot
+      htmltools::div(class = "dg-timeline-caption", ms$caption[i])
+    )
+  })
+
+  # --- Assemble: a line + the nodes ---
+  htmltools::div(
+    class = "dg-timeline",
+    htmltools::div(class = "dg-timeline-track"),           # the horizontal arrow line
+    htmltools::div(class = "dg-timeline-nodes", nodes)
+  )
+}
+
+

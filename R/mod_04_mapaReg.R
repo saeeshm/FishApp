@@ -13,7 +13,6 @@ mod_04_mapaReg_ui <- function(id){
   layout_sidebar(
     # Inputs and descriptions in the sidebar
     sidebar = bslib::sidebar(
-      width = '15%',
       position='left',
       # Instantiating share sidebar UI, specifying filters for this page
       mod_06_sidebar_filters_ui(ns('shared_sidebar'), show=c('database'))

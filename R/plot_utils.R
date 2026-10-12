@@ -54,6 +54,8 @@ pick_spectab <- function(dbname){
 
 # Functions for getting relevant metadata for populating sidebar input selectors
 # based on the chosen database ----------
+
+# Get the full range of years of data available for this database
 get_year_periods <- function(dbname){
   db <- pick_fish_database(dbname)
   year_period <- range(year(na.omit(db$fecha)))
@@ -65,6 +67,8 @@ get_year_periods <- function(dbname){
   as.character(seq(year_period[1], year_period[2]))
 }
 
+# Get the common names for the top 15-species (by capture amount) in the
+# database, to use for populating the species picker input
 get_spec_cmn_names <- function(dbname){
   curr_spectab <- pick_spectab(dbname)
   curr_fdb <- pick_lfq_database(dbname)
@@ -78,6 +82,8 @@ get_spec_cmn_names <- function(dbname){
   return(spec_cmn_names)
 }
 
+# Get the scientific names for the top 15-species (by capture amount) in the
+# database, to use for populating the species picker input
 get_spec_sci_names <- function(dbname){
   curr_spectab <- pick_spectab(dbname)
   curr_fdb <- pick_lfq_database(dbname)
@@ -118,10 +124,8 @@ cols_coral = c(
   "#3ebbed","#f69a94","#eddfca","#90d6e5","#00afa4","#0d659a","#a8426e"
 )
 
-# Helper function to render a plot card with a text at the bottom and optionally
-# at the top - this function is used for all timeseries plots to generate
-# consistent outputs, that can also responsively show the trend and average as
-# labels around the plot. It is assumed that the labels are provided as html
+# Helper function to render a plot card with some description text at the bottom
+# and optionally at the top. It is assumed that the labels are provided as html
 # parseable taglists
 plot_card_labelled <- function(plot, bottom_label=NULL, card_title=NULL, top_label = NULL){
   # Option of no top label

@@ -78,7 +78,6 @@ mod_03_datGen_ui <- function(id){
   bslib::layout_sidebar(
     # Inputs and descriptions in the sidebar
     sidebar = bslib::sidebar(
-      width = '15%',
       position='left',
       # Instantiating share sidebar UI, specifying filters for this page
       mod_06_sidebar_filters_ui(ns('shared_sidebar'), show=c('database', 'years'))
@@ -89,6 +88,15 @@ mod_03_datGen_ui <- function(id){
       fill = F,
       height = NULL,
       heights_equal = 'row',
+      # Row 0: Management milestones timeline (full width, short)
+      bslib::card(
+        fill = TRUE,
+        # bslib::card_header(textOutput(ns('timeline_title'))),
+        bslib::card_body(
+          padding = 0,
+          shiny::uiOutput(ns('timeline'))
+        )
+      ),
       # Row 1: 3 value boxes
       bslib::layout_column_wrap(
         fill=F,
@@ -201,7 +209,14 @@ mod_03_datGen_server <- function(id, lang, filters){
     })
     
     # Main body elements ----------
-    
+
+    # Management milestones timeline (varies by database and language)
+    output$timeline_title <- renderText(
+      if (lang() == 'ES') 'Cronología' else 'Timeline'
+    )
+    output$timeline <- renderUI(dg_timeline(filters$database, lang())) |>
+      bindCache(filters$database, lang())
+
     # Summary statistics object (used to populate value boxes)
     ss <- reactive(dg_summ_stats(
       dbase = curr_fdb(), 

@@ -150,3 +150,12 @@
 # descriptions <- fread(path)
 # # Saving
 # save(descriptions, file='data/descriptions.rda')
+#
+# # ==== Timeline milestone data ====
+
+# CSV of management milestones per database (columns: database, year,
+# label_en, label_es). Source lives in data-raw/ (Rbuildignore-d); only the
+# built .rda ships in data/.
+# timeline_milestones <- fread('data-raw/timeline_milestones.csv')
+# Saving
+# save(timeline_milestones, file='data/timeline_milestones.rda')

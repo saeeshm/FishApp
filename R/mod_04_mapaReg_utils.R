@@ -39,7 +39,26 @@ mapa_regional <- function(region){
   )
   # Getting the map view options based on the region
   viewOpts <- get_map_views(region)
-  
+
+  # Carto basemap API key. Carto issues separate keys restricted to different
+  # origins, so we select the key for the current environment:
+  #   - production (deployed app): CARTO_API_KEY        (restricted to app domain)
+  #   - local development:         CARTO_API_KEY_LOCAL  (restricted to localhost)
+  # golem::app_prod() is TRUE when launched via app.R (the deploy entrypoint)
+  # and FALSE via dev/run_dev.R. Both keys live in the gitignored .Renviron
+  # locally; only CARTO_API_KEY is pushed to the server (see deploy.R). Never
+  # hardcode a key here, so they stay out of the git repository.
+  carto_key_var <- if (golem::app_prod()) "CARTO_API_KEY" else "CARTO_API_KEY_LOCAL"
+  carto_key <- Sys.getenv(carto_key_var, unset = "")
+  if (carto_key == "") {
+    warning(
+      carto_key_var, " is not set - the Carto basemap tiles will not load. ",
+      "Set both keys in a local .Renviron, and push the production key via ",
+      "rsconnect::deployApp(envVars = \"CARTO_API_KEY\") when deploying.",
+      call. = FALSE
+    )
+  }
+
   # Drawing leaflet map
   leaflet::leaflet() |> 
     leaflet::setView(
@@ -47,11 +66,18 @@ mapa_regional <- function(region){
       lat = viewOpts$lat, 
       zoom = viewOpts$zoom
     ) |>
-    # leaflet::setMaxBounds(-88, 14, -86, 17) |>
-    # leaflet::addProviderTiles(leaflet::providers$Esri.WorldShadedRelief,
-    #                           options = leaflet::providerTileOptions(opacity = 0.4)) |> 
-    leaflet::addProviderTiles(leaflet::providers$CartoDB.VoyagerLabelsUnder,
-                              options = leaflet::providerTileOptions(opacity = 0.8)) |>
+    leaflet::addTiles(
+      map = _,
+      urlTemplate = paste0(
+        'https://basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}.png',
+        '?key=', carto_key
+      ),
+      attribution = paste(
+        '&copy; <a href="https://carto.com/attributions">CARTO</a>,',
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      ),
+      options = leaflet::tileOptions(opacity = 0.8)
+    ) |> 
     leaflet::addMapPane('admin', zIndex=500) |>
     leaflet::addMapPane('comunidades', zIndex=550) |>
     # Communities
@@ -61,7 +87,7 @@ mapa_regional <- function(region){
       group = 'Comunidades',
       color = 'darkorange',
       fill = T,
-      radius = 10,
+      radius = 30,
       options = leaflet::pathOptions(pane = 'comunidades')
     ) |> 
     # National Administrative layers

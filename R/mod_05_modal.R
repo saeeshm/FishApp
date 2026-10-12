@@ -20,7 +20,7 @@ modal_UI <- function(id, default_title='Sin Título') {
 
 #' 05_modal Server Functions
 #'
-#' @param id 
+#' @param id Modal object ID - internal parameters for correct namespacing {shiny}.
 #' @param lang language toggle for app (must be a reactive object, character string)
 #' @param plot_title A title for modal window (must be a reactive object, character string)
 #' @param plot_info additional info for modal window (must be a reactive object, character string)

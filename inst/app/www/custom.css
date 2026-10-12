@@ -131,7 +131,7 @@ body {
 }
 
 .modal-hook:hover {
-  background: var(--brand-coral-blue) !important;
+  background: var(--brand-coral_blue) !important;
 }
 
 /* Value boxes */
@@ -140,4 +140,88 @@ div.vb-no-pad {
 }
 div.vb-no-pad .value-box-area{
   padding: 0;
+}
+
+/* ==== Datos generales: management milestones timeline ==== */
+.dg-timeline {
+  position: relative;
+  padding: 0.75rem 1.25rem 0.5rem;
+}
+
+/* The horizontal arrow line behind the nodes */
+.dg-timeline-track {
+  position: absolute;
+  top: 3.4rem;
+  left: 1.25rem;
+  right: 1.25rem;
+  height: 6px;
+  background: var(--brand-coral_blue);
+}
+/* Arrowhead on the right end of the track */
+.dg-timeline-track::after {
+  content: "";
+  position: absolute;
+  right: -14px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-top: 11px solid transparent;
+  border-bottom: 11px solid transparent;
+  border-left: 16px solid var(--brand-coral_blue);
+}
+
+.dg-timeline-nodes {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.dg-timeline-node {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* Bold period label (a year or a month). min-height reserves space so a
+   blank period still keeps its marker aligned on the track. */
+.dg-timeline-period {
+  font-weight: 700;
+  font-size: 1.4rem;
+  line-height: 1.1;
+  min-height: 1.6rem;
+  margin-bottom: 0.5rem;
+}
+.dg-timeline-marker {
+  width: 20px;
+  height: 20px;
+  background: var(--brand-coral_blue);
+  position: relative;
+  z-index: 1;
+  margin-bottom: 0.6rem;
+}
+.dg-timeline-caption {
+  font-size: 0.85rem;
+  line-height: 1.25;
+  max-width: 16ch;
+}
+
+.dg-timeline-empty {
+  padding: 1.5rem;
+  color: var(--brand-medium-gray);
+  font-style: italic;
+}
+
+/* Stack vertically on narrow screens instead of crushing captions */
+@media (max-width: 600px) {
+  .dg-timeline-track { display: none; }
+  .dg-timeline-nodes { flex-direction: column; align-items: flex-start; }
+  .dg-timeline-node {
+    flex-direction: row;
+    align-items: baseline;
+    gap: 0.75rem;
+    text-align: left;
+  }
+  .dg-timeline-period { min-height: 0; }
+  .dg-timeline-caption { max-width: none; }
 }

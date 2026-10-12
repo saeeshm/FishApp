@@ -28,7 +28,6 @@ Imports:
     waffle (>= 1.0.2)
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.3.3
 Suggests: 
     spelling,
     testthat (>= 3.0.0),
@@ -39,5 +38,6 @@ URL: https://github.com/saeeshm/FishApp
 BugReports: https://github.com/saeeshm/FishApp/issues
 Depends: 
     R (>= 2.10)
-Remotes:  
+Remotes: 
     github::hrbrmstr/waffle
+Config/roxygen2/version: 8.1.1

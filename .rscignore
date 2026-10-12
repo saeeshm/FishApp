@@ -13,3 +13,5 @@ dev
 man
 vignettes
 tests
+deploy.R
+.Renviron
