@@ -144,13 +144,19 @@
 # )
 # 
 # # ==== Description data ====
-# 
-# # CSV file of description text for dashboard
-# path <- '/Users/saeesh/Downloads/Shiny App Plot Descriptions - Sheet1.csv'
-# descriptions <- fread(path)
-# # Saving
-# save(descriptions, file='data/descriptions.rda')
 #
+# Plot/card descriptions for the dashboard. Authored in YAML (one record per
+# list item, keyed by idx + category; desc_* fields hold Markdown). Source
+# lives in data-raw/ (Rbuildignore-d); only the built .rda ships in data/.
+# read_yaml() returns an unnamed list of records; rbindlist() stacks them into
+# the same data.table (columns: idx, category, title_en, desc_en, title_es,
+# desc_es) that get_desc() consumes.
+descriptions <- data.table::rbindlist(
+  yaml::read_yaml('data-raw/plot_and_card_descriptions.yaml')
+)
+# Saving
+save(descriptions, file='data/descriptions.rda')
+
 # # ==== Timeline milestone data ====
 
 # CSV of management milestones per database (columns: database, year,

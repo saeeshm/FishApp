@@ -49,7 +49,16 @@ modal_Server <- function(id, lang, plot_title, plot_info) {
           modalDialog(
             title = p_title(),
             easyClose = TRUE,
-            p_info(),
+            # Descriptions are authored in Markdown in the descriptions CSV
+            # (paragraph breaks, bullet/numbered lists, bold, etc.) and
+            # rendered to HTML here. shiny::markdown() uses commonmark (bundled
+            # with shiny), so no extra dependency is needed. Guard against an
+            # empty/NA description so markdown() is not handed a missing value.
+            if (length(p_info()) && !is.na(p_info()) && nzchar(p_info())) {
+              shiny::markdown(p_info())
+            } else {
+              p_info()
+            },
             footer = tagList(
               actionButton("close_modal_btn", ifelse(lang() == "ES", "Cerrar","Close"))
             )

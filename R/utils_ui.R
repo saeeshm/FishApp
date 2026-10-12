@@ -30,10 +30,10 @@ plot_card <- function(header, ...) {
 #' @importFrom bslib card
 get_desc <- function(in_idx, page_name, lang) {
   # Checking that the index and page name are available
-  if(!(in_idx %in% descriptions$idx)){
+  if(!(in_idx %in% unique(descriptions$idx))){
     stop(paste0("Index ", in_idx, " not found in descriptions table"))
   }
-  if(!(page_name %in% descriptions$category)){
+  if(!(page_name %in% unique(descriptions$category))){
     stop(paste0("Page name ", page_name, " not found in descriptions table"))
   }
   # Checking that the lang input is correct
