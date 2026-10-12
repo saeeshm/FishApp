@@ -15,3 +15,5 @@ vignettes
 tests
 deploy.R
 .Renviron
+
+data-raw

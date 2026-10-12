@@ -1,13 +1,13 @@
 # Plot and card descriptions for the FishApp dashboard.
 #
-# Source file for data/descriptions.rda. Each list item is one description,
+# Source file for data/card_descriptions.rda. Each list item is one description,
 # keyed by the (idx, category) pair. Descriptions are authored in Markdown
 # (paragraph breaks, bullet lists, **bold**) and rendered to HTML in the app
 # via shiny::markdown(). Use `|` block scalars for the desc_* fields so
 # Markdown can be written literally, with no quoting or escaping.
 #
-# Build step (in _dataprep.R): read this file with yaml::read_yaml(), combine
-# the records with data.table::rbindlist(), and save as descriptions.rda. The
+# Build step (in data-raw/card_descriptions.R): read this file with yaml::read_yaml(), combine
+# the records with data.table::rbindlist(), and save as card_descriptions.rda. The
 # end object stays a data.table with columns: idx, category, title_en,
 # desc_en, title_es, desc_es.
 

@@ -20,7 +20,7 @@ plot_card <- function(header, ...) {
 #' language
 #'
 #' @param idx Index string (to identify the right description). See the
-#'   descriptions object for a list of available indices
+#'   card_descriptions object for a list of available indices
 #' @param page_name the category name to index the right set of descriptions
 #' @param lang A reactive input determining the language (one of ES (Espanol) or EN (English))
 #'
@@ -30,18 +30,18 @@ plot_card <- function(header, ...) {
 #' @importFrom bslib card
 get_desc <- function(in_idx, page_name, lang) {
   # Checking that the index and page name are available
-  if(!(in_idx %in% unique(descriptions$idx))){
-    stop(paste0("Index ", in_idx, " not found in descriptions table"))
+  if(!(in_idx %in% unique(card_descriptions$idx))){
+    stop(paste0("Index ", in_idx, " not found in card_descriptions table"))
   }
-  if(!(page_name %in% unique(descriptions$category))){
-    stop(paste0("Page name ", page_name, " not found in descriptions table"))
+  if(!(page_name %in% unique(card_descriptions$category))){
+    stop(paste0("Page name ", page_name, " not found in card_descriptions table"))
   }
   # Checking that the lang input is correct
   if(!(lang() %in% c('ES','EN'))){
     stop(paste0("Language ", lang, " not recognized. Use 'ES' or 'EN'"))
   }
-  # Filtering the descriptions table via data.table
-  relv_descs <- descriptions[category == page_name & idx == in_idx,]
+  # Filtering the card_descriptions table via data.table
+  relv_descs <- card_descriptions[category == page_name & idx == in_idx,]
   # Getting the title and text based on language
   # print(lang())
   if(lang() == 'ES'){

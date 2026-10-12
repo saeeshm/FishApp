@@ -17,8 +17,8 @@ an htmltools tag structure rendering the milestone timeline
 }
 \description{
 Milestones are read from the `timeline_milestones` package dataset (built
-from data-raw/timeline_milestones.csv), filtered to the selected database
-and ordered by `sort_order`. Different databases show different timelines
+from data-raw/app_metadata/timeline_milestones.csv), filtered to the
+selected database and ordered by `sort_order`. Different databases show different timelines
 with different period granularity: Tela's periods are years (2015-2019),
 while Trujillo's are months within a single year (July-October).
 }

@@ -49,7 +49,7 @@ modal_Server <- function(id, lang, plot_title, plot_info) {
           modalDialog(
             title = p_title(),
             easyClose = TRUE,
-            # Descriptions are authored in Markdown in the descriptions CSV
+            # Descriptions are authored in Markdown in card_descriptions.yaml
             # (paragraph breaks, bullet/numbered lists, bold, etc.) and
             # rendered to HTML here. shiny::markdown() uses commonmark (bundled
             # with shiny), so no extra dependency is needed. Guard against an

@@ -25,20 +25,20 @@ Imports:
     showtext,
     stringr,
     sysfonts,
-    waffle (>= 1.0.2),
-    yaml
+    waffle (>= 1.0.2)
 Encoding: UTF-8
 LazyData: true
 Suggests: 
     spelling,
     testthat (>= 3.0.0),
-    usethis
+    usethis,
+    yaml
 Config/testthat/edition: 3
 Language: en-US
 URL: https://github.com/saeeshm/FishApp
 BugReports: https://github.com/saeeshm/FishApp/issues
 Depends: 
-    R (>= 2.10)
+    R (>= 3.5)
 Remotes: 
     github::hrbrmstr/waffle
 Config/roxygen2/version: 8.1.1

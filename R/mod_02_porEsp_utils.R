@@ -21,7 +21,7 @@ month.abb.esp <- c(
 # Data filtering ----------
 
 # Creating a plotting dataset by filtering for the provided species
-make_plotdf <- function(dbase, year_min, year_max, currspec){
+make_plotdf <- function(dbase, spectab, year_min, year_max, currspec){
   # Getting the scientific name associated with this common name
   ncien <- spectab[nombre_comun_cln %chin% stringr::str_to_lower(currspec)]$nombre_cientifico
   # Filtering the database for data in this year period for this species
@@ -68,10 +68,10 @@ calc_froese_indics <- function(Linf){
 }
 
 # Calculating basic summary statistics for this species and time period
-ss_summ_stats <- function(fishdbase, lfqdbase, year_min, year_max, currspec){
+ss_summ_stats <- function(fishdbase, lfqdbase, spectab, year_min, year_max, currspec){
   # Getting the relevant data subsets
-  curr_lfqdb <- make_plotdf(lfqdbase, year_min, year_max, currspec)
-  curr_fdb <- make_plotdf(fishdbase, year_min, year_max, currspec)
+  curr_lfqdb <- make_plotdf(lfqdbase, spectab, year_min, year_max, currspec)
+  curr_fdb <- make_plotdf(fishdbase, spectab, year_min, year_max, currspec)
   
   # Calculating L-infinity (using raw sampled lengths)
   Linf <- calc_linf(curr_fdb$longitud, rm_outliers = T)
@@ -139,9 +139,9 @@ ss_summ_stats <- function(fishdbase, lfqdbase, year_min, year_max, currspec){
 # Plots ----------
 
 # Overall CPUE trend
-ss_cpue_trend_total <- function(lfqdbase, year_min, year_max, currspec, lang){
+ss_cpue_trend_total <- function(lfqdbase, spectab, year_min, year_max, currspec, lang){
   # Getting plotting data
-  plotdf <- make_plotdf(lfqdbase, year_min, year_max, currspec)
+  plotdf <- make_plotdf(lfqdbase, spectab, year_min, year_max, currspec)
   # Preparing CPUE dataframe for summarization
   cpueDat <- plotdf |> 
     _[, `:=`(
@@ -234,9 +234,9 @@ ss_cpue_trend_total <- function(lfqdbase, year_min, year_max, currspec, lang){
 }
 
 # CPUE per gear
-# ss_cpue_por_arte <- function(lfqdbase, year_min, year_max, currspec, lang){
+# ss_cpue_por_arte <- function(lfqdbase, spectab, year_min, year_max, currspec, lang){
 #   # Getting plotting data
-#   plotdf <- make_plotdf(lfqdbase, year_min, year_max, currspec)
+#   plotdf <- make_plotdf(lfqdbase, spectab, year_min, year_max, currspec)
 #   # Preparing CPUE dataframe for summarization
 #   cpueDat <- plotdf |> 
 #     _[, `:=`(
@@ -264,9 +264,9 @@ ss_cpue_trend_total <- function(lfqdbase, year_min, year_max, currspec, lang){
 # }
 
 # Plotting length-frequencies by gear for this species
-ss_lfq_plot <- function(lfqdbase, year_min, year_max, currspec, froese, lang){
+ss_lfq_plot <- function(lfqdbase, spectab, year_min, year_max, currspec, froese, lang){
   # Getting plotting data
-  plotdf <- make_plotdf(lfqdbase, year_min, year_max, currspec)
+  plotdf <- make_plotdf(lfqdbase, spectab, year_min, year_max, currspec)
   # Getting ylimits based on the total summed weights for this species by gear
   # ylim_max <- max(plotdf[, .(tot_wt=sum(adjWt)), by=tipo_arte]$tot_wt)
   # Making plot
@@ -343,9 +343,9 @@ ss_lfq_plot <- function(lfqdbase, year_min, year_max, currspec, froese, lang){
 }
 
 # Plotting catch seasonality
-ss_plot_ssn <- function(lfqdbase, year_min, year_max, currspec, lang){
+ss_plot_ssn <- function(lfqdbase, spectab, year_min, year_max, currspec, lang){
   # Getting plotting data
-  plotdf <- make_plotdf(lfqdbase, year_min, year_max, currspec)
+  plotdf <- make_plotdf(lfqdbase, spectab, year_min, year_max, currspec)
   # Getting the correct month reference vector
   mref_vec <- if(lang == 'ES') month.abb.esp else (month.abb)
   # Plotting
@@ -364,9 +364,9 @@ ss_plot_ssn <- function(lfqdbase, year_min, year_max, currspec, lang){
 }
   
 # Plotting the CPUE per length-class against the mean CPUE
-ss_plot_cpue_pl <- function(lfqdbase, year_min, year_max, currspec, lang){
+ss_plot_cpue_pl <- function(lfqdbase, spectab, year_min, year_max, currspec, lang){
   # Getting plotting data
-  plotdf <- make_plotdf(lfqdbase, year_min, year_max, currspec)
+  plotdf <- make_plotdf(lfqdbase, spectab, year_min, year_max, currspec)
   
   # Preparing dataframe for CPUE per length class in this period
   cpue_pl_tab <- plotdf |> 

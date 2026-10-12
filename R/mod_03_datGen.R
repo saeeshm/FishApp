@@ -193,7 +193,7 @@ mod_03_datGen_server <- function(id, lang, filters){
     )
     
     # TEST - Checking that all present
-    # idx_list %in% descriptions$idx
+    # idx_list %in% card_descriptions$idx
     
     # Creating modals
     purrr::walk(idx_list, \(curr_idx){

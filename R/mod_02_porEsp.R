@@ -187,6 +187,8 @@ mod_02_porEsp_server <- function(id, lang, filters){
       bindCache(filters$database)
     curr_fdb <- reactive({pick_fish_database(dbname = filters$database)}) |> 
       bindCache(filters$database)
+    curr_spectab <- reactive({pick_spectab(dbname = filters$database)}) |> 
+      bindCache(filters$database)
     
     # Modals and descriptions ----------
     
@@ -208,7 +210,7 @@ mod_02_porEsp_server <- function(id, lang, filters){
     )
     
     # TEST - Checking that all present
-    # idx_list %in% descriptions$idx
+    # idx_list %in% card_descriptions$idx
     
     # Creating modals
     purrr::walk(idx_list, \(curr_idx){
@@ -237,6 +239,7 @@ mod_02_porEsp_server <- function(id, lang, filters){
     ss <- reactive(ss_summ_stats(
       fishdbase = curr_fdb(), 
       lfqdbase = curr_lfqdb(),
+      spectab = curr_spectab(),
       year_min = filters$years[1], 
       year_max = filters$years[2],
       currspec = filters$species
@@ -252,6 +255,7 @@ mod_02_porEsp_server <- function(id, lang, filters){
     # CPUE Trend card
     cpue <- reactive(ss_cpue_trend_total(
       lfqdbase = curr_lfqdb(),
+      spectab = curr_spectab(),
       year_min = filters$years[1], 
       year_max = filters$years[2],
       currspec = filters$species,
@@ -265,6 +269,7 @@ mod_02_porEsp_server <- function(id, lang, filters){
     # Length-frequencies by gear plot
     output$plot_lfq <- renderPlot(ss_lfq_plot(
       lfqdbase = curr_lfqdb(),
+      spectab = curr_spectab(),
       year_min = filters$years[1], 
       year_max = filters$years[2],
       currspec = filters$species,
@@ -285,6 +290,7 @@ mod_02_porEsp_server <- function(id, lang, filters){
     # Catch-seasonality plot
     output$plot_est <- renderPlot(ss_plot_ssn(
       lfqdbase = curr_lfqdb(),
+      spectab = curr_spectab(),
       year_min = filters$years[1], 
       year_max = filters$years[2],
       currspec = filters$species,
@@ -294,6 +300,7 @@ mod_02_porEsp_server <- function(id, lang, filters){
     # CPUE per length-class plot
     output$plot_cpue_pl <- renderPlot(ss_plot_cpue_pl(
       lfqdbase = curr_lfqdb(),
+      spectab = curr_spectab(),
       year_min = filters$years[1], 
       year_max = filters$years[2],
       currspec = filters$species,

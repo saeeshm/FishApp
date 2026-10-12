@@ -8,3 +8,7 @@
 /rsconnect/
 .Renviron
 deploy.R
+# Sensitive data: kept locally, deployed via rsconnect, never pushed
+data/*.rda
+data-raw/spatial_data/
+data-raw/stock_analysis_data/
